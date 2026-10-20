@@ -257,3 +257,17 @@ export const DeviceSpecSchema: z.ZodType<DeviceSpec> = z
 export function validateDeviceSpec(spec: unknown): DeviceSpec {
   return DeviceSpecSchema.parse(spec);
 }
+
+/**
+ * Zod schema for lightweight device catalog item summary.
+ */
+export const DeviceCatalogItemSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  vendor: z.string().min(1),
+  category: z.enum(['KMS', 'HSM_FINANCIAL', 'HSM_GP', 'HSMAAS']),
+  status: z.enum(['supported', 'coming-soon']),
+  icon: z.string().optional(),
+  summary: LocalizedStringSchema,
+  defaultVersion: z.string().optional()
+});

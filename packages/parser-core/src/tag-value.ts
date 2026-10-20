@@ -290,7 +290,13 @@ export function parseTagValue(
 
   let matchedCommand: CommandSpec | null = null;
 
-  if (!isErrorResponse && matchingCommands.length > 0) {
+  if (isErrorResponse) {
+    detectedDirection = 'response';
+    matchedCommand =
+      matchingCommands.find((c) => c.direction === 'response') ??
+      matchingCommands[0] ??
+      null;
+  } else if (matchingCommands.length > 0) {
     const presentTags = new Set(
       extractedTokens.filter((t) => t.tag !== commandTag).map((t) => t.tag)
     );
@@ -298,7 +304,49 @@ export function parseTagValue(
     const responseCmd = matchingCommands.find((c) => c.direction === 'response');
     const requestCmd = matchingCommands.find((c) => c.direction === 'request');
 
-    if (responseCmd && responseCmd.fields.some((f) => f.tag && presentTags.has(f.tag))) {
+    if (options?.expectedDirection) {
+      matchedCommand =
+        matchingCommands.find((c) => c.direction === options.expectedDirection) ??
+        matchingCommands[0] ??
+        null;
+      detectedDirection = options.expectedDirection;
+    } else if (responseCmd && requestCmd) {
+      const responseTags = new Set(
+        responseCmd.fields
+          .map((f) => f.tag)
+          .filter((t): t is string => typeof t === 'string' && t.length > 0)
+      );
+      const requestTags = new Set(
+        requestCmd.fields
+          .map((f) => f.tag)
+          .filter((t): t is string => typeof t === 'string' && t.length > 0)
+      );
+
+      const uniqueResponseTags = [...responseTags].filter((t) => !requestTags.has(t));
+      const uniqueRequestTags = [...requestTags].filter((t) => !responseTags.has(t));
+
+      const hasUniqueResponseTag = uniqueResponseTags.some((t) => presentTags.has(t));
+      const hasUniqueRequestTag = uniqueRequestTags.some((t) => presentTags.has(t));
+
+      if (hasUniqueResponseTag && !hasUniqueRequestTag) {
+        detectedDirection = 'response';
+        matchedCommand = responseCmd;
+      } else if (hasUniqueRequestTag && !hasUniqueResponseTag) {
+        detectedDirection = 'request';
+        matchedCommand = requestCmd;
+      } else {
+        const hasStatusTag =
+          presentTags.has('BB') ||
+          (errorCodeTag ? presentTags.has(errorCodeTag) : false);
+        if (hasStatusTag) {
+          detectedDirection = 'response';
+          matchedCommand = responseCmd;
+        } else {
+          detectedDirection = 'request';
+          matchedCommand = requestCmd;
+        }
+      }
+    } else if (responseCmd) {
       detectedDirection = 'response';
       matchedCommand = responseCmd;
     } else if (requestCmd) {
@@ -308,7 +356,7 @@ export function parseTagValue(
       matchedCommand = matchingCommands[0] ?? null;
       detectedDirection = matchedCommand?.direction ?? 'request';
     }
-  } else if (!isErrorResponse && commandCode) {
+  } else if (commandCode) {
     valid = false;
     diagnostics.push({
       code: 'UNKNOWN_COMMAND',
@@ -357,7 +405,8 @@ export function parseTagValue(
         isErrorResponse &&
         (tok.tag === errorCodeTag ||
           tok.tag === offendingTagTag ||
-          tok.tag === 'BB')
+          tok.tag === 'BB' ||
+          tok.tag === framing.errorMessageTag)
       ) {
         segments.push({
           id: `seg-error-tag-${tok.tag}`,
@@ -367,6 +416,36 @@ export function parseTagValue(
           start: tok.start,
           end: tok.end,
           tag: tok.tag
+        });
+        fields.push({
+          id: `field-${tok.tag.toLowerCase()}`,
+          name: {
+            es:
+              tok.tag === errorCodeTag
+                ? 'Código de Error'
+                : tok.tag === offendingTagTag
+                ? 'Tag Ofensor'
+                : 'Mensaje de Error',
+            en:
+              tok.tag === errorCodeTag
+                ? 'Error Code'
+                : tok.tag === offendingTagTag
+                ? 'Offending Tag'
+                : 'Error Message'
+          },
+          description: {
+            es: `Etiqueta de error ${tok.tag}`,
+            en: `Error tag ${tok.tag}`
+          },
+          tag: tok.tag,
+          rawValue: tok.value,
+          decodedValue: tok.value,
+          maskedValue: tok.value,
+          start: tok.start,
+          end: tok.end,
+          encoding: 'ascii',
+          valid: true,
+          sensitive: false
         });
         continue;
       }

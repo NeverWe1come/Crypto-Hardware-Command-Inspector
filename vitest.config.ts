@@ -17,10 +17,15 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts'],
+    setupFiles: [path.resolve(__dirname, 'vitest.setup.ts')],
     include: [
-      'packages/**/src/**/*.test.ts',
-      'apps/explorer/src/**/*.test.{ts,tsx}'
+      'packages/*/src/**/*.test.{ts,tsx}',
+      'apps/*/src/**/*.test.{ts,tsx}'
+    ],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      'metronic-v9.5.0/**'
     ],
     coverage: {
       provider: 'v8',
