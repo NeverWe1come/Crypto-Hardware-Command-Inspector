@@ -73,4 +73,83 @@ export type WorkspaceAction =
   | { readonly type: 'SET_LOCALE'; readonly payload: AppLocale }
   | { readonly type: 'SET_THEME'; readonly payload: AppTheme }
   | { readonly type: 'SET_SIDEBAR_QUERY'; readonly payload: string }
-  | { readonly type: 'SET_SELECTED_CATEGORY'; readonly payload: CategoryFilter };
+  | { readonly type: 'SET_SELECTED_CATEGORY'; readonly payload: CategoryFilter }
+  | {
+      readonly type: 'ADD_COMMAND';
+      readonly payload?: {
+        readonly tabId?: string;
+        readonly initialRaw?: string;
+        readonly initialDirection?: CommandDirection;
+        readonly initialVersion?: string;
+        readonly commandId?: string;
+      };
+    }
+  | {
+      readonly type: 'DELETE_COMMAND';
+      readonly payload: {
+        readonly commandId: string;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'DUPLICATE_COMMAND';
+      readonly payload: {
+        readonly commandId: string;
+        readonly newCommandId?: string;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'UPDATE_COMMAND_RAW';
+      readonly payload: {
+        readonly commandId: string;
+        readonly raw: string;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'UPDATE_COMMAND_DIRECTION';
+      readonly payload: {
+        readonly commandId: string;
+        readonly direction: CommandDirection;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'UPDATE_COMMAND_VERSION';
+      readonly payload: {
+        readonly commandId: string;
+        readonly version: string;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'UPDATE_TAB_HEADER_LENGTH';
+      readonly payload: {
+        readonly headerLength: number;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'LINK_COMMANDS';
+      readonly payload: {
+        readonly commandId: string;
+        readonly targetCommandId: string | null;
+        readonly tabId?: string;
+        readonly bidirectional?: boolean;
+      };
+    }
+  | {
+      readonly type: 'REORDER_COMMANDS';
+      readonly payload: {
+        readonly commandIds: readonly string[];
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'SELECT_COMMAND';
+      readonly payload: {
+        readonly commandId: string;
+        readonly tabId?: string;
+      };
+    };

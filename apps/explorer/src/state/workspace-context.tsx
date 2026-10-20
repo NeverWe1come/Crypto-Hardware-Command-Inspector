@@ -49,6 +49,14 @@ export function WorkspaceProvider({ children, initialState }: WorkspaceProviderP
 }
 
 /**
+ * Optional hook to access workspace state and dispatch actions.
+ * Returns undefined if used outside a `<WorkspaceProvider />` instead of throwing.
+ */
+export function useOptionalWorkspace(): WorkspaceContextValue | undefined {
+  return useContext(WorkspaceContext);
+}
+
+/**
  * Custom hook to access workspace state and dispatch actions.
  * Throws an error if used outside a `<WorkspaceProvider />`.
  */

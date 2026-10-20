@@ -34,6 +34,23 @@ function createId(prefix: string): string {
 }
 
 /**
+ * Resolves the target tab and its index within the state tree.
+ * Defaults to the currently active tab if no explicit tabId is provided.
+ */
+function findTargetTab(
+  state: WorkspaceState,
+  tabId?: string
+): { tab: WorkspaceTab; tabIndex: number } | null {
+  const targetId = tabId ?? state.activeTabId;
+  if (!targetId) return null;
+  const tabIndex = state.tabs.findIndex((t) => t.id === targetId);
+  if (tabIndex === -1) return null;
+  const tab = state.tabs[tabIndex];
+  if (!tab) return null;
+  return { tab, tabIndex };
+}
+
+/**
  * Pure reducer function for the application workspace.
  * Treats state as strictly immutable.
  *
@@ -189,7 +206,312 @@ export function workspaceReducer(
       };
     }
 
-    default:
+    case 'ADD_COMMAND': {
+      const target = findTargetTab(state, action.payload?.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const newId = action.payload?.commandId ?? createId('cmd');
+      const newCommand: CommandEntry = {
+        id: newId,
+        raw: action.payload?.initialRaw ?? '',
+        direction: action.payload?.initialDirection ?? 'request',
+        version: action.payload?.initialVersion ?? tab.version,
+        linkedCommandId: null
+      };
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: [...tab.commands, newCommand],
+        activeCommandId: newId
+      };
+
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'DELETE_COMMAND': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+
+      if (tab.commands.length === 1) {
+        // Tab must never have 0 commands; create a fresh command
+        const freshId = createId('cmd');
+        const freshCmd: CommandEntry = {
+          id: freshId,
+          raw: '',
+          direction: 'request',
+          version: tab.version,
+          linkedCommandId: null
+        };
+        const updatedTab: WorkspaceTab = {
+          ...tab,
+          commands: [freshCmd],
+          activeCommandId: freshId
+        };
+        const nextTabs = [...state.tabs];
+        nextTabs[tabIndex] = updatedTab;
+        return { ...state, tabs: nextTabs };
+      }
+
+      // Filter out deleted command and clean up dangling links pointing to it
+      const remainingCommands = tab.commands
+        .filter((c) => c.id !== action.payload.commandId)
+        .map((c) =>
+          c.linkedCommandId === action.payload.commandId
+            ? { ...c, linkedCommandId: null }
+            : c
+        );
+
+      let nextActiveId = tab.activeCommandId;
+      if (tab.activeCommandId === action.payload.commandId) {
+        // Choose adjacent: prefer previous if cmdIndex > 0, else first remaining
+        const candidateIndex = cmdIndex > 0 ? cmdIndex - 1 : 0;
+        nextActiveId = remainingCommands[candidateIndex]?.id ?? null;
+      }
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: remainingCommands,
+        activeCommandId: nextActiveId
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'DUPLICATE_COMMAND': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+      const sourceCmd = tab.commands[cmdIndex];
+      if (!sourceCmd) return state;
+
+      const newId = action.payload.newCommandId ?? createId('cmd');
+      const duplicatedCmd: CommandEntry = {
+        ...sourceCmd,
+        id: newId,
+        linkedCommandId: null
+      };
+
+      const nextCommands = [
+        ...tab.commands.slice(0, cmdIndex + 1),
+        duplicatedCmd,
+        ...tab.commands.slice(cmdIndex + 1)
+      ];
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: nextCommands,
+        activeCommandId: newId
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'UPDATE_COMMAND_RAW': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+      const cmd = tab.commands[cmdIndex];
+      if (!cmd) return state;
+      if (cmd.raw === action.payload.raw) return state;
+
+      const nextCommands = [...tab.commands];
+      nextCommands[cmdIndex] = { ...cmd, raw: action.payload.raw };
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: nextCommands
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'UPDATE_COMMAND_DIRECTION': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+      const cmd = tab.commands[cmdIndex];
+      if (!cmd) return state;
+      if (cmd.direction === action.payload.direction) return state;
+
+      const nextCommands = [...tab.commands];
+      nextCommands[cmdIndex] = { ...cmd, direction: action.payload.direction };
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: nextCommands
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'UPDATE_COMMAND_VERSION': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+      const cmd = tab.commands[cmdIndex];
+      if (!cmd) return state;
+      if (cmd.version === action.payload.version) return state;
+
+      const nextCommands = [...tab.commands];
+      nextCommands[cmdIndex] = { ...cmd, version: action.payload.version };
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: nextCommands
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'UPDATE_TAB_HEADER_LENGTH': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const len = action.payload.headerLength;
+      if (len < 0 || tab.headerLength === len) return state;
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        headerLength: len
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'LINK_COMMANDS': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const { commandId, targetCommandId, bidirectional = true } = action.payload;
+      if (commandId === targetCommandId) return state;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === commandId);
+      if (cmdIndex === -1) return state;
+
+      if (targetCommandId !== null) {
+        const targetIndex = tab.commands.findIndex((c) => c.id === targetCommandId);
+        if (targetIndex === -1) return state;
+      }
+
+      // If unlinking: targetCommandId is null
+      if (targetCommandId === null) {
+        const oldTargetId = tab.commands[cmdIndex]?.linkedCommandId;
+        const nextCommands = tab.commands.map((c) => {
+          if (c.id === commandId) return { ...c, linkedCommandId: null };
+          if (oldTargetId && c.id === oldTargetId) return { ...c, linkedCommandId: null };
+          return c;
+        });
+        const updatedTab: WorkspaceTab = { ...tab, commands: nextCommands };
+        const nextTabs = [...state.tabs];
+        nextTabs[tabIndex] = updatedTab;
+        return { ...state, tabs: nextTabs };
+      }
+
+      // Linking:
+      const oldCmdPartner = tab.commands[cmdIndex]?.linkedCommandId;
+      const oldTargetPartner = tab.commands.find((c) => c.id === targetCommandId)?.linkedCommandId;
+
+      const nextCommands = tab.commands.map((c) => {
+        if (c.id === commandId) {
+          return { ...c, linkedCommandId: targetCommandId };
+        }
+        if (c.id === targetCommandId && bidirectional) {
+          return { ...c, linkedCommandId: commandId };
+        }
+        if (oldCmdPartner && c.id === oldCmdPartner && oldCmdPartner !== targetCommandId) {
+          return { ...c, linkedCommandId: null };
+        }
+        if (oldTargetPartner && c.id === oldTargetPartner && oldTargetPartner !== commandId) {
+          return { ...c, linkedCommandId: null };
+        }
+        return c;
+      });
+
+      const updatedTab: WorkspaceTab = { ...tab, commands: nextCommands };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'REORDER_COMMANDS': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const { commandIds } = action.payload;
+      if (commandIds.length !== tab.commands.length) return state;
+
+      const currentIds = tab.commands.map((c) => c.id);
+      const isSameOrder = currentIds.every((id, idx) => id === commandIds[idx]);
+      if (isSameOrder) return state;
+
+      const commandMap = new Map(tab.commands.map((c) => [c.id, c]));
+      const newCommands: CommandEntry[] = [];
+      for (const id of commandIds) {
+        const found = commandMap.get(id);
+        if (!found) return state;
+        newCommands.push(found);
+      }
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: newCommands
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'SELECT_COMMAND': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const { commandId } = action.payload;
+      if (tab.activeCommandId === commandId) return state;
+      const exists = tab.commands.some((c) => c.id === commandId);
+      if (!exists) return state;
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        activeCommandId: commandId
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    default: {
+      const _exhaustive: never = action;
+      void _exhaustive;
       return state;
+    }
   }
 }

@@ -3,25 +3,54 @@
  * Main application shell layout featuring a 3-column resizable workspace (`@chci/explorer`).
  */
 
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { getDeviceSpec } from '@chci/device-specs';
+import { parseCommand, type FrameSegment } from '@chci/parser-core';
 import { useWorkspace } from '../state/workspace-context';
 import { Header } from './Header';
 import { CatalogSidebar } from './CatalogSidebar';
 import { WorkspaceTabs } from './WorkspaceTabs';
+import { CommandList } from './CommandList';
+import { CodeEditor } from './CodeEditor';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup
 } from './ui/resizable';
-import { Cpu, Terminal, Sparkles, Layers } from 'lucide-react';
+import { Cpu, Sparkles, Layers } from 'lucide-react';
 
 export function Shell() {
-  const { state } = useWorkspace();
+  const { state, dispatch } = useWorkspace();
+
+  const [hoveredSegment, setHoveredSegment] = useState<FrameSegment | null>(null);
+  const [selectedSegment, setSelectedSegment] = useState<FrameSegment | null>(null);
 
   const activeTab = state.tabs.find((tab) => tab.id === state.activeTabId);
   const activeDeviceSpec = activeTab ? getDeviceSpec(activeTab.deviceId) : undefined;
+
+  const activeCommand = useMemo(() => {
+    if (!activeTab || activeTab.commands.length === 0) return null;
+    return (
+      activeTab.commands.find((c) => c.id === activeTab.activeCommandId) ??
+      activeTab.commands[0] ??
+      null
+    );
+  }, [activeTab]);
+
+  React.useEffect(() => {
+    setHoveredSegment(null);
+    setSelectedSegment(null);
+  }, [activeCommand?.id]);
+
+  const parseResult = useMemo(() => {
+    if (!activeCommand || !activeDeviceSpec || !activeTab) return null;
+    return parseCommand(activeCommand.raw, activeDeviceSpec, {
+      version: activeCommand.version,
+      expectedDirection: activeCommand.direction,
+      headerLength: activeTab.headerLength
+    });
+  }, [activeCommand, activeDeviceSpec, activeTab]);
 
   return (
     <div
@@ -96,19 +125,60 @@ export function Shell() {
                     </div>
                   </div>
 
-                  {/* Active tab commands container (placeholder for Phase 4 editor) */}
-                  <div
-                    className="flex-1 rounded-md border border-dashed border-border p-6 flex flex-col items-center justify-center text-center text-muted-foreground bg-muted/5"
-                    data-testid="command-editor-placeholder"
-                  >
-                    <Terminal className="size-8 mb-2 text-muted-foreground/60" />
-                    <p className="text-xs font-medium text-foreground">
-                      {activeTab.commands.length} comando(s) en la sesión activa
-                    </p>
-                    <p className="text-[11px] text-muted-foreground mt-1 max-w-sm">
-                      El editor interactivo CodeMirror 6 y la lista de comandos se integrarán aquí.
-                    </p>
-                  </div>
+                  {/* Sortable Command List */}
+                  <CommandList tab={activeTab} />
+
+                  {/* CodeMirror 6 Editor for Active Command */}
+                  {activeCommand && (
+                    <div className="flex flex-col space-y-2 pt-2" data-testid="code-editor-section">
+                      <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-foreground">
+                            {activeCommand.direction === 'request'
+                              ? 'Trama de Solicitud (Request)'
+                              : 'Trama de Respuesta (Response)'}
+                          </span>
+                          {parseResult?.commandCode && (
+                            <span className="font-mono bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[11px] font-semibold border border-primary/20">
+                              Cmd: {parseResult.commandCode}
+                            </span>
+                          )}
+                        </div>
+                        {parseResult && (
+                          <span
+                            className={`text-[11px] px-2 py-0.5 rounded font-medium ${
+                              parseResult.valid
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                                : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                            }`}
+                          >
+                            {parseResult.valid
+                              ? 'Trama Válida'
+                              : `${parseResult.diagnostics.length} Diagnóstico(s)`}
+                          </span>
+                        )}
+                      </div>
+
+                      <CodeEditor
+                        key={activeCommand.id}
+                        raw={activeCommand.raw}
+                        segments={parseResult?.segments ?? []}
+                        controlChars={parseResult?.normalized.controlChars}
+                        onChange={(newRaw) =>
+                          dispatch({
+                            type: 'UPDATE_COMMAND_RAW',
+                            payload: {
+                              commandId: activeCommand.id,
+                              raw: newRaw
+                            }
+                          })
+                        }
+                        onHoverSegment={setHoveredSegment}
+                        onSelectSegment={setSelectedSegment}
+                        highlightedSegmentId={hoveredSegment?.id ?? selectedSegment?.id ?? null}
+                      />
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* Empty state when no tabs are open */

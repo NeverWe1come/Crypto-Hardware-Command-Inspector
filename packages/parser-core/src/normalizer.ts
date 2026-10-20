@@ -50,6 +50,33 @@ const CONTROL_CHAR_MAP: Readonly<Record<number, { readonly name: string; readonl
 };
 
 /**
+ * Extracts all ASCII control characters from a raw string with their exact offsets,
+ * hex codes, and visual symbol representations.
+ *
+ * @param raw - Any raw string (without trimming).
+ * @returns Array of ControlCharInfo objects for every control character found.
+ */
+export function detectControlChars(raw: string): readonly ControlCharInfo[] {
+  const controlChars: ControlCharInfo[] = [];
+
+  for (let i = 0; i < raw.length; i++) {
+    const code = raw.charCodeAt(i);
+    const entry = CONTROL_CHAR_MAP[code];
+    if (entry) {
+      controlChars.push({
+        index: i,
+        code,
+        hex: `0x${code.toString(16).toUpperCase().padStart(2, '0')}`,
+        name: entry.name,
+        symbol: entry.symbol
+      });
+    }
+  }
+
+  return Object.freeze(controlChars);
+}
+
+/**
  * Normalizes a raw input command string by trimming outer whitespace (spaces, tabs, and newlines),
  * computing byte length, and extracting ASCII control characters.
  *
