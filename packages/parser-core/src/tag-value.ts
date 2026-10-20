@@ -21,6 +21,21 @@ import type {
 
 /**
  * Parses a tag-value command string (e.g., `[AOECHO;AGHello;]`).
+ *
+ * Implements token parsing for Futurex Excrypt devices where frames are enclosed
+ * in brackets (`[` and `]`) and fields are specified as 2-character mnemonic tags
+ * followed by value data and terminated with a delimiter (typically `;`).
+ *
+ * @param raw - Raw ASCII command string.
+ * @param spec - Hardware device specification containing tag-value framing rules and command schemas.
+ * @param options - Optional parsing flags (expected direction, firmware version).
+ * @returns Fully structured {@link ParseResult} with decoded tags, error flags, and color segments.
+ *
+ * @example
+ * ```typescript
+ * const result = parseTagValue('[AOECHO;AGTest;]', futurexSpec);
+ * console.log(result.commandCode); // "ECHO"
+ * ```
  */
 export function parseTagValue(
   raw: string,

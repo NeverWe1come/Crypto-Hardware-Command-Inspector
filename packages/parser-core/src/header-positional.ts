@@ -21,7 +21,15 @@ import type {
 
 /**
  * Resolves the dynamic length of a self-describing Thales cryptographic key.
- * Returns null if the key format header is corrupt.
+ *
+ * Supports Thales Key Blocks ('S' + 4-digit length), TR-31 Key Blocks ('R' + 4-digit length),
+ * single-length keys ('Z'), double-length keys ('U', 'X'), triple-length keys ('T', 'Y'),
+ * and raw legacy hex representations.
+ *
+ * @param text - Full frame text being parsed.
+ * @param offset - Character index where the key field begins.
+ * @param remainingAfterOffset - Remaining characters available in frame after offset.
+ * @returns Total character length of the key cryptogram, or null if key format header is invalid/truncated.
  */
 function resolveThalesKeyLength(
   text: string,
@@ -85,6 +93,21 @@ function resolveThalesKeyLength(
 
 /**
  * Parses a header-positional command string (e.g., Thales payShield 10K).
+ *
+ * Handles optional user-defined or wire transport headers (e.g., 4 or 12 hex characters),
+ * followed by a fixed 2-character command code (e.g., `NC`, `A0`, `CW`), optional mode/sub-commands,
+ * and positional parameters with support for dynamic key-length resolution.
+ *
+ * @param raw - Raw ASCII command string.
+ * @param spec - Hardware device specification containing framing rules and command schemas.
+ * @param options - Optional parsing flags (expected direction, header length override, firmware version).
+ * @returns Fully structured {@link ParseResult} with extracted fields, error codes, and frame segments.
+ *
+ * @example
+ * ```typescript
+ * const result = parseHeaderPositional('0000NC', thalesSpec, { headerLength: 4 });
+ * console.log(result.commandCode); // "NC"
+ * ```
  */
 export function parseHeaderPositional(
   raw: string,

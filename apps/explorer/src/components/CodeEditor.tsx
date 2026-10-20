@@ -27,16 +27,29 @@ import {
 } from '@codemirror/view';
 import { detectControlChars, type ControlCharInfo, type FrameSegment } from '@chci/parser-core';
 
+/**
+ * Props accepted by the {@link CodeEditor} component.
+ */
 export interface CodeEditorProps {
+  /** Raw cryptographic command text to display and edit. */
   readonly raw: string;
+  /** Semantic frame segments used to apply highlight decorations. */
   readonly segments?: readonly FrameSegment[];
+  /** Optional precomputed control character descriptors. */
   readonly controlChars?: readonly ControlCharInfo[];
+  /** Callback fired whenever the user edits text inside CodeMirror. */
   readonly onChange?: (val: string) => void;
+  /** Callback fired when hovering over a segmented character range. */
   readonly onHoverSegment?: (segment: FrameSegment | null) => void;
+  /** Callback fired when clicking/selecting a segmented range. */
   readonly onSelectSegment?: (segment: FrameSegment | null) => void;
+  /** ID of segment currently hovered in analysis table to highlight. */
   readonly highlightedSegmentId?: string | null;
+  /** Whether the editor is in read-only mode. */
   readonly readOnly?: boolean;
+  /** Optional CSS class name for styling the wrapper element. */
   readonly className?: string;
+  /** Placeholder text shown when the editor is completely empty. */
   readonly placeholder?: string;
 }
 

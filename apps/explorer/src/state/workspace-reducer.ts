@@ -25,6 +25,9 @@ export const initialWorkspaceState: WorkspaceState = {
 
 /**
  * Generates an opaque unique identifier for workspace tabs and commands.
+ *
+ * @param prefix - String prefix (e.g., `'tab'`, `'cmd'`).
+ * @returns Unique string ID using `crypto.randomUUID()` when available.
  */
 function createId(prefix: string): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -36,6 +39,10 @@ function createId(prefix: string): string {
 /**
  * Resolves the target tab and its index within the state tree.
  * Defaults to the currently active tab if no explicit tabId is provided.
+ *
+ * @param state - Current immutable workspace state.
+ * @param tabId - Optional explicit tab ID to locate.
+ * @returns Object with tab and tabIndex if found, or null.
  */
 function findTargetTab(
   state: WorkspaceState,

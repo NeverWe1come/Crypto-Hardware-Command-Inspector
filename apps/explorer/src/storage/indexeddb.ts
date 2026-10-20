@@ -53,6 +53,8 @@ export async function getDb(): Promise<IDBPDatabase<CHCIDBSchema>> {
 
 /**
  * Closes the active IndexedDB connection if open.
+ *
+ * @returns Promise that resolves once the database connection is closed.
  */
 export async function closeDb(): Promise<void> {
   if (dbPromise) {
@@ -64,6 +66,8 @@ export async function closeDb(): Promise<void> {
 
 /**
  * Resets all stores in the database. Used primarily for test teardown and factory reset.
+ *
+ * @returns Promise that resolves once all object stores have been cleared.
  */
 export async function resetDatabase(): Promise<void> {
   const db = await getDb();
@@ -201,6 +205,8 @@ export async function loadActiveSession(): Promise<WorkspaceState | null> {
 
 /**
  * Clears the active session autosave record from IndexedDB.
+ *
+ * @returns Promise that resolves once active session storage is cleared.
  */
 export async function clearActiveSession(): Promise<void> {
   const db = await getDb();
@@ -244,6 +250,8 @@ export async function getHistory(limit?: number): Promise<HistoryEntry[]> {
 
 /**
  * Clears all entries in the command history log.
+ *
+ * @returns Promise that resolves once the history object store is emptied.
  */
 export async function clearHistory(): Promise<void> {
   const db = await getDb();

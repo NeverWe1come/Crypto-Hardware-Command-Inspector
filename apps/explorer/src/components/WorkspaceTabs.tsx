@@ -10,6 +10,12 @@ import { useWorkspace } from '../state/workspace-context';
 import { Button } from './ui/button';
 import { X, Cpu } from 'lucide-react';
 
+/**
+ * Horizontal tab bar displaying open cryptographic devices with device badges,
+ * command counts, selection, and close buttons.
+ *
+ * @returns Workspace tabs bar JSX element, or null if no tabs are open.
+ */
 export function WorkspaceTabs() {
   const intl = useIntl();
   const { state, dispatch } = useWorkspace();

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * Client application bootstrap entry point (`@chci/explorer`).
+ */
+
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles/globals.css';

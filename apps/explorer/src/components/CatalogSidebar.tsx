@@ -26,6 +26,12 @@ const CATEGORIES: readonly CategoryOption[] = [
   { id: 'HSMAAS', labelId: 'sidebar.categories.hsmaas', defaultLabel: 'HSM as a Service' }
 ];
 
+/**
+ * Resolves the visual icon component for a cryptographic hardware category.
+ *
+ * @param cat - Active category filter identifier.
+ * @returns React icon node.
+ */
 function getCategoryIcon(cat: CategoryFilter) {
   switch (cat) {
     case 'HSM_FINANCIAL':
@@ -41,6 +47,12 @@ function getCategoryIcon(cat: CategoryFilter) {
   }
 }
 
+/**
+ * Hardware catalog sidebar with search bar, family category filters, and list
+ * of supported (Atalla, Thales, Futurex) and coming-soon devices with status badges.
+ *
+ * @returns Catalog sidebar JSX element.
+ */
 export function CatalogSidebar() {
   const intl = useIntl();
   const { state, dispatch } = useWorkspace();

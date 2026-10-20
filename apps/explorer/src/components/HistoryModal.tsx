@@ -31,11 +31,24 @@ import {
   Terminal
 } from 'lucide-react';
 
+/**
+ * Props accepted by the {@link HistoryModal} component.
+ */
 export interface HistoryModalProps {
+  /** Whether the history modal dialog is currently visible. */
   readonly open: boolean;
+  /** Callback fired when the open state changes. */
   readonly onOpenChange: (open: boolean) => void;
 }
 
+/**
+ * Command history modal rendering entries recorded in `.chci_history` format,
+ * supporting real-time full-text search, direct injection into active command or new commands,
+ * plain-text `.chci_history` export/download, and log clearing.
+ *
+ * @param props - Component open state and visibility toggle handler.
+ * @returns Dialog modal JSX element.
+ */
 export function HistoryModal({ open, onOpenChange }: HistoryModalProps) {
   const intl = useIntl();
   const { state: workspaceState, dispatch } = useWorkspace();

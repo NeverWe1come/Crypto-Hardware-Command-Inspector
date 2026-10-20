@@ -19,6 +19,18 @@ export const HISTORY_FILE_HEADER =
  *
  * @param entry - History log record.
  * @returns Formatted line `ISO_TIMESTAMP | DEVICE_ID | VERSION | DIRECTION | RAW_COMMAND`.
+ *
+ * @example
+ * ```typescript
+ * const line = formatHistoryLine({
+ *   timestamp: '2026-10-20T12:00:00.000Z',
+ *   deviceId: 'thales-payshield-10k',
+ *   version: '2.3',
+ *   direction: 'request',
+ *   raw: 'A00000U0123'
+ * });
+ * // Returns: "2026-10-20T12:00:00.000Z | thales-payshield-10k | 2.3 | request | A00000U0123"
+ * ```
  */
 export function formatHistoryLine(entry: HistoryEntry): string {
   return `${entry.timestamp} | ${entry.deviceId} | ${entry.version} | ${entry.direction} | ${entry.raw}`;
@@ -30,6 +42,12 @@ export function formatHistoryLine(entry: HistoryEntry): string {
  *
  * @param line - Raw line text.
  * @returns Parsed `HistoryEntry` or null if invalid.
+ *
+ * @example
+ * ```typescript
+ * const entry = parseHistoryLine('2026-10-20T12:00:00.000Z | futurex-excrypt | 7.6.1 | request | [AOECHO;]');
+ * console.log(entry?.deviceId); // "futurex-excrypt"
+ * ```
  */
 export function parseHistoryLine(line: string): HistoryEntry | null {
   const trimmed = line.trim();

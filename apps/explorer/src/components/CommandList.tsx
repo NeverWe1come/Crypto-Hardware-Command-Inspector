@@ -37,17 +37,31 @@ import {
   ArrowDownLeft
 } from 'lucide-react';
 
+/**
+ * Props accepted by the {@link CommandList} component.
+ */
 export interface CommandListProps {
+  /** Active workspace tab (defaults to active tab from context). */
   readonly tab?: WorkspaceTab;
+  /** Currently active command ID. */
   readonly activeCommandId?: string | null;
+  /** Callback fired when a command item is clicked/selected. */
   readonly onSelectCommand?: (commandId: string) => void;
+  /** Callback fired when the add new command button is clicked. */
   readonly onAddCommand?: () => void;
+  /** Callback fired when a command delete button is clicked. */
   readonly onDeleteCommand?: (commandId: string) => void;
+  /** Callback fired when a command duplicate button is clicked. */
   readonly onDuplicateCommand?: (commandId: string) => void;
+  /** Callback fired when commands are reordered via drag-and-drop. */
   readonly onReorderCommands?: (commandIds: readonly string[]) => void;
+  /** Callback fired when a command's direction (request/response) is changed. */
   readonly onUpdateDirection?: (commandId: string, direction: CommandDirection) => void;
+  /** Callback fired when a command's firmware version is modified. */
   readonly onUpdateVersion?: (commandId: string, version: string) => void;
+  /** Callback fired when linking or unlinking a request to a response command. */
   readonly onLinkCommands?: (commandId: string, targetCommandId: string | null) => void;
+  /** Callback fired when updating header length for header-positional devices. */
   readonly onUpdateHeaderLength?: (headerLength: number) => void;
 }
 

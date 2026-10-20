@@ -23,6 +23,13 @@ import {
 } from './ui/resizable';
 import { Cpu, Sparkles, Layers } from 'lucide-react';
 
+/**
+ * Root workspace layout component composing the navigation header, web warning banner,
+ * hardware catalog sidebar, central multi-command CodeMirror editor, and 8-block
+ * cryptographic analysis panel in a 3-column resizable layout.
+ *
+ * @returns Application shell JSX element.
+ */
 export function Shell() {
   const { state, dispatch } = useWorkspace();
 

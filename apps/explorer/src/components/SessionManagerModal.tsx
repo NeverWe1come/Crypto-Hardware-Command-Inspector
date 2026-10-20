@@ -42,11 +42,23 @@ import {
   AlertCircle
 } from 'lucide-react';
 
+/**
+ * Props accepted by the {@link SessionManagerModal} component.
+ */
 export interface SessionManagerModalProps {
+  /** Whether the session modal dialog is currently visible. */
   readonly open: boolean;
+  /** Callback fired when the open state changes (e.g., closing or opening). */
   readonly onOpenChange: (open: boolean) => void;
 }
 
+/**
+ * Session management modal providing full CRUD operations over saved workspace sessions
+ * in IndexedDB, as well as strict JSON export/import conforming to `chci-session-v1.json`.
+ *
+ * @param props - Component open state and visibility toggle handler.
+ * @returns Dialog modal JSX element.
+ */
 export function SessionManagerModal({ open, onOpenChange }: SessionManagerModalProps) {
   const intl = useIntl();
   const { state: workspaceState, dispatch } = useWorkspace();

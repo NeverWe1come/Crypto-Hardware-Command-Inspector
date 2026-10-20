@@ -26,15 +26,24 @@ interface WorkspaceContextValue {
 
 const WorkspaceContext = createContext<WorkspaceContextValue | undefined>(undefined);
 
+/**
+ * Props accepted by the {@link WorkspaceProvider} component.
+ */
 export interface WorkspaceProviderProps {
+  /** React children rendered within the context boundary. */
   readonly children: ReactNode;
+  /** Optional initial workspace state overrides (used extensively in unit/integration tests). */
   readonly initialState?: Partial<WorkspaceState>;
+  /** Whether to enable automatic IndexedDB debounce persistence (defaults to true if initialState is omitted). */
   readonly enableAutosave?: boolean;
 }
 
 /**
  * Root provider injecting the workspace state reducer and react-intl translation messages.
  * Automatically saves and restores the active session from IndexedDB if enableAutosave is active.
+ *
+ * @param props - Component configuration and children nodes.
+ * @returns React context provider wrapping child nodes.
  */
 export function WorkspaceProvider({
   children,
@@ -111,6 +120,8 @@ export function WorkspaceProvider({
 /**
  * Optional hook to access workspace state and dispatch actions.
  * Returns undefined if used outside a `<WorkspaceProvider />` instead of throwing.
+ *
+ * @returns Current workspace context value or undefined.
  */
 export function useOptionalWorkspace(): WorkspaceContextValue | undefined {
   return useContext(WorkspaceContext);
@@ -119,6 +130,9 @@ export function useOptionalWorkspace(): WorkspaceContextValue | undefined {
 /**
  * Custom hook to access workspace state and dispatch actions.
  * Throws an error if used outside a `<WorkspaceProvider />`.
+ *
+ * @returns Current workspace context value with state and dispatch.
+ * @throws {Error} If called outside a WorkspaceProvider tree.
  */
 export function useWorkspace(): WorkspaceContextValue {
   const context = useContext(WorkspaceContext);

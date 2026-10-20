@@ -12,6 +12,13 @@ import { ShieldCheck, Moon, Sun, Laptop, Globe, History, FolderKanban } from 'lu
 import { SessionManagerModal } from './SessionManagerModal';
 import { HistoryModal } from './HistoryModal';
 
+/**
+ * Top application header providing brand identity, 100% offline security status badge,
+ * session library access, `.chci_history` modal trigger, language selector (ES/EN),
+ * and light/dark theme toggle.
+ *
+ * @returns Header navigation JSX element.
+ */
 export function Header() {
   const intl = useIntl();
   const { state, dispatch } = useWorkspace();

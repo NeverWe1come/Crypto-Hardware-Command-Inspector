@@ -70,7 +70,13 @@ export interface AnalysisPanelProps {
 }
 
 /**
- * Detailed cryptographic analysis panel displaying deep breakdown of active command frame.
+ * Detailed cryptographic analysis panel displaying deep breakdown of active command frame
+ * into 8 collapsible accordion blocks: general info, parameter breakdown with masking,
+ * color-coded frame view, response/error codes, diagnostic alerts, expected response template,
+ * request-response cross correlation, and official vendor firmware notes.
+ *
+ * @param props - Component properties and event handlers.
+ * @returns Cryptographic analysis panel JSX element.
  */
 export function AnalysisPanel(props: AnalysisPanelProps) {
   const intl = useIntl();

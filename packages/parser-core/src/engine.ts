@@ -24,7 +24,9 @@ import type {
  *
  * @param spec - Device specification containing version definitions.
  * @param version - Optional version identifier (defaults to `spec.defaultVersion`).
+ * @param visited - Recursion tracking set used to detect circular dependency loops.
  * @returns Fully resolved DeviceVersionSpec with flattened commands and error codes.
+ * @throws {Error} If version does not exist in the specification or cyclic inheritance is detected.
  */
 export function resolveDeviceVersion(
   spec: DeviceSpec,
@@ -77,6 +79,13 @@ export function resolveDeviceVersion(
  * @param deviceSpec - Target cryptographic device specification.
  * @param options - Optional runtime parsing overrides (version, expectedDirection, headerLength).
  * @returns Complete immutable ParseResult.
+ *
+ * @example
+ * ```typescript
+ * const parsed = parseCommand('A00000U0123456789ABCDEF0123456789ABCDEF', thalesSpec);
+ * console.log(parsed.commandCode); // "A0"
+ * console.log(parsed.fields.length); // 3
+ * ```
  */
 export function parseCommand(
   raw: string,
@@ -165,8 +174,14 @@ export function parseCommand(
  *
  * @param requestResult - ParseResult of the request command.
  * @param responseResult - ParseResult of the candidate response command.
- * @param deviceSpec - Cryptographic device specification.
+ * @param _deviceSpec - Cryptographic device specification.
  * @returns CorrelationResult with granular check results.
+ *
+ * @example
+ * ```typescript
+ * const correlation = correlateCommands(reqResult, resResult, spec);
+ * console.log(correlation.isCorrelated); // true
+ * ```
  */
 export function correlateCommands(
   requestResult: ParseResult,

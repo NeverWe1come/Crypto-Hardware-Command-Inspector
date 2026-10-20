@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * Shared styling utility functions (`@chci/explorer`).
+ */
+
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

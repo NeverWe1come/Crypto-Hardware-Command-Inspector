@@ -21,6 +21,21 @@ import type {
 
 /**
  * Parses a delimited positional command string (e.g., `<CMD#field1#field2#>`).
+ *
+ * Used primarily by hardware such as Utimaco / Atalla AT1000 where frames are
+ * enclosed by start/end delimiters (`<` and `>`) and tokens are separated by `#`.
+ *
+ * @param raw - Raw ASCII or hexadecimal command string received from wire/host.
+ * @param spec - Hardware device specification containing framing and command schemas.
+ * @param options - Optional parsing flags (expected direction, explicit firmware version).
+ * @returns Fully structured {@link ParseResult} with extracted fields, diagnostics, and segments.
+ *
+ * @example
+ * ```typescript
+ * const result = parseDelimitedPositional('<31#Y#01#>', atallaSpec);
+ * console.log(result.commandCode); // "31"
+ * console.log(result.errorCode); // "01"
+ * ```
  */
 export function parseDelimitedPositional(
   raw: string,

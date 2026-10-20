@@ -66,10 +66,19 @@ export const SessionExportSchema = z.object({
   session: SavedSessionSchema
 }).strict();
 
+/** Inferred TypeScript type representing the complete exported session file envelope. */
 export type SessionExportSchemaType = z.infer<typeof SessionExportSchema>;
+
+/** Inferred TypeScript type representing an individual saved session record. */
 export type SavedSessionSchemaType = z.infer<typeof SavedSessionSchema>;
+
+/** Inferred TypeScript type validating the workspace state hierarchy. */
 export type WorkspaceStateSchemaType = z.infer<typeof WorkspaceStateSchema>;
+
+/** Inferred TypeScript type validating an individual workspace tab. */
 export type WorkspaceTabSchemaType = z.infer<typeof WorkspaceTabSchema>;
+
+/** Inferred TypeScript type validating an individual cryptographic command entry. */
 export type CommandEntrySchemaType = z.infer<typeof CommandEntrySchema>;
 
 /**

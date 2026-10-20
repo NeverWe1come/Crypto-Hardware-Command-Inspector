@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * Root application component tree (`@chci/explorer`).
+ */
+
 import { WorkspaceProvider } from './state/workspace-context';
 import { Shell } from './components/Shell';
 
