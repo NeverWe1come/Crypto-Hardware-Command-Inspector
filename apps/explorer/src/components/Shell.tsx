@@ -3,11 +3,12 @@
  * Main application shell layout featuring a 3-column resizable workspace (`@chci/explorer`).
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { getDeviceSpec } from '@chci/device-specs';
 import { parseCommand, type FrameSegment } from '@chci/parser-core';
 import { useWorkspace } from '../state/workspace-context';
+import { appendHistory } from '../storage/indexeddb';
 import { Header } from './Header';
 import { CatalogSidebar } from './CatalogSidebar';
 import { WorkspaceTabs } from './WorkspaceTabs';
@@ -52,6 +53,30 @@ export function Shell() {
       headerLength: activeTab.headerLength
     });
   }, [activeCommand, activeDeviceSpec, activeTab]);
+
+  // Automatically log non-empty commands to history on debounce
+  const lastLoggedRef = useRef<string>('');
+  useEffect(() => {
+    if (!activeCommand || !activeCommand.raw.trim() || !activeTab) return;
+    const currentRaw = activeCommand.raw.trim();
+    const compositeKey = `${activeTab.deviceId}:${activeCommand.id}:${currentRaw}`;
+    if (compositeKey === lastLoggedRef.current) return;
+
+    const timer = setTimeout(() => {
+      lastLoggedRef.current = compositeKey;
+      void appendHistory({
+        timestamp: new Date().toISOString(),
+        deviceId: activeTab.deviceId,
+        version: activeCommand.version,
+        direction: activeCommand.direction,
+        raw: currentRaw
+      }).catch(() => {
+        // Ignore background history write errors
+      });
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [activeCommand?.raw, activeCommand?.version, activeCommand?.direction, activeTab?.deviceId, activeCommand, activeTab]);
 
   return (
     <div

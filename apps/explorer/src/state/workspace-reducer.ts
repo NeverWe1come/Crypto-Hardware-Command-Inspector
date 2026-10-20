@@ -508,6 +508,16 @@ export function workspaceReducer(
       return { ...state, tabs: nextTabs };
     }
 
+    case 'LOAD_WORKSPACE': {
+      return {
+        ...action.payload,
+        tabs: action.payload.tabs.map((tab) => ({
+          ...tab,
+          commands: tab.commands.map((cmd) => ({ ...cmd }))
+        }))
+      };
+    }
+
     default: {
       const _exhaustive: never = action;
       void _exhaustive;

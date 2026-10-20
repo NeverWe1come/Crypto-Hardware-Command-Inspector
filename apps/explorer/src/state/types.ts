@@ -152,4 +152,8 @@ export type WorkspaceAction =
         readonly commandId: string;
         readonly tabId?: string;
       };
+    }
+  | {
+      readonly type: 'LOAD_WORKSPACE';
+      readonly payload: WorkspaceState;
     };
