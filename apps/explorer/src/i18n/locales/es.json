@@ -85,5 +85,11 @@
   "history.action.loadIntoActive": "Cargar en comando actual",
   "history.action.addToWorkspace": "Añadir como nuevo comando",
   "history.action.export": "Descargar .chci_history",
-  "history.action.clear": "Limpiar historial"
+  "history.action.clear": "Limpiar historial",
+  "webSandbox.badge": "Sandbox Web",
+  "webSandbox.title": "Entorno Web de Demostración",
+  "webSandbox.warning": "Advertencia de seguridad: No introduzcas claves criptográficas reales, PIN blocks de producción ni datos sensibles en este entorno web.",
+  "webSandbox.offlineRecommendation": "Para un aislamiento total sin conexión a red (air-gapped), utiliza la aplicación de escritorio oficial de CHCI.",
+  "webSandbox.downloadDesktop": "Descargar versión de escritorio",
+  "webSandbox.dismiss": "Descartar aviso de entorno web"
 }

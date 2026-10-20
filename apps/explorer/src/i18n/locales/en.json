@@ -85,5 +85,11 @@
   "history.action.loadIntoActive": "Load into active command",
   "history.action.addToWorkspace": "Add as new command",
   "history.action.export": "Download .chci_history",
-  "history.action.clear": "Clear history"
+  "history.action.clear": "Clear history",
+  "webSandbox.badge": "Web Sandbox",
+  "webSandbox.title": "Web Demonstration Environment",
+  "webSandbox.warning": "Security warning: Do not enter real cryptographic keys, production PIN blocks, or sensitive material in this web environment.",
+  "webSandbox.offlineRecommendation": "For 100% offline, air-gapped security, use the official CHCI desktop application.",
+  "webSandbox.downloadDesktop": "Download desktop app",
+  "webSandbox.dismiss": "Dismiss web sandbox banner"
 }

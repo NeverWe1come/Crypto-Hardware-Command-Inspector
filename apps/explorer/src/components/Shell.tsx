@@ -10,6 +10,7 @@ import { parseCommand, type FrameSegment } from '@chci/parser-core';
 import { useWorkspace } from '../state/workspace-context';
 import { appendHistory } from '../storage/indexeddb';
 import { Header } from './Header';
+import { WebSandboxBanner } from './WebSandboxBanner';
 import { CatalogSidebar } from './CatalogSidebar';
 import { WorkspaceTabs } from './WorkspaceTabs';
 import { CommandList } from './CommandList';
@@ -85,6 +86,9 @@ export function Shell() {
     >
       {/* Top Application Header */}
       <Header />
+
+      {/* Web Sandbox Security Warning Banner (Active only when VITE_TARGET === 'web') */}
+      <WebSandboxBanner />
 
       {/* 3-Panel Resizable Workspace Area */}
       <div className="flex-1 min-h-0 overflow-hidden">
