@@ -13,6 +13,7 @@ import { CatalogSidebar } from './CatalogSidebar';
 import { WorkspaceTabs } from './WorkspaceTabs';
 import { CommandList } from './CommandList';
 import { CodeEditor } from './CodeEditor';
+import { AnalysisPanel } from './AnalysisPanel';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -213,8 +214,6 @@ export function Shell() {
             id="analysis-panel"
             defaultSize={25}
             minSize={20}
-            aria-label="Panel de análisis"
-            data-testid="analysis-panel"
             className="flex flex-col bg-card/40 border-l border-border overflow-hidden"
           >
             <div className="h-10 px-3 border-b border-border flex items-center justify-between text-xs font-semibold text-foreground select-none shrink-0">
@@ -227,20 +226,17 @@ export function Shell() {
               </div>
             </div>
 
-            <div
-              className="flex-1 p-4 overflow-y-auto flex flex-col items-center justify-center text-center text-muted-foreground"
-              data-testid="analysis-panel-placeholder"
-            >
-              <p className="text-xs">
-                <FormattedMessage
-                  id="analysis.empty"
-                  defaultMessage="No hay comandos en la pestaña activa"
-                />
-              </p>
-              <p className="text-[10px] text-muted-foreground/70 mt-1 max-w-[200px]">
-                Los diagnósticos, desglose de campos y respuestas esperadas se detallarán aquí.
-              </p>
-            </div>
+            <AnalysisPanel
+              tab={activeTab}
+              deviceSpec={activeDeviceSpec}
+              activeCommand={activeCommand}
+              parseResult={parseResult}
+              highlightedSegmentId={hoveredSegment?.id ?? null}
+              selectedSegmentId={selectedSegment?.id ?? null}
+              onHoverSegment={setHoveredSegment}
+              onSelectSegment={setSelectedSegment}
+              className="flex-1 min-h-0"
+            />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
