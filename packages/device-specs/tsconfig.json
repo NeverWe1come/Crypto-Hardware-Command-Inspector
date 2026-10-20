@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "noEmit": true,
+    "paths": {
+      "@chci/parser-core": ["../parser-core/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}
