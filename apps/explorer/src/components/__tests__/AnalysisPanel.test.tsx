@@ -1237,4 +1237,74 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(screen.getByTestId('command-pagination-indicator')).toHaveTextContent(/Comando 1 de 3/i);
     });
   });
+
+  // =========================================================================
+  // 14. DOM Order & Manufacturer Notes Structure
+  // =========================================================================
+  describe('DOM Order & Manufacturer Notes Structure', () => {
+    it('renders Vista de Trama before Desglose de Parámetros in the DOM', () => {
+      renderWithIntl(
+        <AnalysisPanel
+          deviceSpec={thalesPayshield10kSpec}
+          tab={mockTab}
+          activeCommand={mockCommands[0]}
+          parseResult={thalesParsedRequest}
+        />
+      );
+
+      const frameView = screen.getByTestId('accordion-item-frame-view');
+      const fieldsBreakdown = screen.getByTestId('accordion-item-fields');
+
+      // Verify DOM ordering (frameView appears before fieldsBreakdown)
+      expect(
+        frameView.compareDocumentPosition(fieldsBreakdown) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy();
+    });
+
+    it('renders individual colored note cards for CAUTION, IMPORTANT, TIP, and NOTE', async () => {
+      const mockResultWithNotes: ParseResult = {
+        ...atallaParsedRequest,
+        matchedCommand: {
+          ...atallaParsedRequest.matchedCommand!,
+          notes: [
+            {
+              es: 'CAUTION: Puede borrar claves irreversiblemente.',
+              en: 'CAUTION: May irreversibly delete keys.'
+            },
+            {
+              es: 'IMPORTANT: Requiere doble autorización.',
+              en: 'IMPORTANT: Requires dual authorization.'
+            },
+            {
+              es: 'TIP: Use el formato AKB para mayor velocidad.',
+              en: 'TIP: Use AKB format for higher speed.'
+            },
+            {
+              es: 'NOTE: Compatible con firmware v8.60.',
+              en: 'NOTE: Compatible with v8.60 firmware.'
+            }
+          ]
+        }
+      };
+
+      renderWithIntl(
+        <AnalysisPanel
+          deviceSpec={atallaAt1000Spec}
+          parseResult={mockResultWithNotes}
+          activeCommand={{
+            id: 'c_notes',
+            raw: atallaRawRequest,
+            version: '8.60',
+            direction: 'request'
+          }}
+        />
+      );
+
+      expect(screen.getByTestId(/manufacturer-note-caution/)).toBeInTheDocument();
+      expect(screen.getByTestId(/manufacturer-note-important/)).toBeInTheDocument();
+      expect(screen.getByTestId(/manufacturer-note-tip/)).toBeInTheDocument();
+      expect(screen.getByTestId(/manufacturer-note-note/)).toBeInTheDocument();
+    });
+  });
 });

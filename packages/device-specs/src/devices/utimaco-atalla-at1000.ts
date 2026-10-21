@@ -5,6 +5,7 @@
 
 import type { DeviceSpec } from '@chci/parser-core';
 import { atallaV860Commands } from './utimaco-atalla-v860-commands.js';
+import { ATALLA_DOCUMENTATION_SECTIONS } from './utimaco-atalla-docs.js';
 
 /**
  * Utimaco Atalla AT1000 specification.
@@ -21,6 +22,7 @@ export const atallaAt1000Spec: DeviceSpec = {
   },
   defaultVersion: '8.60',
   exampleCommand: '00#',
+  documentationSections: ATALLA_DOCUMENTATION_SECTIONS,
   framing: {
     type: 'delimited-positional',
     startDelimiter: '<',

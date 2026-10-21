@@ -173,7 +173,18 @@ export const CommandSpecSchema = z.object({
   fields: z.array(FieldSpecSchema),
   source: z.string().min(1),
   notes: z.array(LocalizedStringSchema).optional(),
-  examples: z.array(CommandExampleSpecSchema).optional()
+  examples: z.array(CommandExampleSpecSchema).optional(),
+  markdownDoc: LocalizedStringSchema.optional()
+});
+
+/**
+ * Zod schema for hardware documentation sections.
+ */
+export const HardwareDocSectionSpecSchema = z.object({
+  id: z.string().min(1),
+  title: LocalizedStringSchema,
+  category: z.enum(['overview', 'chapter', 'appendix', 'commands']),
+  markdown: LocalizedStringSchema
 });
 
 /**
@@ -212,7 +223,8 @@ export const DeviceSpecSchema: z.ZodType<DeviceSpec> = z
     summary: LocalizedStringSchema,
     defaultVersion: z.string().min(1),
     framing: FramingConfigSchema,
-    versions: z.record(z.string(), DeviceVersionSpecSchema)
+    versions: z.record(z.string(), DeviceVersionSpecSchema),
+    documentationSections: z.array(HardwareDocSectionSpecSchema).optional()
   })
   .refine((data) => data.defaultVersion in data.versions, {
     message: 'defaultVersion must exist in the versions dictionary'

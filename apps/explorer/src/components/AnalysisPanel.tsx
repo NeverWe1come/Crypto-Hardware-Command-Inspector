@@ -114,12 +114,12 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
   }, [props.parseResult, activeCommand, deviceSpec, activeTab?.headerLength]);
 
   // 3. UI State: Accordion sections, Sensitive fields masking
-  // Sections: 'fields', 'frame-view', 'unified-diagnostics', 'notes'. ('general-info' starts collapsed by default)
+  // Sections: 'frame-view', 'fields', 'unified-diagnostics', 'notes'. ('general-info' starts collapsed by default)
   const [openSections, setOpenSections] = useState<Set<string>>(
     () =>
       new Set([
-        'fields',
         'frame-view',
+        'fields',
         'unified-diagnostics',
         'notes'
       ])
@@ -187,15 +187,27 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
     return resolveDeviceVersion(deviceSpec, activeCommand.version);
   }, [deviceSpec, activeCommand]);
 
-  const combinedNotes = useMemo(() => {
+  const notesList = useMemo(() => {
+    const list: string[] = [];
     const vNotes = resolveText(versionSpec?.releaseNotes);
-    const cNotes = parseResult?.matchedCommand?.notes
-      ? parseResult.matchedCommand.notes
-          .map((n) => resolveText(n))
-          .filter(Boolean)
-          .join('\n')
-      : '';
-    return [vNotes, cNotes].filter(Boolean).join('\n\n');
+    if (vNotes) {
+      const chunks = vNotes.split(/(?=\[(?:CAUTION|IMPORTANT|TIP|NOTE)\]|\b(?:CAUTION|IMPORTANT|TIP|NOTE):)/i);
+      for (const c of chunks) {
+        if (c.trim()) list.push(c.trim());
+      }
+    }
+    if (parseResult?.matchedCommand?.notes) {
+      for (const n of parseResult.matchedCommand.notes) {
+        const text = resolveText(n);
+        if (text) {
+          const chunks = text.split(/(?=\[(?:CAUTION|IMPORTANT|TIP|NOTE)\]|\b(?:CAUTION|IMPORTANT|TIP|NOTE):)/i);
+          for (const c of chunks) {
+            if (c.trim()) list.push(c.trim());
+          }
+        }
+      }
+    }
+    return list;
   }, [resolveText, versionSpec?.releaseNotes, parseResult?.matchedCommand?.notes]);
 
   // 4. Empty State Handling
@@ -466,7 +478,114 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
         </div>
 
         {/* ================================================================= */}
-        {/* Block 2: Parameter Breakdown & Sensitive Masking                  */}
+        {/* Block 2: Frame View & Semantic Role Pills (Above Parameters)      */}
+        {/* ================================================================= */}
+        <div data-testid="accordion-item-frame-view" className="flex flex-col">
+          <button
+            type="button"
+            id="accordion-trigger-frame-view"
+            data-testid="accordion-trigger-frame-view"
+            aria-expanded={openSections.has('frame-view')}
+            aria-controls="accordion-content-frame-view"
+            onClick={() => toggleSection('frame-view')}
+            className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/40 transition-colors select-none text-left"
+          >
+            <span>
+              <FormattedMessage id="analysis.frameView" defaultMessage="Vista de Trama" />
+            </span>
+            {openSections.has('frame-view') ? (
+              <ChevronDown className="size-3.5 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="size-3.5 text-muted-foreground" />
+            )}
+          </button>
+
+          {openSections.has('frame-view') && (
+            <div
+              id="accordion-content-frame-view"
+              data-testid="accordion-content-frame-view"
+              className="p-3 text-xs bg-card/20 space-y-2"
+            >
+              <div
+                data-testid="frame-view-container"
+                className="flex flex-wrap gap-1 p-2 rounded-md bg-muted/20 border border-border"
+              >
+                {parseResult && parseResult.segments.length > 0 ? (
+                  parseResult.segments.map((seg) => {
+                    const isHighlighted =
+                      (props.highlightedSegmentId !== undefined &&
+                        props.highlightedSegmentId !== null &&
+                        props.highlightedSegmentId === seg.id) ||
+                      (props.selectedSegmentId !== undefined &&
+                        props.selectedSegmentId !== null &&
+                        props.selectedSegmentId === seg.id);
+
+                    const matchingField = seg.fieldId
+                      ? parseResult.fields.find((f) => f.id === seg.fieldId)
+                      : undefined;
+                    const isSensitive = matchingField?.sensitive === true;
+                    const isVisible =
+                      !isSensitive ||
+                      revealAll ||
+                      (matchingField ? revealedFields.has(matchingField.id) : false);
+                    const displaySegValue = isVisible ? seg.rawValue : '••••••••';
+
+                    const roleClassMap: Record<string, string> = {
+                      delimiter:
+                        'bg-[#1a2236] text-[#94a3b8] border-[#2e3b5b] font-bold',
+                      header:
+                        'bg-purple-500/20 text-purple-300 border-purple-500/40 font-semibold',
+                      'command-code':
+                        'bg-[#0284c7]/20 text-[#38bdf8] border-[#0284c7]/40 font-bold',
+                      field:
+                        'bg-[#018934]/20 text-[#0da845] border-[#018934]/40',
+                      tag:
+                        'bg-[#ff7800]/20 text-[#ff9233] border-[#ff7800]/40 font-semibold',
+                      'tag-value':
+                        'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                    };
+
+                    const badgeClass =
+                      roleClassMap[seg.role] ??
+                      'bg-muted text-muted-foreground border-border';
+
+                    return (
+                      <button
+                        type="button"
+                        key={seg.id}
+                        data-testid={`frame-segment-${seg.id}`}
+                        data-role={seg.role}
+                        data-highlighted={isHighlighted ? 'true' : 'false'}
+                        aria-label={`Segmento ${seg.role}: ${displaySegValue}`}
+                        onMouseEnter={() => props.onHoverSegment?.(seg)}
+                        onMouseLeave={() => props.onHoverSegment?.(null)}
+                        onClick={() => props.onSelectSegment?.(seg)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            props.onSelectSegment?.(seg);
+                          }
+                        }}
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-mono border cursor-pointer transition-all select-none ${badgeClass} ${
+                          isHighlighted ? 'ring-2 ring-[#ff7800] ring-offset-1 ring-offset-[#202940] font-bold shadow-xs' : ''
+                        }`}
+                      >
+                        {displaySegValue}
+                      </button>
+                    );
+                  })
+                ) : (
+                  <span className="text-muted-foreground italic text-xs">
+                    Sin segmentos generados.
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ================================================================= */}
+        {/* Block 3: Parameter Breakdown & Sensitive Masking                  */}
         {/* ================================================================= */}
         <div data-testid="accordion-item-fields" className="flex flex-col">
           <button
@@ -582,8 +701,8 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                               </td>
                               <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground">
                                 {field.start !== undefined && field.end !== undefined
-                                  ? `${field.start}..${field.end} (${field.end - field.start})`
-                                  : '-'}
+                                   ? `${field.start}..${field.end} (${field.end - field.start})`
+                                   : '-'}
                               </td>
                               <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground">
                                 {field.encoding ?? 'ascii'}
@@ -641,113 +760,6 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                   />
                 </p>
               )}
-            </div>
-          )}
-        </div>
-
-        {/* ================================================================= */}
-        {/* Block 3: Frame View & Semantic Role Pills                         */}
-        {/* ================================================================= */}
-        <div data-testid="accordion-item-frame-view" className="flex flex-col">
-          <button
-            type="button"
-            id="accordion-trigger-frame-view"
-            data-testid="accordion-trigger-frame-view"
-            aria-expanded={openSections.has('frame-view')}
-            aria-controls="accordion-content-frame-view"
-            onClick={() => toggleSection('frame-view')}
-            className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/40 transition-colors select-none text-left"
-          >
-            <span>
-              <FormattedMessage id="analysis.frameView" defaultMessage="Vista de Trama" />
-            </span>
-            {openSections.has('frame-view') ? (
-              <ChevronDown className="size-3.5 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="size-3.5 text-muted-foreground" />
-            )}
-          </button>
-
-          {openSections.has('frame-view') && (
-            <div
-              id="accordion-content-frame-view"
-              data-testid="accordion-content-frame-view"
-              className="p-3 text-xs bg-card/20 space-y-2"
-            >
-              <div
-                data-testid="frame-view-container"
-                className="flex flex-wrap gap-1 p-2 rounded-md bg-muted/20 border border-border"
-              >
-                {parseResult && parseResult.segments.length > 0 ? (
-                  parseResult.segments.map((seg) => {
-                    const isHighlighted =
-                      (props.highlightedSegmentId !== undefined &&
-                        props.highlightedSegmentId !== null &&
-                        props.highlightedSegmentId === seg.id) ||
-                      (props.selectedSegmentId !== undefined &&
-                        props.selectedSegmentId !== null &&
-                        props.selectedSegmentId === seg.id);
-
-                    const matchingField = seg.fieldId
-                      ? parseResult.fields.find((f) => f.id === seg.fieldId)
-                      : undefined;
-                    const isSensitive = matchingField?.sensitive === true;
-                    const isVisible =
-                      !isSensitive ||
-                      revealAll ||
-                      (matchingField ? revealedFields.has(matchingField.id) : false);
-                    const displaySegValue = isVisible ? seg.rawValue : '••••••••';
-
-                    const roleClassMap: Record<string, string> = {
-                      delimiter:
-                        'bg-[#1a2236] text-[#94a3b8] border-[#2e3b5b] font-bold',
-                      header:
-                        'bg-purple-500/20 text-purple-300 border-purple-500/40 font-semibold',
-                      'command-code':
-                        'bg-[#0284c7]/20 text-[#38bdf8] border-[#0284c7]/40 font-bold',
-                      field:
-                        'bg-[#018934]/20 text-[#0da845] border-[#018934]/40',
-                      tag:
-                        'bg-[#ff7800]/20 text-[#ff9233] border-[#ff7800]/40 font-semibold',
-                      'tag-value':
-                        'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                    };
-
-                    const badgeClass =
-                      roleClassMap[seg.role] ??
-                      'bg-muted text-muted-foreground border-border';
-
-                    return (
-                      <button
-                        type="button"
-                        key={seg.id}
-                        data-testid={`frame-segment-${seg.id}`}
-                        data-role={seg.role}
-                        data-highlighted={isHighlighted ? 'true' : 'false'}
-                        aria-label={`Segmento ${seg.role}: ${displaySegValue}`}
-                        onMouseEnter={() => props.onHoverSegment?.(seg)}
-                        onMouseLeave={() => props.onHoverSegment?.(null)}
-                        onClick={() => props.onSelectSegment?.(seg)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            props.onSelectSegment?.(seg);
-                          }
-                        }}
-                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-mono border cursor-pointer transition-all select-none ${badgeClass} ${
-                          isHighlighted ? 'ring-2 ring-[#ff7800] ring-offset-1 ring-offset-[#202940] font-bold shadow-xs' : ''
-                        }`}
-                      >
-                        {displaySegValue}
-                      </button>
-                    );
-                  })
-                ) : (
-                  <span className="text-muted-foreground italic text-xs">
-                    Sin segmentos generados.
-                  </span>
-                )}
-              </div>
             </div>
           )}
         </div>
@@ -919,7 +931,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
               data-testid="accordion-content-notes"
               className="p-3 text-xs bg-card/20 space-y-2.5"
             >
-              {!combinedNotes ? (
+              {notesList.length === 0 ? (
                 <p className="text-muted-foreground italic text-xs">
                   <FormattedMessage
                     id="analysis.notes.empty"
@@ -929,22 +941,24 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
               ) : (
                 <div
                   data-testid="manufacturer-notes-container"
-                  className="space-y-2 text-xs leading-relaxed"
+                  className="space-y-2.5 text-xs leading-relaxed"
                 >
-                  {combinedNotes.split('\n\n').map((noteBlock, nIdx) => {
-                    const isCaution = noteBlock.includes('[CAUTION]') || noteBlock.startsWith('CAUTION:');
-                    const isImportant = noteBlock.includes('[IMPORTANT]') || noteBlock.startsWith('IMPORTANT:');
-                    const isTip = noteBlock.includes('[TIP]') || noteBlock.startsWith('TIP:');
-                    const isNote = noteBlock.includes('[NOTE]') || noteBlock.startsWith('NOTE:');
+                  {notesList.map((noteBlock, nIdx) => {
+                    const isCaution = /\[CAUTION\]|^CAUTION:/i.test(noteBlock);
+                    const isImportant = /\[IMPORTANT\]|^IMPORTANT:/i.test(noteBlock);
+                    const isTip = /\[TIP\]|^TIP:/i.test(noteBlock);
+                    const isNote = /\[NOTE\]|^NOTE:/i.test(noteBlock);
 
                     const cleanText = noteBlock
-                      .replace(/^\[(CAUTION|IMPORTANT|TIP|NOTE)\]\s*/g, '')
+                      .replace(/^\[(CAUTION|IMPORTANT|TIP|NOTE)\]\s*/i, '')
+                      .replace(/^(CAUTION|IMPORTANT|TIP|NOTE):\s*/i, '')
                       .trim();
 
                     if (isCaution) {
                       return (
                         <div
                           key={nIdx}
+                          data-testid={`manufacturer-note-caution-${nIdx}`}
                           className="p-3 rounded-md bg-[#ff7800]/10 border-l-4 border-l-[#ff7800] border border-[#ff7800]/30 text-xs text-[#feffff]"
                         >
                           <strong className="text-[#ff7800] block mb-1 uppercase font-bold text-[11px] tracking-wider">
@@ -958,6 +972,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                       return (
                         <div
                           key={nIdx}
+                          data-testid={`manufacturer-note-important-${nIdx}`}
                           className="p-3 rounded-md bg-[#ef4444]/10 border-l-4 border-l-[#ef4444] border border-[#ef4444]/30 text-xs text-[#feffff]"
                         >
                           <strong className="text-[#ef4444] block mb-1 uppercase font-bold text-[11px] tracking-wider">
@@ -971,6 +986,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                       return (
                         <div
                           key={nIdx}
+                          data-testid={`manufacturer-note-tip-${nIdx}`}
                           className="p-3 rounded-md bg-[#018934]/10 border-l-4 border-l-[#018934] border border-[#018934]/30 text-xs text-[#feffff]"
                         >
                           <strong className="text-[#0da845] block mb-1 uppercase font-bold text-[11px] tracking-wider">
@@ -984,6 +1000,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                       return (
                         <div
                           key={nIdx}
+                          data-testid={`manufacturer-note-note-${nIdx}`}
                           className="p-3 rounded-md bg-[#0284c7]/10 border-l-4 border-l-[#0284c7] border border-[#0284c7]/30 text-xs text-[#feffff]"
                         >
                           <strong className="text-[#38bdf8] block mb-1 uppercase font-bold text-[11px] tracking-wider">
@@ -997,6 +1014,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                     return (
                       <div
                         key={nIdx}
+                        data-testid={`manufacturer-note-general-${nIdx}`}
                         className="p-3 bg-muted/20 border border-border rounded-md text-xs leading-relaxed whitespace-pre-line text-muted-foreground"
                       >
                         {cleanText}

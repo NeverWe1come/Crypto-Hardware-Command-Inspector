@@ -17,12 +17,14 @@ import { CommandList } from './CommandList';
 import { CodeEditor } from './CodeEditor';
 import { AnalysisPanel } from './AnalysisPanel';
 import { Button } from './ui/button';
+import { HardwareDocsModal } from './HardwareDocsModal';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup
 } from './ui/resizable';
-import { Cpu, Sparkles, Layers, Plus } from 'lucide-react';
+import { Cpu, Sparkles, Layers, Plus, BookOpen } from 'lucide-react';
+import { useIntl } from 'react-intl';
 
 /**
  * Root workspace layout component composing the navigation header, web warning banner,
@@ -32,10 +34,13 @@ import { Cpu, Sparkles, Layers, Plus } from 'lucide-react';
  * @returns Application shell JSX element.
  */
 export function Shell() {
+  const intl = useIntl();
+  const locale = (intl.locale === 'en' ? 'en' : 'es') as 'es' | 'en';
   const { state, dispatch } = useWorkspace();
 
   const sidebarPanelRef = useRef<React.ComponentRef<typeof ResizablePanel>>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
 
   const [hoveredSegment, setHoveredSegment] = useState<FrameSegment | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<FrameSegment | null>(null);
@@ -188,17 +193,31 @@ export function Shell() {
                       </div>
                     </div>
 
-                    {/* Prominent New Command Action Button */}
-                    <Button
-                      type="button"
-                      data-testid="header-add-command-button"
-                      onClick={() => dispatch({ type: 'ADD_COMMAND' })}
-                      size="sm"
-                      className="h-8 text-xs gap-1.5 bg-[#ff7800] hover:bg-[#e66c00] text-[#131927] font-semibold shadow-xs"
-                    >
-                      <Plus className="size-3.5" />
-                      <FormattedMessage id="editor.addCommand" defaultMessage="Nuevo comando" />
-                    </Button>
+                    {/* Actions: Hardware Docs & Prominent New Command */}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        data-testid="header-hardware-docs-button"
+                        onClick={() => setIsDocsModalOpen(true)}
+                        size="sm"
+                        className="h-8 text-xs gap-1.5 bg-[#1a2236] hover:bg-[#283350] border-[#2e3b5b] text-[#38bdf8] hover:text-[#feffff] font-medium shadow-xs"
+                      >
+                        <BookOpen className="size-3.5" />
+                        <span>Documentación Hardware</span>
+                      </Button>
+
+                      <Button
+                        type="button"
+                        data-testid="header-add-command-button"
+                        onClick={() => dispatch({ type: 'ADD_COMMAND' })}
+                        size="sm"
+                        className="h-8 text-xs gap-1.5 bg-[#ff7800] hover:bg-[#e66c00] text-[#131927] font-semibold shadow-xs"
+                      >
+                        <Plus className="size-3.5" />
+                        <FormattedMessage id="editor.addCommand" defaultMessage="Nuevo comando" />
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Section 1: Contained Command List Block (Flexible Top Area) */}
@@ -304,6 +323,14 @@ export function Shell() {
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
+
+      {/* Hardware Documentation Viewer Modal */}
+      <HardwareDocsModal
+        isOpen={isDocsModalOpen}
+        onClose={() => setIsDocsModalOpen(false)}
+        deviceSpec={activeDeviceSpec}
+        locale={locale}
+      />
     </div>
   );
 }

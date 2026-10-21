@@ -234,4 +234,32 @@ describe('Application Shell Integration', () => {
       expect(screen.getByTestId('analysis-panel-placeholder')).toBeInTheDocument();
     });
   });
+
+  describe('Hardware Documentation Integration', () => {
+    it('renders the hardware documentation button before the add command button and opens modal on click', async () => {
+      const { user } = renderShell();
+
+      // Open a tab so header action buttons become active
+      await user.click(screen.getByTestId('device-card-utimaco-atalla-at1000'));
+
+      const docsButton = screen.getByTestId('header-hardware-docs-button');
+      const addButton = screen.getByTestId('header-add-command-button');
+
+      expect(docsButton).toBeInTheDocument();
+      expect(addButton).toBeInTheDocument();
+
+      // Ensure docsButton precedes addButton in DOM order
+      expect(
+        docsButton.compareDocumentPosition(addButton) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy();
+
+      // Modal initially closed
+      expect(screen.queryByTestId('hardware-docs-modal')).not.toBeInTheDocument();
+
+      // Click docs button to open modal
+      await user.click(docsButton);
+      expect(screen.getByTestId('hardware-docs-modal')).toBeInTheDocument();
+    });
+  });
 });

@@ -160,6 +160,8 @@ export interface CommandSpec {
   readonly source: string;
   readonly notes?: readonly LocalizedString[];
   readonly examples?: readonly CommandExampleSpec[];
+  /** Full raw Markdown documentation extracted from official reference manuals */
+  readonly markdownDoc?: LocalizedString;
 }
 
 /**
@@ -247,6 +249,16 @@ export interface DeviceVersionSpec {
 }
 
 /**
+ * Document section / chapter of the official vendor manual for a device.
+ */
+export interface HardwareDocSectionSpec {
+  readonly id: string;
+  readonly title: LocalizedString;
+  readonly category: 'overview' | 'chapter' | 'appendix' | 'commands';
+  readonly markdown: LocalizedString;
+}
+
+/**
  * Root specification for a cryptographic hardware device in `@chci/device-specs`.
  */
 export interface DeviceSpec {
@@ -261,6 +273,8 @@ export interface DeviceSpec {
   readonly exampleCommand?: string;
   readonly framing: FramingConfig;
   readonly versions: Readonly<Record<string, DeviceVersionSpec>>;
+  /** Comprehensive hardware documentation sections extracted from official vendor manuals */
+  readonly documentationSections?: readonly HardwareDocSectionSpec[];
 }
 
 /**

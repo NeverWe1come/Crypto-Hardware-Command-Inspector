@@ -128,4 +128,24 @@ describe('CommandInfoModal Component', () => {
       screen.getByText('Atalla AT1000 HSM Command Reference Manual v8.60, Section 4.2')
     ).toBeInTheDocument();
   });
+
+  it('renders markdown document and switches views when markdownDoc is present', async () => {
+    const cmdWithMd: CommandSpec = {
+      ...mockCommand,
+      markdownDoc: {
+        es: '# Command 10\n\n> **CAUTION:** Dangerous operation\n\n| Field | Length |\n| :--- | :--- |\n| 1 | 8 |',
+        en: '# Command 10\n\n> **CAUTION:** Dangerous operation\n\n| Field | Length |\n| :--- | :--- |\n| 1 | 8 |'
+      }
+    };
+
+    const { user } = renderModal({ commandSpec: cmdWithMd });
+
+    expect(screen.getByTestId('command-markdown-view')).toBeInTheDocument();
+    expect(screen.getByText('Dangerous operation')).toBeInTheDocument();
+
+    // Switch to parameters view
+    const fieldsBtn = screen.getByText(/Parámetros/);
+    await user.click(fieldsBtn);
+    expect(screen.getByTestId('command-fields-view')).toBeInTheDocument();
+  });
 });
