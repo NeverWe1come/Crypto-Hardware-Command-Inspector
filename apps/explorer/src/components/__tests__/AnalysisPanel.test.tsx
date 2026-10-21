@@ -530,7 +530,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
   // 4. Block 2: Parameters / Field Breakdown & Sensitive Field Masking
   // =========================================================================
   describe('Block 2: Parameter Breakdown & Sensitive Field Masking', () => {
-    it('renders interactive fields breakdown table with columns: Nombre, Offset/Longitud, Formato, Valor', () => {
+    it('renders interactive fields breakdown table with columns: Nombre, Longitud, Formato, Valor', () => {
       renderWithIntl(
         <AnalysisPanel
           deviceSpec={atallaAt1000Spec}
@@ -549,7 +549,8 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
 
       // Check column headers
       expect(within(table).getByText(/Nombre/i)).toBeInTheDocument();
-      expect(within(table).getByText(/Offset/i)).toBeInTheDocument();
+      expect(within(table).getByText(/Longitud/i)).toBeInTheDocument();
+      expect(within(table).queryByText(/Offset/i)).not.toBeInTheDocument();
       expect(within(table).getAllByText(/Formato/i).length).toBeGreaterThanOrEqual(1);
       expect(within(table).getByText(/Valor/i)).toBeInTheDocument();
 
@@ -559,6 +560,78 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(screen.getByTestId('field-row-dest-pek')).toBeInTheDocument();
       expect(screen.getByTestId('field-row-incoming-pin-block')).toBeInTheDocument();
       expect(screen.getByTestId('field-row-account-number')).toBeInTheDocument();
+    });
+
+    it('expands field description when info button is clicked', async () => {
+      const { user } = renderWithIntl(
+        <AnalysisPanel
+          deviceSpec={atallaAt1000Spec}
+          parseResult={atallaParsedRequest}
+          activeCommand={{
+            id: 'c1',
+            raw: atallaRawRequest,
+            version: '8.60',
+            direction: 'request'
+          }}
+        />
+      );
+
+      const infoBtn = screen.getByTestId('btn-field-info-pin-format');
+      expect(infoBtn).toBeInTheDocument();
+      expect(screen.queryByTestId('field-details-row-pin-format')).not.toBeInTheDocument();
+
+      await user.click(infoBtn);
+      expect(screen.getByTestId('field-details-row-pin-format')).toBeInTheDocument();
+    });
+
+    it('displays AKB and Variant badges and lengths correctly for Atalla dual-mode commands', () => {
+      const atallaBfAkbRaw = '<BF#1mVNE000,238046ABFEB1D0FEBDBF663EFA990245087B3A4D7EBA33C5,E63E7035EEAEB721#451861#0000000011#970731#000E#0000002E0000015A9000#1B48ED0AF1BA1A98#>';
+      const parsedAkb = parseCommand(atallaBfAkbRaw, atallaAt1000Spec, {
+        version: '8.60',
+        expectedDirection: 'request'
+      });
+
+      const { unmount } = renderWithIntl(
+        <AnalysisPanel
+          deviceSpec={atallaAt1000Spec}
+          parseResult={parsedAkb}
+          activeCommand={{
+            id: 'bf-akb',
+            raw: atallaBfAkbRaw,
+            version: '8.60',
+            direction: 'request'
+          }}
+        />
+      );
+
+      // Verify AKB badge is rendered for VSVC Master Key field (first parameter)
+      const akbBadge = screen.getByText('AKB');
+      expect(akbBadge).toBeInTheDocument();
+
+      unmount();
+
+      // Now verify Variant key (32 hex characters)
+      const atallaBfVariantRaw = '<BF#11112222333344445555666677778888#451861#0000000011#970731#000E#0000002E0000015A9000#1B48ED0AF1BA1A98#>';
+      const parsedVariant = parseCommand(atallaBfVariantRaw, atallaAt1000Spec, {
+        version: '8.60',
+        expectedDirection: 'request'
+      });
+
+      renderWithIntl(
+        <AnalysisPanel
+          deviceSpec={atallaAt1000Spec}
+          parseResult={parsedVariant}
+          activeCommand={{
+            id: 'bf-var',
+            raw: atallaBfVariantRaw,
+            version: '8.60',
+            direction: 'request'
+          }}
+        />
+      );
+
+      const variantBadge = screen.getByText('Variant');
+      expect(variantBadge).toBeInTheDocument();
     });
 
     it('masks sensitive fields by default with "••••••••"', () => {

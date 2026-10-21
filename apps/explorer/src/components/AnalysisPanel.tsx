@@ -128,12 +128,26 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
   const [revealedFields, setRevealedFields] = useState<Set<string>>(new Set());
   const [revealAll, setRevealAll] = useState<boolean>(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false);
+  const [expandedFieldDetails, setExpandedFieldDetails] = useState<Set<string>>(new Set());
 
-  // Reset sensitive field unmasking whenever active command switches
+  // Reset sensitive field unmasking and expanded field details whenever active command switches
   useEffect(() => {
     setRevealedFields(new Set());
     setRevealAll(false);
+    setExpandedFieldDetails(new Set());
   }, [activeCommand?.id]);
+
+  const toggleFieldDetails = (fieldId: string) => {
+    setExpandedFieldDetails((prev) => {
+      const next = new Set(prev);
+      if (next.has(fieldId)) {
+        next.delete(fieldId);
+      } else {
+        next.add(fieldId);
+      }
+      return next;
+    });
+  };
 
   const toggleSection = (sectionId: string) => {
     setOpenSections((prev) => {
@@ -652,9 +666,15 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                       <thead>
                         <tr className="border-b border-border bg-muted/40 text-[11px] text-muted-foreground font-semibold">
                           <th className="py-1.5 px-2">Nombre</th>
-                          <th className="py-1.5 px-2">Offset</th>
+                          <th className="py-1.5 px-2">
+                            <FormattedMessage
+                              id="analysis.fields.length"
+                              defaultMessage="Longitud"
+                            />
+                          </th>
                           <th className="py-1.5 px-2">Formato</th>
                           <th className="py-1.5 px-2 text-right">Valor</th>
+                          <th className="py-1.5 px-2 w-8 text-center" aria-label="Información"></th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border/40">
@@ -676,76 +696,206 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                           const displayValue = isVisible ? field.rawValue : '••••••••';
 
                           return (
-                            <tr
-                              key={field.id}
-                              data-testid={`field-row-${field.id}`}
-                              data-highlighted={isHighlighted ? 'true' : 'false'}
-                              tabIndex={0}
-                              role="row"
-                              aria-selected={isHighlighted}
-                              onMouseEnter={() => matchingSeg && props.onHoverSegment?.(matchingSeg)}
-                              onMouseLeave={() => props.onHoverSegment?.(null)}
-                              onClick={() => matchingSeg && props.onSelectSegment?.(matchingSeg)}
-                              onKeyDown={(e) => {
-                                if ((e.key === 'Enter' || e.key === ' ') && matchingSeg) {
-                                  e.preventDefault();
-                                  props.onSelectSegment?.(matchingSeg);
-                                }
-                              }}
-                              className={`hover:bg-muted/40 cursor-pointer transition-colors focus:outline-hidden focus:ring-1 focus:ring-primary ${
-                                isHighlighted ? 'bg-primary/15 font-medium' : ''
-                              }`}
-                            >
-                              <td className="py-1.5 px-2 font-medium">
-                                {resolveText(field.name) || field.id}
-                              </td>
-                              <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground">
-                                {field.start !== undefined && field.end !== undefined
-                                   ? `${field.start}..${field.end} (${field.end - field.start})`
-                                   : '-'}
-                              </td>
-                              <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground">
-                                {field.encoding ?? 'ascii'}
-                              </td>
-                              <td className="py-1.5 px-2 text-right">
-                                <div className="flex items-center justify-end gap-1.5">
-                                  <span
-                                    data-testid={`field-value-${field.id}`}
-                                    className="font-mono text-xs"
-                                  >
-                                    {displayValue}
-                                  </span>
-                                  {isSensitive && (
-                                    <button
-                                      type="button"
-                                      data-testid={`btn-toggle-sensitive-${field.id}`}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        toggleSensitiveField(field.id);
-                                      }}
-                                      className="p-1 text-muted-foreground hover:text-foreground rounded-xs"
-                                      aria-label={
-                                        isVisible
-                                          ? intl.formatMessage({
-                                              id: 'analysis.fields.hideSensitive',
-                                              defaultMessage: 'Ocultar valor sensible'
-                                            })
-                                          : intl.formatMessage({
-                                              id: 'analysis.fields.revealSensitive',
-                                              defaultMessage: 'Revelar valor sensible'
-                                            })
-                                      }
+                            <React.Fragment key={field.id}>
+                              <tr
+                                data-testid={`field-row-${field.id}`}
+                                data-highlighted={isHighlighted ? 'true' : 'false'}
+                                tabIndex={0}
+                                role="row"
+                                aria-selected={isHighlighted}
+                                onMouseEnter={() => matchingSeg && props.onHoverSegment?.(matchingSeg)}
+                                onMouseLeave={() => props.onHoverSegment?.(null)}
+                                onClick={() => matchingSeg && props.onSelectSegment?.(matchingSeg)}
+                                onKeyDown={(e) => {
+                                  if ((e.key === 'Enter' || e.key === ' ') && matchingSeg) {
+                                    e.preventDefault();
+                                    props.onSelectSegment?.(matchingSeg);
+                                  }
+                                }}
+                                className={`hover:bg-muted/40 cursor-pointer transition-colors focus:outline-hidden focus:ring-1 focus:ring-primary ${
+                                  isHighlighted ? 'bg-primary/15 font-medium' : ''
+                                }`}
+                              >
+                                <td className="py-1.5 px-2 font-medium">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span>{resolveText(field.name) || field.id}</span>
+                                    {field.detectedMode === 'akb' && (
+                                      <span
+                                        data-testid={`badge-akb-${field.id}`}
+                                        className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-[#FBD5CD]/20 text-[#f472b6] border border-[#f472b6]/40"
+                                      >
+                                        AKB
+                                      </span>
+                                    )}
+                                    {field.detectedMode === 'variant' && (
+                                      <span
+                                        data-testid={`badge-variant-${field.id}`}
+                                        className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-[#B5B1D2]/20 text-purple-300 border border-purple-500/40"
+                                      >
+                                        Variant
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground">
+                                  {field.rawValue.length}
+                                </td>
+                                <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground">
+                                  {field.encoding ?? 'ascii'}
+                                </td>
+                                <td className="py-1.5 px-2 text-right">
+                                  <div className="flex items-center justify-end gap-1.5">
+                                    <span
+                                      data-testid={`field-value-${field.id}`}
+                                      className="font-mono text-xs"
                                     >
-                                      {isVisible ? (
-                                        <EyeOff className="size-3" />
+                                      {displayValue}
+                                    </span>
+                                    {isSensitive && (
+                                      <button
+                                        type="button"
+                                        data-testid={`btn-toggle-sensitive-${field.id}`}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleSensitiveField(field.id);
+                                        }}
+                                        className="p-1 text-muted-foreground hover:text-foreground rounded-xs"
+                                        aria-label={
+                                          isVisible
+                                            ? intl.formatMessage({
+                                                id: 'analysis.fields.hideSensitive',
+                                                defaultMessage: 'Ocultar valor sensible'
+                                              })
+                                            : intl.formatMessage({
+                                                id: 'analysis.fields.revealSensitive',
+                                                defaultMessage: 'Revelar valor sensible'
+                                              })
+                                        }
+                                      >
+                                        {isVisible ? (
+                                          <EyeOff className="size-3" />
+                                        ) : (
+                                          <Eye className="size-3" />
+                                        )}
+                                      </button>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="py-1.5 px-2 text-center" onClick={(e) => e.stopPropagation()}>
+                                  <button
+                                    type="button"
+                                    data-testid={`btn-field-info-${field.id}`}
+                                    onClick={() => toggleFieldDetails(field.id)}
+                                    className={`p-1 rounded-xs transition-colors ${
+                                      expandedFieldDetails.has(field.id)
+                                        ? 'text-[#38bdf8] bg-muted/60'
+                                        : 'text-muted-foreground hover:text-[#38bdf8] hover:bg-muted/40'
+                                    }`}
+                                    aria-label={`Información de ${resolveText(field.name)}`}
+                                    title={`Ver descripción completa de ${resolveText(field.name)}`}
+                                  >
+                                    <Info className="size-3.5" />
+                                  </button>
+                                </td>
+                              </tr>
+
+                              {expandedFieldDetails.has(field.id) && (
+                                <tr
+                                  data-testid={`field-details-row-${field.id}`}
+                                  className="bg-muted/15 border-b border-border/60"
+                                >
+                                  <td colSpan={5} className="p-3">
+                                    <div className="space-y-2.5 text-xs">
+                                      {field.variants && field.variants.length > 0 ? (
+                                        <div className="space-y-2">
+                                          {field.variants.map((v, vIdx) => {
+                                            if (v.mode === 'akb') {
+                                              return (
+                                                <div
+                                                  key={vIdx}
+                                                  data-testid={`field-variant-akb-${field.id}`}
+                                                  className="p-3 rounded-md bg-[#FBD5CD]/10 border-l-4 border-l-[#f472b6] border border-[#f472b6]/30 text-xs text-[#feffff]"
+                                                >
+                                                  <div className="flex items-center justify-between mb-1.5">
+                                                    <strong className="text-[#f472b6] font-bold text-[11px] tracking-wider uppercase flex items-center gap-1.5">
+                                                      <span>🟧 AKB (Atalla Key Block)</span>
+                                                    </strong>
+                                                    <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-[#FBD5CD]/20 text-[#f472b6] border border-[#f472b6]/40">
+                                                      Longitud: {v.lengthText}
+                                                    </span>
+                                                  </div>
+                                                  <p className="text-muted-foreground text-xs leading-relaxed whitespace-pre-line">
+                                                    {resolveText(v.description)}
+                                                  </p>
+                                                </div>
+                                              );
+                                            }
+                                            if (v.mode === 'variant') {
+                                              return (
+                                                <div
+                                                  key={vIdx}
+                                                  data-testid={`field-variant-variant-${field.id}`}
+                                                  className="p-3 rounded-md bg-[#B5B1D2]/10 border-l-4 border-l-purple-500 border border-purple-500/30 text-xs text-[#feffff]"
+                                                >
+                                                  <div className="flex items-center justify-between mb-1.5">
+                                                    <strong className="text-purple-300 font-bold text-[11px] tracking-wider uppercase flex items-center gap-1.5">
+                                                      <span>🟪 Variant (Variante MFK)</span>
+                                                    </strong>
+                                                    <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-[#B5B1D2]/20 text-purple-300 border border-purple-500/40">
+                                                      Longitud: {v.lengthText}
+                                                    </span>
+                                                  </div>
+                                                  <p className="text-muted-foreground text-xs leading-relaxed whitespace-pre-line">
+                                                    {resolveText(v.description)}
+                                                  </p>
+                                                </div>
+                                              );
+                                            }
+                                            return (
+                                              <div
+                                                key={vIdx}
+                                                data-testid={`field-variant-both-${field.id}`}
+                                                className="p-3 rounded-md bg-muted/20 border border-border text-xs text-[#feffff]"
+                                              >
+                                                <div className="flex items-center justify-between mb-1.5">
+                                                  <strong className="text-[#38bdf8] font-bold text-[11px] tracking-wider uppercase">
+                                                    AKB & Variant (Ambos)
+                                                  </strong>
+                                                  <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border">
+                                                    Longitud: {v.lengthText}
+                                                  </span>
+                                                </div>
+                                                <p className="text-muted-foreground text-xs leading-relaxed whitespace-pre-line">
+                                                  {resolveText(v.description)}
+                                                </p>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
                                       ) : (
-                                        <Eye className="size-3" />
+                                        <div className="p-3 rounded-md bg-muted/20 border border-border text-xs text-[#feffff]">
+                                          <strong className="text-[#38bdf8] block text-[11px] font-semibold mb-1">
+                                            Descripción Oficial
+                                          </strong>
+                                          <p className="text-muted-foreground text-xs leading-relaxed whitespace-pre-line">
+                                            {resolveText(field.description)}
+                                          </p>
+                                        </div>
                                       )}
-                                    </button>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
+
+                                      {field.notes && (
+                                        <div className="p-2.5 rounded bg-[#0284c7]/10 border border-[#0284c7]/30 text-xs text-[#38bdf8]">
+                                          <strong className="font-semibold block mb-0.5 text-[11px]">Notas de Parámetro:</strong>
+                                          <p className="text-muted-foreground text-xs leading-relaxed">
+                                            {resolveText(field.notes)}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
                           );
                         })}
                       </tbody>

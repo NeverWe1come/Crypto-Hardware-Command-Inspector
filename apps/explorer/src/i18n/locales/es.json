@@ -43,6 +43,7 @@
   "analysis.empty.description": "Selecciona un comando en la lista para ver su desglose criptográfico detallado.",
   "analysis.generalInfo": "Información General",
   "analysis.fields": "Desglose de Parámetros",
+  "analysis.fields.length": "Longitud",
   "analysis.frameView": "Vista de Trama",
   "analysis.diagnostics": "Diagnósticos",
   "analysis.responseCode": "Código de Respuesta / Error",

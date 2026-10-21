@@ -484,8 +484,40 @@ export function parseDelimitedPositional(
         });
       }
 
-      // Validate length
-      if (tok.value.length > 0 && !validateFieldLength(tok.value, fSpec.length)) {
+      // Validate length (checking main length spec or any declared key management variants)
+      const isLengthValid =
+        tok.value.length === 0 ||
+        validateFieldLength(tok.value, fSpec.length) ||
+        (fSpec.variants &&
+          fSpec.variants.length > 0 &&
+          fSpec.variants.some((v) => validateFieldLength(tok.value, v.length)));
+
+      let detectedMode: 'akb' | 'variant' | 'both' | undefined = undefined;
+      if (fSpec.variants && fSpec.variants.length > 0) {
+        const akbVar = fSpec.variants.find((v) => v.mode === 'akb');
+        const variantVar = fSpec.variants.find((v) => v.mode === 'variant');
+        const isAkbMatch =
+          akbVar &&
+          (tok.value.includes(',') ||
+            /^[13][A-Za-z0-9]{3}[A-Za-z0-9]000/.test(tok.value) ||
+            validateFieldLength(tok.value, akbVar.length));
+        const isVariantMatch =
+          variantVar && validateFieldLength(tok.value, variantVar.length);
+
+        if (isAkbMatch && !isVariantMatch) {
+          detectedMode = 'akb';
+        } else if (isVariantMatch && !isAkbMatch) {
+          detectedMode = 'variant';
+        } else if (isAkbMatch && isVariantMatch) {
+          if (tok.value.includes(',') || /^[13][A-Za-z0-9]{7}/.test(tok.value)) {
+            detectedMode = 'akb';
+          } else {
+            detectedMode = 'variant';
+          }
+        }
+      }
+
+      if (tok.value.length > 0 && !isLengthValid) {
         fieldValid = false;
         valid = false;
         diagnostics.push({
@@ -560,7 +592,9 @@ export function parseDelimitedPositional(
         valid: fieldValid,
         position: i,
         enumMeaning,
-        notes: fSpec.notes
+        notes: fSpec.notes,
+        variants: fSpec.variants,
+        detectedMode
       });
 
       segments.push({

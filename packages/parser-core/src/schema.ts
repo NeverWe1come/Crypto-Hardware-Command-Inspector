@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import type { DeviceSpec, FieldSpec } from './types';
+import type { DeviceSpec, FieldModeVariant, FieldSpec } from './types';
 
 /**
  * Zod schema validating a bilingual string object (`es` and `en`).
@@ -94,6 +94,16 @@ export const FieldEnumOptionSchema = z.object({
 });
 
 /**
+ * Zod schema for key management mode variants (AKB, Variant, Both).
+ */
+export const FieldModeVariantSchema: z.ZodType<FieldModeVariant> = z.object({
+  mode: z.enum(['akb', 'variant', 'both']),
+  lengthText: z.string(),
+  length: FieldLengthSpecSchema,
+  description: LocalizedStringSchema
+});
+
+/**
  * Zod schema for conditional field activation.
  */
 export const FieldConditionSchema = z.object({
@@ -118,7 +128,8 @@ export const FieldSpecSchema: z.ZodType<FieldSpec> = z.object({
   enumValues: z.array(FieldEnumOptionSchema).optional(),
   condition: FieldConditionSchema.optional(),
   notes: LocalizedStringSchema.optional(),
-  example: z.string().optional()
+  example: z.string().optional(),
+  variants: z.array(FieldModeVariantSchema).optional()
 });
 
 /**

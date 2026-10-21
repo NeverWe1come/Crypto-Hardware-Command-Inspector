@@ -280,11 +280,17 @@ describe('Version Inheritance Hierarchy (`resolveDeviceVersion`)', () => {
       expect(parsed.matchedCommand?.id).toBe('atalla-bf-req');
       expect(parsed.fields.length).toBe(7);
 
-      // Field 0: VSVC Master Key
+      // Field 0: VSVC Master Key (AKB mode detected, length 74)
       expect(parsed.fields[0]?.id).toBe('vsvc-master-key');
       expect(parsed.fields[0]?.sensitive).toBe(true);
       expect(parsed.fields[0]?.maskedValue).toBe('••••••••');
       expect(parsed.fields[0]?.rawValue).toContain('1mVNE000');
+      expect(parsed.fields[0]?.detectedMode).toBe('akb');
+      expect(parsed.fields[0]?.variants?.length).toBe(2);
+      expect(parsed.fields[0]?.variants?.[0]?.mode).toBe('akb');
+      expect(parsed.fields[0]?.variants?.[0]?.lengthText).toBe('74');
+      expect(parsed.fields[0]?.variants?.[1]?.mode).toBe('variant');
+      expect(parsed.fields[0]?.variants?.[1]?.lengthText).toBe('32');
 
       // Field 1: Ppiep
       expect(parsed.fields[1]?.id).toBe('ppiep');
@@ -313,10 +319,21 @@ describe('Version Inheritance Hierarchy (`resolveDeviceVersion`)', () => {
       expect(parsed.fields[6]?.maskedValue).toBe('••••••••');
     });
 
-    it('resolves all 448 command specifications for Atalla AT1000 v8.60', () => {
-      expect(atallaAt1000Spec.versions['8.60']?.commands.length).toBe(448);
+    it('accurately parses Command BF with Variant key (32 hex characters)', () => {
+      const rawVariantCmd =
+        '<BF#0123456789ABCDEF0123456789ABCDEF#451861#0000000011#970731#000E#0000002E0000015A9000#1B48ED0AF1BA1A98#>';
+      const parsedVariant = parseCommand(rawVariantCmd, atallaAt1000Spec, { version: '8.60' });
+
+      expect(parsedVariant.valid).toBe(true);
+      expect(parsedVariant.commandCode).toBe('BF');
+      expect(parsedVariant.fields[0]?.detectedMode).toBe('variant');
+      expect(parsedVariant.fields[0]?.rawValue).toBe('0123456789ABCDEF0123456789ABCDEF');
+    });
+
+    it('resolves all 452 command specifications for Atalla AT1000 v8.60', () => {
+      expect(atallaAt1000Spec.versions['8.60']?.commands.length).toBe(452);
       const resolved86 = resolveDeviceVersion(atallaAt1000Spec, '8.60');
-      expect(resolved86.commands.length).toBe(455);
+      expect(resolved86.commands.length).toBe(459);
     });
   });
 

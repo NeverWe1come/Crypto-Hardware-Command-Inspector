@@ -75,12 +75,12 @@ function renderInlineFormatting(text: string): React.ReactNode[] {
     }
 
     // 5. Special AKB / Variant Badges
-    const akbBadge = remaining.match(/^(🟩\s*AKB)/);
+    const akbBadge = remaining.match(/^(🌸\s*AKB|🟧\s*AKB|🟩\s*AKB)/);
     if (akbBadge) {
       tokens.push(
         <span
           key={`akb-${keyIdx++}`}
-          className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-bold bg-[#018934]/25 text-[#0da845] border border-[#018934]/40 mr-1"
+          className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-bold bg-[#FBD5CD]/20 text-[#f472b6] border border-[#f472b6]/40 mr-1"
         >
           AKB
         </span>
@@ -94,7 +94,7 @@ function renderInlineFormatting(text: string): React.ReactNode[] {
       tokens.push(
         <span
           key={`var-${keyIdx++}`}
-          className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-bold bg-purple-500/25 text-purple-300 border border-purple-500/40 mr-1"
+          className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 mr-1"
         >
           Variant
         </span>
@@ -104,7 +104,7 @@ function renderInlineFormatting(text: string): React.ReactNode[] {
     }
 
     // 6. Regular plain text slice until next formatting trigger
-    const nextSpecial = remaining.search(/[`*🟩🟪]/u);
+    const nextSpecial = remaining.search(/[`*🌸🟧🟩🟪]/u);
     if (nextSpecial === -1) {
       tokens.push(remaining);
       break;

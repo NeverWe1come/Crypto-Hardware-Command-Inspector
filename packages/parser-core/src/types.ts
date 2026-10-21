@@ -91,6 +91,17 @@ export interface FieldEnumOption {
 }
 
 /**
+ * Key management mode specific specification for a field
+ * (e.g., AKB Pink `#FFDDD3`, Variant Purple `#C1BADC`, or both Unshaded).
+ */
+export interface FieldModeVariant {
+  readonly mode: 'akb' | 'variant' | 'both';
+  readonly lengthText: string;
+  readonly length: FieldLengthSpec;
+  readonly description: LocalizedString;
+}
+
+/**
  * Condition determining whether an optional/dependent field is active based on a prior field's value.
  */
 export interface FieldCondition {
@@ -123,6 +134,8 @@ export interface FieldSpec {
   readonly condition?: FieldCondition;
   readonly notes?: LocalizedString;
   readonly example?: string;
+  /** Specific sub-specifications when field properties differ between AKB, Variant, or Both. */
+  readonly variants?: readonly FieldModeVariant[];
 }
 
 /**
@@ -364,6 +377,10 @@ export interface ParsedField {
   readonly position?: number;
   readonly enumMeaning?: LocalizedString;
   readonly notes?: LocalizedString;
+  /** Sub-specifications by key management mode (AKB / Variant / Both) */
+  readonly variants?: readonly FieldModeVariant[];
+  /** Detected key management mode for the parsed value in the active command frame. */
+  readonly detectedMode?: 'akb' | 'variant' | 'both';
 }
 
 /**

@@ -170,6 +170,38 @@ export function CommandInfoModal({
                             {resolve(f.description)}
                           </p>
                         )}
+                        {f.variants && f.variants.length > 0 && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                            {f.variants.map((v, vIdx) => {
+                              const isAkb = v.mode === 'akb';
+                              const isVariant = v.mode === 'variant';
+                              return (
+                                <div
+                                  key={vIdx}
+                                  className={`p-2 rounded text-[11px] border ${
+                                    isAkb
+                                      ? 'bg-[#FBD5CD]/10 border-[#f472b6]/30 text-[#f472b6]'
+                                      : isVariant
+                                      ? 'bg-[#B5B1D2]/10 border-purple-500/30 text-purple-300'
+                                      : 'bg-[#1e293b]/60 border-[#2e3b5b] text-[#cbd5e1]'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="font-bold">
+                                      {isAkb ? 'AKB' : isVariant ? 'Variant' : 'Standard'}
+                                    </span>
+                                    <span className="font-mono text-[10px] opacity-80">
+                                      Longitud: {v.lengthText ?? (v.length.kind === 'fixed' ? v.length.length : 'var')}
+                                    </span>
+                                  </div>
+                                  <p className="text-[10px] text-[#94a3b8] leading-tight">
+                                    {resolve(v.description)}
+                                  </p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

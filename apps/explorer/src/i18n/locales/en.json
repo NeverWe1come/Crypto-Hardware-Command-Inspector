@@ -43,6 +43,7 @@
   "analysis.empty.description": "Select a command in the list to view its detailed cryptographic breakdown.",
   "analysis.generalInfo": "General Information",
   "analysis.fields": "Parameter Breakdown",
+  "analysis.fields.length": "Length",
   "analysis.frameView": "Frame View",
   "analysis.diagnostics": "Diagnostics",
   "analysis.responseCode": "Response / Error Code",
