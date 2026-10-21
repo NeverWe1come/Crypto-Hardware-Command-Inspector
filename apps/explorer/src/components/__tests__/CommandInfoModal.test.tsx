@@ -30,7 +30,8 @@ const mockDevice: DeviceSpec = {
     '8.60': {
       version: '8.60',
       label: { es: 'v8.60', en: 'v8.60' },
-      commands: []
+      commands: [],
+      errorCodes: {}
     }
   }
 };
