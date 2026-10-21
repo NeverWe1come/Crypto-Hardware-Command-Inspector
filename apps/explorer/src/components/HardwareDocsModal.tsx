@@ -2,11 +2,12 @@
  * @packageDocumentation
  * Full cryptographic hardware documentation viewer modal (`@chci/explorer`).
  * Provides indexed multi-chapter navigation across vendor manuals, protocol specifications,
- * command reference appendices, and official architectural guides.
+ * command reference appendices, and official architectural guides with category filters
+ * and cross-referencing link navigation.
  */
 
 import React, { useCallback, useMemo, useState } from 'react';
-import type { DeviceSpec } from '@chci/parser-core';
+import type { DeviceSpec, HardwareDocSectionSpec } from '@chci/parser-core';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +15,7 @@ import {
   DialogTitle,
   DialogDescription
 } from './ui/dialog';
-import { BookOpen, Search, FileText, Cpu } from 'lucide-react';
+import { BookOpen, Search, FileText, Cpu, ArrowLeft, Terminal } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { Input } from './ui/input';
 
@@ -36,10 +37,7 @@ export function HardwareDocsModal({
 }: HardwareDocsModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
-
-  const sections = useMemo(() => {
-    return deviceSpec?.documentationSections ?? [];
-  }, [deviceSpec?.documentationSections]);
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'chapter' | 'command' | 'appendix'>('all');
 
   const resolve = useCallback(
     (ls?: { es: string; en: string } | null) => {
@@ -49,26 +47,113 @@ export function HardwareDocsModal({
     [locale]
   );
 
-  // Filter sections by search query
+  // Combine documentation sections with individual command reference docs
+  const allSections = useMemo<readonly HardwareDocSectionSpec[]>(() => {
+    const baseSections = deviceSpec?.documentationSections ?? [];
+
+    const cmdSections: HardwareDocSectionSpec[] = [];
+    if (deviceSpec) {
+      const defaultVer = deviceSpec.defaultVersion;
+      const verSpec = deviceSpec.versions[defaultVer];
+      const commands = verSpec?.commands ?? [];
+      const requestCommands = commands.filter(
+        (c) => c.direction === 'request' && c.markdownDoc
+      );
+      for (const cmd of requestCommands) {
+        cmdSections.push({
+          id: `cmd-${cmd.code.toLowerCase()}`,
+          title: {
+            es: `Comando ${cmd.code} - ${resolve(cmd.name).replace(/\s*\(Petición\)$/i, '')}`,
+            en: `Command ${cmd.code} - ${resolve(cmd.name).replace(/\s*\(Request\)$/i, '')}`
+          },
+          category: 'command' as unknown as 'chapter',
+          markdown: cmd.markdownDoc!
+        });
+      }
+    }
+    return [...baseSections, ...cmdSections];
+  }, [deviceSpec, resolve]);
+
+  // Counts for tabs
+  const counts = useMemo(() => {
+    return {
+      all: allSections.length,
+      chapter: allSections.filter((s) => s.category === 'chapter').length,
+      command: allSections.filter((s) => (s.category as string) === 'command').length,
+      appendix: allSections.filter((s) => s.category === 'appendix').length
+    };
+  }, [allSections]);
+
+  // Filter sections by search query and category
   const filteredSections = useMemo(() => {
-    if (!searchQuery.trim()) return sections;
+    let list = allSections;
+    if (categoryFilter !== 'all') {
+      list = list.filter((s) => (s.category as string) === categoryFilter);
+    }
+    if (!searchQuery.trim()) return list;
     const q = searchQuery.toLowerCase();
-    return sections.filter((s) => {
+    return list.filter((s) => {
       const title = resolve(s.title).toLowerCase();
       const md = resolve(s.markdown).toLowerCase();
-      return title.includes(q) || md.includes(q);
+      return title.includes(q) || md.includes(q) || s.id.toLowerCase().includes(q);
     });
-  }, [sections, searchQuery, resolve]);
+  }, [allSections, categoryFilter, searchQuery, resolve]);
 
-  // Active section (default to first section or 'overview')
+  // Active section (default to 'overview' or first section)
   const activeSection = useMemo(() => {
     if (filteredSections.length === 0) return null;
     if (selectedSectionId) {
-      const match = filteredSections.find((s) => s.id === selectedSectionId);
+      const match = allSections.find((s) => s.id === selectedSectionId);
       if (match) return match;
     }
-    return filteredSections[0] ?? null;
-  }, [filteredSections, selectedSectionId]);
+    const overview = allSections.find((s) => s.id === 'overview');
+    return overview ?? filteredSections[0] ?? null;
+  }, [allSections, filteredSections, selectedSectionId]);
+
+  // Handle clickable links inside Markdown
+  const handleNavigateLink = useCallback(
+    (href: string) => {
+      const cleanHref = href.trim();
+      // 1. Commands: commands/cmd-10-... or cmd-10
+      const cmdMatch =
+        cleanHref.match(/commands\/cmd-([0-9a-zA-Z]+)/i) ||
+        cleanHref.match(/^cmd-([0-9a-zA-Z]+)/i);
+      if (cmdMatch && cmdMatch[1]) {
+        const code = cmdMatch[1].toLowerCase();
+        const targetSec = allSections.find(
+          (s) => s.id === `cmd-${code}` || s.id.toLowerCase().includes(code)
+        );
+        if (targetSec) {
+          setSelectedSectionId(targetSec.id);
+          return;
+        }
+      }
+      // 2. Chapters: chapters/ch01-... or ch01
+      const chMatch =
+        cleanHref.match(/chapters\/(ch\d+)/i) || cleanHref.match(/^(ch\d+)/i);
+      if (chMatch && chMatch[1]) {
+        const chId = chMatch[1].toLowerCase();
+        const targetSec = allSections.find((s) => s.id.startsWith(chId));
+        if (targetSec) {
+          setSelectedSectionId(targetSec.id);
+          return;
+        }
+      }
+      // 3. Appendices: appendices/app-a-... or app-a
+      const appMatch =
+        cleanHref.match(/appendices\/(app-[a-f])/i) ||
+        cleanHref.match(/^(app-[a-f])/i);
+      if (appMatch && appMatch[1]) {
+        const appId = appMatch[1].toLowerCase();
+        const targetSec = allSections.find((s) => s.id.startsWith(appId));
+        if (targetSec) {
+          setSelectedSectionId(targetSec.id);
+          return;
+        }
+      }
+    },
+    [allSections]
+  );
 
   if (!deviceSpec) return null;
 
@@ -103,19 +188,67 @@ export function HardwareDocsModal({
           {/* Left Navigation Sidebar */}
           <aside
             data-testid="hardware-docs-sidebar"
-            className="w-72 shrink-0 flex flex-col bg-[#131927] overflow-hidden"
+            className="w-80 shrink-0 flex flex-col bg-[#131927] overflow-hidden"
           >
             {/* Search filter */}
-            <div className="p-3 border-b border-[#2e3b5b] shrink-0">
+            <div className="p-3 border-b border-[#2e3b5b] shrink-0 space-y-2">
               <div className="relative">
                 <Search className="size-3.5 absolute left-2.5 top-2.5 text-[#94a3b8]" />
                 <Input
                   type="text"
-                  placeholder="Buscar en el manual..."
+                  placeholder="Buscar en el manual o comandos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="h-8 pl-8 text-xs bg-[#1a2236] border-[#2e3b5b] text-[#feffff] placeholder:text-[#64748b] rounded-xs"
                 />
+              </div>
+
+              {/* Category tabs */}
+              <div className="flex items-center gap-1 bg-[#1a2236] p-0.5 rounded border border-[#2e3b5b] text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => setCategoryFilter('all')}
+                  className={`flex-1 py-1 px-1.5 rounded-xs font-medium text-center transition-colors ${
+                    categoryFilter === 'all'
+                      ? 'bg-[#ff7800] text-[#131927] font-semibold'
+                      : 'text-[#94a3b8] hover:text-[#feffff]'
+                  }`}
+                >
+                  Todos ({counts.all})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCategoryFilter('chapter')}
+                  className={`py-1 px-1.5 rounded-xs font-medium text-center transition-colors ${
+                    categoryFilter === 'chapter'
+                      ? 'bg-[#ff7800] text-[#131927] font-semibold'
+                      : 'text-[#94a3b8] hover:text-[#feffff]'
+                  }`}
+                >
+                  Capítulos ({counts.chapter})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCategoryFilter('command')}
+                  className={`py-1 px-1.5 rounded-xs font-medium text-center transition-colors ${
+                    categoryFilter === 'command'
+                      ? 'bg-[#ff7800] text-[#131927] font-semibold'
+                      : 'text-[#94a3b8] hover:text-[#feffff]'
+                  }`}
+                >
+                  Comandos ({counts.command})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCategoryFilter('appendix')}
+                  className={`py-1 px-1.5 rounded-xs font-medium text-center transition-colors ${
+                    categoryFilter === 'appendix'
+                      ? 'bg-[#ff7800] text-[#131927] font-semibold'
+                      : 'text-[#94a3b8] hover:text-[#feffff]'
+                  }`}
+                >
+                  Apéndices ({counts.appendix})
+                </button>
               </div>
             </div>
 
@@ -123,17 +256,31 @@ export function HardwareDocsModal({
             <nav className="flex-1 overflow-y-auto p-2 space-y-1">
               {filteredSections.length === 0 ? (
                 <div className="p-4 text-center text-xs text-[#94a3b8]">
-                  No se encontraron secciones para "{searchQuery}"
+                  No se encontraron resultados para "{searchQuery}"
                 </div>
               ) : (
                 filteredSections.map((sec) => {
                   const isSelected = activeSection?.id === sec.id;
+                  const cat = sec.category as string;
                   const catBadgeColor =
-                    sec.category === 'overview'
+                    cat === 'overview'
                       ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-                      : sec.category === 'chapter'
+                      : cat === 'chapter'
                         ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
-                        : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+                        : cat === 'command'
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+
+                  const icon =
+                    cat === 'command' ? (
+                      <Terminal
+                        className={`size-3.5 shrink-0 ${isSelected ? 'text-[#131927]' : 'text-amber-400'}`}
+                      />
+                    ) : (
+                      <FileText
+                        className={`size-3.5 shrink-0 ${isSelected ? 'text-[#131927]' : 'text-[#38bdf8]'}`}
+                      />
+                    );
 
                   return (
                     <button
@@ -148,15 +295,17 @@ export function HardwareDocsModal({
                       }`}
                     >
                       <div className="flex items-center gap-2 truncate">
-                        <FileText className={`size-3.5 shrink-0 ${isSelected ? 'text-[#131927]' : 'text-[#38bdf8]'}`} />
+                        {icon}
                         <span className="truncate">{resolve(sec.title)}</span>
                       </div>
                       <span
                         className={`text-[9px] uppercase font-mono px-1 py-0.5 rounded border shrink-0 ${
-                          isSelected ? 'bg-[#131927]/20 text-[#131927] border-[#131927]/30' : catBadgeColor
+                          isSelected
+                            ? 'bg-[#131927]/20 text-[#131927] border-[#131927]/30'
+                            : catBadgeColor
                         }`}
                       >
-                        {sec.category}
+                        {cat}
                       </span>
                     </button>
                   );
@@ -173,19 +322,39 @@ export function HardwareDocsModal({
             {activeSection ? (
               <div className="max-w-4xl mx-auto w-full space-y-4">
                 <div className="pb-3 border-b border-[#2e3b5b] flex items-center justify-between">
-                  <h2 className="text-base font-bold text-[#feffff]">
-                    {resolve(activeSection.title)}
-                  </h2>
-                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#283350] text-[#38bdf8] border border-[#2e3b5b]">
+                  <div className="flex items-center gap-2">
+                    {activeSection.id !== 'overview' && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedSectionId('overview')}
+                        className="text-xs text-[#38bdf8] hover:text-[#7dd3fc] hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <ArrowLeft className="size-3.5" />
+                        <span>Índice Maestro</span>
+                      </button>
+                    )}
+                    {activeSection.id !== 'overview' && (
+                      <span className="text-[#64748b]">/</span>
+                    )}
+                    <h2 className="text-sm font-bold text-[#feffff] truncate max-w-xl">
+                      {resolve(activeSection.title)}
+                    </h2>
+                  </div>
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#283350] text-[#38bdf8] border border-[#2e3b5b] shrink-0">
                     {activeSection.id}
                   </span>
                 </div>
-                <MarkdownRenderer markdown={resolve(activeSection.markdown)} />
+                <MarkdownRenderer
+                  markdown={resolve(activeSection.markdown)}
+                  onNavigateLink={handleNavigateLink}
+                />
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-[#94a3b8] space-y-2">
                 <BookOpen className="size-8 text-[#64748b]" />
-                <p className="text-xs">Selecciona un capítulo en el menú lateral para leer su contenido.</p>
+                <p className="text-xs">
+                  Selecciona un comando o capítulo en el menú lateral para leer su documentación completa.
+                </p>
               </div>
             )}
           </main>
