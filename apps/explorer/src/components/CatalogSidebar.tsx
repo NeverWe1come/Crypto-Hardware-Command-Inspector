@@ -109,6 +109,13 @@ export function CatalogSidebar() {
     const isTabOpen = state.tabs.some((t) => t.deviceId === device.id);
 
     if (isCollapsed) {
+      const initials = device.name
+        .split(' ')
+        .map((w) => w[0])
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('');
+
       return (
         <button
           type="button"
@@ -117,18 +124,18 @@ export function CatalogSidebar() {
           aria-disabled={!isSupported}
           onClick={() => handleOpenDevice(device.id, device.status)}
           title={device.name}
-          className={`w-full text-left p-2 rounded-md border text-xs truncate transition-all select-none ${
+          className={`w-full text-center p-2 rounded-md border text-[11px] font-bold uppercase transition-all select-none ${
             isSupported ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
           } ${
             isTabActive
-              ? 'bg-[#283350] border-[#ff7800] border-l-4 border-l-[#ff7800] text-[#feffff] font-semibold shadow-xs'
+              ? 'bg-[#283350] border-[#ff7800] text-[#feffff] shadow-xs'
               : isTabOpen
-                ? 'bg-[#202940] border-[#018934] border-l-4 border-l-[#018934] text-[#feffff]'
+                ? 'bg-[#202940] border-[#018934] text-[#feffff]'
                 : 'bg-[#202940] border-[#2e3b5b] text-[#94a3b8] hover:text-[#feffff] hover:bg-[#283350]'
           }`}
           data-testid={`device-card-${device.id}`}
         >
-          {device.name}
+          {initials || device.name.slice(0, 2)}
         </button>
       );
     }
@@ -195,15 +202,7 @@ export function CatalogSidebar() {
           </span>
         </div>
 
-        {/* Third Line: Simple Example Command */}
-        {device.exampleCommand && (
-          <div className="text-[10px] font-mono bg-[#131927] px-2 py-1 rounded text-[#38bdf8] flex items-center gap-1.5 border border-[#2e3b5b]">
-            <span className="text-muted-foreground text-[9px]">Ejemplo:</span>
-            <code className="font-bold">{device.exampleCommand}</code>
-          </div>
-        )}
-
-        {/* Fourth Line: Description */}
+        {/* Third Line: Description (example command removed) */}
         <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
           {device.summary[state.locale] ?? device.summary.en}
         </p>
@@ -214,27 +213,31 @@ export function CatalogSidebar() {
   return (
     <aside
       data-testid="catalog-sidebar"
-      className="flex flex-col h-full bg-[#161f33] select-none border-r border-border overflow-hidden"
+      className={`flex flex-col h-full bg-[#161f33] select-none border-r border-border overflow-hidden transition-all duration-200 ${
+        isCollapsed ? 'w-16 min-w-[64px] max-w-[64px]' : 'w-72 min-w-[288px]'
+      }`}
     >
       {/* Sidebar search input + Collapse Toggle */}
-      <div className="p-3 border-b border-border flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
-          <Input
-            value={state.catalogSearchQuery}
-            onChange={handleSearchChange}
-            placeholder={intl.formatMessage({
-              id: 'sidebar.search.placeholder',
-              defaultMessage: 'Buscar hardware o KMS...'
-            })}
-            aria-label={intl.formatMessage({
-              id: 'sidebar.search.placeholder',
-              defaultMessage: 'Buscar hardware o KMS...'
-            })}
-            data-testid="catalog-search-input"
-            className="pl-8 h-8 text-xs bg-[#131927] border-[#2e3b5b]"
-          />
-        </div>
+      <div className={`p-3 border-b border-border flex items-center gap-2 ${isCollapsed ? 'justify-center p-2' : ''}`}>
+        {!isCollapsed && (
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+            <Input
+              value={state.catalogSearchQuery}
+              onChange={handleSearchChange}
+              placeholder={intl.formatMessage({
+                id: 'sidebar.search.placeholder',
+                defaultMessage: 'Buscar hardware o KMS...'
+              })}
+              aria-label={intl.formatMessage({
+                id: 'sidebar.search.placeholder',
+                defaultMessage: 'Buscar hardware o KMS...'
+              })}
+              data-testid="catalog-search-input"
+              className="pl-8 h-8 text-xs bg-[#131927] border-[#2e3b5b]"
+            />
+          </div>
+        )}
 
         {/* Collapse / Expand toggle button */}
         <Button
@@ -256,32 +259,34 @@ export function CatalogSidebar() {
       </div>
 
       {/* 3 Main Category filter tabs: HSMs, KMS, HSMaaS */}
-      <div
-        className="px-3 py-2 border-b border-border flex items-center gap-1.5 overflow-x-auto no-scrollbar bg-[#131927]"
-        data-testid="category-filters"
-      >
-        {MAIN_CATEGORIES.map((cat) => {
-          const isActive = activeCategory === cat.id;
-          const Icon = cat.icon;
-          return (
-            <button
-              key={cat.id}
-              type="button"
-              aria-pressed={isActive}
-              onClick={() => handleSelectCategory(cat.id)}
-              className={`px-2.5 py-1 rounded text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
-                isActive
-                  ? 'bg-[#283350] border-[#ff7800] text-[#feffff] shadow-xs'
-                  : 'bg-[#1a2236] border-transparent text-[#94a3b8] hover:bg-[#283350]/60 hover:text-[#feffff]'
-              }`}
-              data-testid={`category-filter-${cat.id.toLowerCase()}`}
-            >
-              <Icon className={`size-3.5 ${isActive ? 'text-[#ff7800]' : 'text-[#94a3b8]'}`} />
-              <span>{cat.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      {!isCollapsed && (
+        <div
+          className="px-3 py-2 border-b border-border flex items-center gap-1.5 overflow-x-auto no-scrollbar bg-[#131927]"
+          data-testid="category-filters"
+        >
+          {MAIN_CATEGORIES.map((cat) => {
+            const isActive = activeCategory === cat.id;
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => handleSelectCategory(cat.id)}
+                className={`px-2.5 py-1 rounded text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
+                  isActive
+                    ? 'bg-[#283350] border-[#ff7800] text-[#feffff] shadow-xs'
+                    : 'bg-[#1a2236] border-transparent text-[#94a3b8] hover:bg-[#283350]/60 hover:text-[#feffff]'
+                }`}
+                data-testid={`category-filter-${cat.id.toLowerCase()}`}
+              >
+                <Icon className={`size-3.5 ${isActive ? 'text-[#ff7800]' : 'text-[#94a3b8]'}`} />
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Catalog device list */}
       <div className="flex-1 overflow-y-auto p-2.5 space-y-2" data-testid="device-list">
@@ -298,8 +303,8 @@ export function CatalogSidebar() {
             {financialHsms.length > 0 && (
               <div className="space-y-1.5">
                 {!isCollapsed && (
-                  <div className="px-1 py-1 text-[11px] font-bold text-[#ff7800] uppercase tracking-wider flex items-center gap-1.5">
-                    <Cpu className="size-3 text-[#ff7800]" />
+                  <div className="px-1 py-1 text-[11px] font-bold text-[#38bdf8] uppercase tracking-wider flex items-center gap-1.5">
+                    <Cpu className="size-3 text-[#38bdf8]" />
                     <span>HSMs Financieros (Payment)</span>
                   </div>
                 )}

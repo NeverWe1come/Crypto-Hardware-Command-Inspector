@@ -36,8 +36,10 @@ import {
   EyeOff,
   ArrowRight,
   ArrowLeft,
-  Layers
+  Layers,
+  Info
 } from 'lucide-react';
+import { CommandInfoModal } from './CommandInfoModal';
 
 export interface AnalysisPanelProps {
   /** Target cryptographic hardware device specification */
@@ -112,21 +114,20 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
   }, [props.parseResult, activeCommand, deviceSpec, activeTab?.headerLength]);
 
   // 3. UI State: Accordion sections, Sensitive fields masking
+  // Sections: 'fields', 'frame-view', 'unified-diagnostics', 'notes'. ('general-info' starts collapsed by default)
   const [openSections, setOpenSections] = useState<Set<string>>(
     () =>
       new Set([
-        'general-info',
         'fields',
         'frame-view',
-        'error-code',
-        'diagnostics',
-        'expected-response',
+        'unified-diagnostics',
         'notes'
       ])
   );
 
   const [revealedFields, setRevealedFields] = useState<Set<string>>(new Set());
   const [revealAll, setRevealAll] = useState<boolean>(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false);
 
   // Reset sensitive field unmasking whenever active command switches
   useEffect(() => {
@@ -398,12 +399,24 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                   <span className="text-[11px] text-muted-foreground block font-medium">
                     Código de Comando
                   </span>
-                  <span
-                    data-testid="general-info-command-code"
-                    className="font-mono font-bold text-primary"
-                  >
-                    {parseResult?.commandCode ?? '-'}
-                  </span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsInfoModalOpen(true)}
+                      title="Ver información completa del comando"
+                      aria-label="Ver información completa del comando"
+                      className="p-1 rounded bg-[#0284c7]/20 text-[#38bdf8] hover:bg-[#0284c7]/40 hover:text-[#feffff] transition-colors"
+                      data-testid="command-info-button"
+                    >
+                      <Info className="size-3.5" />
+                    </button>
+                    <span
+                      data-testid="general-info-command-code"
+                      className="font-mono font-bold text-primary"
+                    >
+                      {parseResult?.commandCode ?? '-'}
+                    </span>
+                  </div>
                 </div>
 
                 <div>
@@ -740,257 +753,142 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
         </div>
 
         {/* ================================================================= */}
-        {/* Block 4: Response & Error Code Analysis                           */}
+        {/* Block 4: Unified Response Status & Diagnostics                    */}
         {/* ================================================================= */}
-        <div data-testid="accordion-item-error-code" className="flex flex-col">
+        <div data-testid="accordion-item-unified-diagnostics" className="flex flex-col">
           <button
             type="button"
-            id="accordion-trigger-error-code"
-            data-testid="accordion-trigger-error-code"
-            aria-expanded={openSections.has('error-code')}
-            aria-controls="accordion-content-error-code"
-            onClick={() => toggleSection('error-code')}
+            id="accordion-trigger-unified-diagnostics"
+            data-testid="accordion-trigger-unified-diagnostics"
+            aria-expanded={openSections.has('unified-diagnostics')}
+            aria-controls="accordion-content-unified-diagnostics"
+            onClick={() => toggleSection('unified-diagnostics')}
             className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/40 transition-colors select-none text-left"
           >
             <span>
-              <FormattedMessage
-                id="analysis.responseCode"
-                defaultMessage="Código de Respuesta / Error"
-              />
+              Estado de Respuesta y Diagnósticos
             </span>
-            {openSections.has('error-code') ? (
+            {openSections.has('unified-diagnostics') ? (
               <ChevronDown className="size-3.5 text-muted-foreground" />
             ) : (
               <ChevronRight className="size-3.5 text-muted-foreground" />
             )}
           </button>
 
-          {openSections.has('error-code') && (
+          {openSections.has('unified-diagnostics') && (
             <div
-              id="accordion-content-error-code"
-              data-testid="accordion-content-error-code"
-              className="p-3 text-xs bg-card/20 space-y-2"
+              id="accordion-content-unified-diagnostics"
+              data-testid="accordion-content-unified-diagnostics"
+              className="p-3 text-xs bg-card/20 space-y-3"
             >
-              {!isResponse ? (
-                <div
-                  data-testid="response-code-not-applicable"
-                  className="text-muted-foreground italic text-xs"
-                >
-                  <FormattedMessage
-                    id="analysis.responseCode.notApplicable"
-                    defaultMessage="Trama de petición (los códigos de respuesta aplican a respuestas)"
-                  />
-                </div>
-              ) : parseResult?.isErrorResponse ||
-                (parseResult?.errorCode && parseResult.errorCode !== '00') ? (
-                <div
-                  data-testid="error-code-container"
-                  className="space-y-2 p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      data-testid="error-code-badge"
-                      className="font-mono font-bold px-2 py-0.5 rounded bg-destructive text-destructive-foreground text-xs"
-                    >
-                      {parseResult.errorCode}
-                    </span>
-                    <h4
-                      data-testid="error-code-title"
-                      className="font-semibold text-xs text-foreground"
-                    >
-                      {resolveText(parseResult.errorSpec?.title) || 'Error de Hardware'}
-                    </h4>
-                  </div>
-                  <p
-                    data-testid="error-code-description"
-                    className="text-xs text-muted-foreground leading-relaxed"
-                  >
-                    {resolveText(parseResult.errorSpec?.description)}
-                  </p>
-                  {parseResult.errorSpec?.troubleshooting && (
-                    <div className="pt-1 border-t border-border/40">
-                      <span className="text-[11px] font-semibold text-foreground">
-                        Solución / Causa sugerida:{' '}
-                      </span>
-                      <p
-                        data-testid="error-code-troubleshooting"
-                        className="text-xs text-muted-foreground leading-relaxed mt-0.5"
-                      >
-                        {resolveText(parseResult.errorSpec.troubleshooting)}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div
-                  data-testid="response-success-container"
-                  className="flex items-center gap-2 p-3 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                >
-                  <CheckCircle2 className="size-4 shrink-0" />
-                  <div>
-                    <span className="font-mono font-bold text-xs mr-2">00</span>
-                    <span className="text-xs font-semibold">Operación Exitosa</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* ================================================================= */}
-        {/* Block 5: Diagnostics                                              */}
-        {/* ================================================================= */}
-        <div data-testid="accordion-item-diagnostics" className="flex flex-col">
-          <button
-            type="button"
-            id="accordion-trigger-diagnostics"
-            data-testid="accordion-trigger-diagnostics"
-            aria-expanded={openSections.has('diagnostics')}
-            aria-controls="accordion-content-diagnostics"
-            onClick={() => toggleSection('diagnostics')}
-            className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/40 transition-colors select-none text-left"
-          >
-            <span>
-              <FormattedMessage
-                id="analysis.diagnostics"
-                defaultMessage="Diagnósticos"
-              />
-            </span>
-            {openSections.has('diagnostics') ? (
-              <ChevronDown className="size-3.5 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="size-3.5 text-muted-foreground" />
-            )}
-          </button>
-
-          {openSections.has('diagnostics') && (
-            <div
-              id="accordion-content-diagnostics"
-              data-testid="accordion-content-diagnostics"
-              className="p-3 text-xs bg-card/20 space-y-2"
-            >
-              {parseResult && parseResult.diagnostics.length > 0 ? (
-                <div data-testid="diagnostics-list" className="space-y-1.5">
-                  {parseResult.diagnostics.map((diag, idx) => (
-                    <div
-                      key={`${diag.code}-${idx}`}
-                      data-testid={`diagnostic-item-${diag.code}`}
-                      className="flex items-start gap-2 p-2 rounded-md bg-muted/40 border border-border text-xs"
-                    >
-                      <span
-                        data-testid={`diagnostic-severity-${diag.code}`}
-                        className={`px-1.5 py-0.5 rounded text-[10px] uppercase font-bold shrink-0 ${
-                          diag.severity === 'error'
-                            ? 'bg-destructive/15 text-destructive'
-                            : diag.severity === 'warning'
-                              ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
-                              : 'bg-blue-500/15 text-blue-600 dark:text-blue-400'
-                        }`}
-                      >
-                        {diag.severity}
-                      </span>
-                      <span className="text-foreground leading-relaxed">
-                        {resolveText(diag.message) || diag.code}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div
-                  data-testid="diagnostics-empty"
-                  className="flex items-center gap-2 p-2.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs"
-                >
-                  <CheckCircle2 className="size-4 shrink-0" />
-                  <span>
-                    <FormattedMessage
-                      id="analysis.diagnostics.empty"
-                      defaultMessage="Trama válida sin anomalías"
-                    />
+              {/* Part 1: Response Status (Only shown if direction is response) */}
+              {isResponse && (
+                <div className="space-y-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    Resultado de la Operación
                   </span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* ================================================================= */}
-        {/* Block 6: Expected Response Template                               */}
-        {/* ================================================================= */}
-        <div data-testid="accordion-item-expected-response" className="flex flex-col">
-          <button
-            type="button"
-            id="accordion-trigger-expected-response"
-            data-testid="accordion-trigger-expected-response"
-            aria-expanded={openSections.has('expected-response')}
-            aria-controls="accordion-content-expected-response"
-            onClick={() => toggleSection('expected-response')}
-            className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/40 transition-colors select-none text-left"
-          >
-            <span>
-              <FormattedMessage
-                id="analysis.expectedResponse"
-                defaultMessage="Respuesta Esperada"
-              />
-            </span>
-            {openSections.has('expected-response') ? (
-              <ChevronDown className="size-3.5 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="size-3.5 text-muted-foreground" />
-            )}
-          </button>
-
-          {openSections.has('expected-response') && (
-            <div
-              id="accordion-content-expected-response"
-              data-testid="accordion-content-expected-response"
-              className="p-3 text-xs bg-card/20 space-y-2"
-            >
-              {isResponse ? (
-                <div
-                  data-testid="expected-response-not-applicable"
-                  className="text-muted-foreground italic text-xs"
-                >
-                  <FormattedMessage
-                    id="analysis.expectedResponse.notApplicable"
-                    defaultMessage="Esta trama ya es una respuesta"
-                  />
-                </div>
-              ) : (
-                <div
-                  data-testid="expected-response-container"
-                  className="space-y-2 p-3 rounded-md bg-muted/30 border border-border"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      data-testid="expected-response-code"
-                      className="font-mono font-bold px-2 py-0.5 rounded bg-primary/10 text-primary text-xs"
+                  {parseResult?.isErrorResponse ||
+                  (parseResult?.errorCode && parseResult.errorCode !== '00') ? (
+                    <div
+                      data-testid="error-code-container"
+                      className="space-y-2 p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive"
                     >
-                      {parseResult?.pairedCommand?.code ||
-                        parseResult?.matchedCommand?.pairedCode ||
-                        '-'}
-                    </span>
-                    <span
-                      data-testid="expected-response-title"
-                      className="font-semibold text-xs text-foreground"
+                      <div className="flex items-center gap-2">
+                        <span
+                          data-testid="error-code-badge"
+                          className="font-mono font-bold px-2 py-0.5 rounded bg-destructive text-destructive-foreground text-xs"
+                        >
+                          {parseResult.errorCode}
+                        </span>
+                        <h4
+                          data-testid="error-code-title"
+                          className="font-semibold text-xs text-foreground"
+                        >
+                          {resolveText(parseResult.errorSpec?.title) || 'Error de Hardware'}
+                        </h4>
+                      </div>
+                      <p
+                        data-testid="error-code-description"
+                        className="text-xs text-muted-foreground leading-relaxed"
+                      >
+                        {resolveText(parseResult.errorSpec?.description)}
+                      </p>
+                      {parseResult.errorSpec?.troubleshooting && (
+                        <div className="pt-1 border-t border-border/40">
+                          <span className="text-[11px] font-semibold text-foreground">
+                            Solución / Causa sugerida:{' '}
+                          </span>
+                          <p
+                            data-testid="error-code-troubleshooting"
+                            className="text-xs text-muted-foreground leading-relaxed mt-0.5"
+                          >
+                            {resolveText(parseResult.errorSpec.troubleshooting)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div
+                      data-testid="response-success-container"
+                      className="flex items-center gap-2 p-3 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
                     >
-                      {resolveText(parseResult?.pairedCommand?.name) ||
-                        resolveText(parseResult?.pairedCommand?.summary) ||
-                        'Respuesta correspondiente esperada'}
-                    </span>
-                  </div>
-                  {parseResult?.pairedCommand?.description && (
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      {resolveText(parseResult.pairedCommand.description)}
-                    </p>
+                      <CheckCircle2 className="size-4 shrink-0" />
+                      <div>
+                        <span className="font-mono font-bold text-xs mr-2">00</span>
+                        <span className="text-xs font-semibold">Operación Exitosa</span>
+                      </div>
+                    </div>
                   )}
                 </div>
               )}
+
+              {/* Part 2: Frame Diagnostics (Validation Checks) */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                  Diagnósticos de Trama
+                </span>
+                {parseResult && parseResult.diagnostics.length > 0 ? (
+                  <div data-testid="diagnostics-list" className="space-y-1.5">
+                    {parseResult.diagnostics.map((diag, idx) => (
+                      <div
+                        key={`${diag.code}-${idx}`}
+                        data-testid={`diagnostic-item-${diag.code}`}
+                        className="flex items-start gap-2 p-2 rounded-md bg-muted/40 border border-border text-xs"
+                      >
+                        <span
+                          data-testid={`diagnostic-severity-${diag.code}`}
+                          className={`px-1.5 py-0.5 rounded text-[10px] uppercase font-bold shrink-0 ${
+                            diag.severity === 'error'
+                              ? 'bg-destructive/15 text-destructive'
+                              : diag.severity === 'warning'
+                                ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                                : 'bg-blue-500/15 text-blue-600 dark:text-blue-400'
+                          }`}
+                        >
+                          {diag.severity}
+                        </span>
+                        <span className="text-foreground leading-relaxed">
+                          {resolveText(diag.message) || diag.code}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    data-testid="diagnostics-empty"
+                    className="flex items-center gap-2 p-2.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs"
+                  >
+                    <CheckCircle2 className="size-4 shrink-0" />
+                    <span>Trama válida sin anomalías</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
 
         {/* ================================================================= */}
-        {/* Block 7: Manufacturer Notes & Firmware Particularities            */}
+        {/* Block 5: Manufacturer Notes with Official Colors                  */}
         {/* ================================================================= */}
         <div data-testid="accordion-item-notes" className="flex flex-col">
           <button
@@ -1019,7 +917,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
             <div
               id="accordion-content-notes"
               data-testid="accordion-content-notes"
-              className="p-3 text-xs bg-card/20 space-y-2"
+              className="p-3 text-xs bg-card/20 space-y-2.5"
             >
               {!combinedNotes ? (
                 <p className="text-muted-foreground italic text-xs">
@@ -1031,15 +929,95 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
               ) : (
                 <div
                   data-testid="manufacturer-notes-container"
-                  className="p-3 bg-muted/20 border border-border rounded-md text-xs leading-relaxed whitespace-pre-line text-muted-foreground"
+                  className="space-y-2 text-xs leading-relaxed"
                 >
-                  {combinedNotes}
+                  {combinedNotes.split('\n\n').map((noteBlock, nIdx) => {
+                    const isCaution = noteBlock.includes('[CAUTION]') || noteBlock.startsWith('CAUTION:');
+                    const isImportant = noteBlock.includes('[IMPORTANT]') || noteBlock.startsWith('IMPORTANT:');
+                    const isTip = noteBlock.includes('[TIP]') || noteBlock.startsWith('TIP:');
+                    const isNote = noteBlock.includes('[NOTE]') || noteBlock.startsWith('NOTE:');
+
+                    const cleanText = noteBlock
+                      .replace(/^\[(CAUTION|IMPORTANT|TIP|NOTE)\]\s*/g, '')
+                      .trim();
+
+                    if (isCaution) {
+                      return (
+                        <div
+                          key={nIdx}
+                          className="p-3 rounded-md bg-[#ff7800]/10 border-l-4 border-l-[#ff7800] border border-[#ff7800]/30 text-xs text-[#feffff]"
+                        >
+                          <strong className="text-[#ff7800] block mb-1 uppercase font-bold text-[11px] tracking-wider">
+                            CAUTION
+                          </strong>
+                          <span>{cleanText}</span>
+                        </div>
+                      );
+                    }
+                    if (isImportant) {
+                      return (
+                        <div
+                          key={nIdx}
+                          className="p-3 rounded-md bg-[#ef4444]/10 border-l-4 border-l-[#ef4444] border border-[#ef4444]/30 text-xs text-[#feffff]"
+                        >
+                          <strong className="text-[#ef4444] block mb-1 uppercase font-bold text-[11px] tracking-wider">
+                            IMPORTANT
+                          </strong>
+                          <span>{cleanText}</span>
+                        </div>
+                      );
+                    }
+                    if (isTip) {
+                      return (
+                        <div
+                          key={nIdx}
+                          className="p-3 rounded-md bg-[#018934]/10 border-l-4 border-l-[#018934] border border-[#018934]/30 text-xs text-[#feffff]"
+                        >
+                          <strong className="text-[#0da845] block mb-1 uppercase font-bold text-[11px] tracking-wider">
+                            TIP
+                          </strong>
+                          <span>{cleanText}</span>
+                        </div>
+                      );
+                    }
+                    if (isNote) {
+                      return (
+                        <div
+                          key={nIdx}
+                          className="p-3 rounded-md bg-[#0284c7]/10 border-l-4 border-l-[#0284c7] border border-[#0284c7]/30 text-xs text-[#feffff]"
+                        >
+                          <strong className="text-[#38bdf8] block mb-1 uppercase font-bold text-[11px] tracking-wider">
+                            NOTE
+                          </strong>
+                          <span>{cleanText}</span>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={nIdx}
+                        className="p-3 bg-muted/20 border border-border rounded-md text-xs leading-relaxed whitespace-pre-line text-muted-foreground"
+                      >
+                        {cleanText}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
           )}
         </div>
       </div>
+
+      {/* Command Complete Info Modal */}
+      <CommandInfoModal
+        isOpen={isInfoModalOpen}
+        onClose={() => setIsInfoModalOpen(false)}
+        commandSpec={parseResult?.matchedCommand}
+        deviceSpec={deviceSpec}
+        locale={locale}
+      />
     </div>
   );
 }

@@ -402,8 +402,8 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
   // 3. Block 1: General Info & Direction Mismatch Warning
   // =========================================================================
   describe('Block 1: General Information', () => {
-    it('renders device name, vendor, firmware version, and command code', () => {
-      renderWithIntl(
+    it('renders device name, vendor, firmware version, and command code when general info is expanded', async () => {
+      const { user } = renderWithIntl(
         <AnalysisPanel
           deviceSpec={atallaAt1000Spec}
           tab={{
@@ -431,7 +431,9 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       );
 
       // Accordion item for General Info
-      expect(screen.getByTestId('accordion-item-general-info')).toBeInTheDocument();
+      const generalTrigger = screen.getByTestId('accordion-trigger-general-info');
+      expect(generalTrigger).toBeInTheDocument();
+      await user.click(generalTrigger);
 
       // Device info
       const deviceEl = screen.getByTestId('general-info-device');
@@ -451,8 +453,8 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(dirEl).toHaveTextContent(/Petición/i);
     });
 
-    it('renders command summary, description, and official manufacturer manual citation', () => {
-      renderWithIntl(
+    it('renders command summary, description, and official manufacturer manual citation', async () => {
+      const { user } = renderWithIntl(
         <AnalysisPanel
           deviceSpec={atallaAt1000Spec}
           parseResult={atallaParsedRequest}
@@ -465,6 +467,8 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
         />
       );
 
+      await user.click(screen.getByTestId('accordion-trigger-general-info'));
+
       const descEl = screen.getByTestId('general-info-description');
       expect(descEl).toHaveTextContent(/Descifra el PIN block/i);
 
@@ -472,7 +476,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(sourceEl).toHaveTextContent(/Atalla AT1000 Host Command Reference Manual/i);
     });
 
-    it('renders warning alert when detected direction does NOT match expected direction (mismatch)', () => {
+    it('renders warning alert when detected direction does NOT match expected direction (mismatch)', async () => {
       // Command raw is a request '<31#1#...#>' but configured with direction 'response'
       const mismatchedParsed: ParseResult = parseCommand(
         atallaRawRequest,
@@ -483,7 +487,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
         }
       );
 
-      renderWithIntl(
+      const { user } = renderWithIntl(
         <AnalysisPanel
           deviceSpec={atallaAt1000Spec}
           parseResult={mismatchedParsed}
@@ -495,6 +499,8 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
           }}
         />
       );
+
+      await user.click(screen.getByTestId('accordion-trigger-general-info'));
 
       // Warning alert / badge should appear
       const warningAlert = screen.getByTestId('direction-mismatch-warning');
@@ -992,7 +998,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(successContainer).toHaveTextContent(/Operación Exitosa|Éxito|Success/i);
     });
 
-    it('displays non-applicable message when active command is a request frame', () => {
+    it('does not display response outcome when active command is a request frame', () => {
       renderWithIntl(
         <AnalysisPanel
           deviceSpec={thalesPayshield10kSpec}
@@ -1006,9 +1012,8 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
         />
       );
 
-      const notApplicable = screen.getByTestId('response-code-not-applicable');
-      expect(notApplicable).toBeInTheDocument();
-      expect(notApplicable).toHaveTextContent(/petición/i);
+      expect(screen.queryByTestId('response-success-container')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('error-code-container')).not.toBeInTheDocument();
     });
   });
 
@@ -1064,54 +1069,6 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       const emptyDiag = screen.getByTestId('diagnostics-empty');
       expect(emptyDiag).toBeInTheDocument();
       expect(emptyDiag).toHaveTextContent(/Trama válida sin anomalías/i);
-    });
-  });
-
-  // =========================================================================
-  // 8. Block 6: Expected Response Template
-  // =========================================================================
-  describe('Block 6: Expected Response Template', () => {
-    it('renders expected response template with paired command code for request frames', () => {
-      renderWithIntl(
-        <AnalysisPanel
-          deviceSpec={thalesPayshield10kSpec}
-          parseResult={thalesParsedRequest}
-          activeCommand={{
-            id: 'c_thales_req',
-            raw: thalesRawRequest,
-            version: '2.3',
-            direction: 'request'
-          }}
-        />
-      );
-
-      const container = screen.getByTestId('expected-response-container');
-      expect(container).toBeInTheDocument();
-
-      const pairedCodeBadge = screen.getByTestId('expected-response-code');
-      expect(pairedCodeBadge).toHaveTextContent('ND');
-
-      const pairedTitle = screen.getByTestId('expected-response-title');
-      expect(pairedTitle).toHaveTextContent(/Diagnóstico del HSM/i);
-    });
-
-    it('displays note that frame is already a response when active command is a response', () => {
-      renderWithIntl(
-        <AnalysisPanel
-          deviceSpec={thalesPayshield10kSpec}
-          parseResult={thalesParsedSuccessResponse}
-          activeCommand={{
-            id: 'c_thales_res',
-            raw: thalesRawSuccessResponse,
-            version: '2.3',
-            direction: 'response'
-          }}
-        />
-      );
-
-      const notApplicable = screen.getByTestId('expected-response-not-applicable');
-      expect(notApplicable).toBeInTheDocument();
-      expect(notApplicable).toHaveTextContent(/Esta trama ya es una respuesta/i);
     });
   });
 
@@ -1178,9 +1135,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(screen.getByTestId('accordion-trigger-general-info')).toHaveTextContent(/Información General/i);
       expect(screen.getByTestId('accordion-trigger-fields')).toHaveTextContent(/Desglose de Parámetros/i);
       expect(screen.getByTestId('accordion-trigger-frame-view')).toHaveTextContent(/Vista de Trama/i);
-      expect(screen.getByTestId('accordion-trigger-diagnostics')).toHaveTextContent(/Diagnósticos/i);
-      expect(screen.getByTestId('accordion-trigger-error-code')).toHaveTextContent(/Código de Respuesta \/ Error/i);
-      expect(screen.getByTestId('accordion-trigger-expected-response')).toHaveTextContent(/Respuesta Esperada/i);
+      expect(screen.getByTestId('accordion-trigger-unified-diagnostics')).toHaveTextContent(/Estado de Respuesta y Diagnósticos/i);
       expect(screen.getByTestId('accordion-trigger-notes')).toHaveTextContent(/Notas del Fabricante/i);
     });
 
@@ -1198,9 +1153,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(screen.getByTestId('accordion-trigger-general-info')).toHaveTextContent(/General Information/i);
       expect(screen.getByTestId('accordion-trigger-fields')).toHaveTextContent(/Parameter Breakdown/i);
       expect(screen.getByTestId('accordion-trigger-frame-view')).toHaveTextContent(/Frame View/i);
-      expect(screen.getByTestId('accordion-trigger-diagnostics')).toHaveTextContent(/Diagnostics/i);
-      expect(screen.getByTestId('accordion-trigger-error-code')).toHaveTextContent(/Response \/ Error Code/i);
-      expect(screen.getByTestId('accordion-trigger-expected-response')).toHaveTextContent(/Expected Response/i);
+      expect(screen.getByTestId('accordion-trigger-unified-diagnostics')).toHaveTextContent(/Estado de Respuesta y Diagnósticos|Response Status/i);
       expect(screen.getByTestId('accordion-trigger-notes')).toHaveTextContent(/Manufacturer Notes/i);
     });
   });
@@ -1248,15 +1201,12 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
         'general-info',
         'fields',
         'frame-view',
-        'error-code',
-        'diagnostics',
-        'expected-response',
+        'unified-diagnostics',
         'notes'
       ];
 
       sections.forEach((sec) => {
         const trigger = screen.getByTestId(`accordion-trigger-${sec}`);
-        expect(trigger).toHaveAttribute('aria-expanded', 'true');
         expect(trigger).toHaveAttribute('aria-controls', `accordion-content-${sec}`);
       });
     });
@@ -1266,16 +1216,19 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
   // 13. Integration with WorkspaceProvider
   // =========================================================================
   describe('Integration with WorkspaceProvider State', () => {
-    it('automatically resolves active command, deviceSpec, and parseResult from workspace state when rendered with no props', () => {
+    it('automatically resolves active command, deviceSpec, and parseResult from workspace state when rendered with no props', async () => {
       const state: Partial<WorkspaceState> = {
         activeTabId: mockTab.id,
         tabs: [mockTab]
       };
 
-      renderWithWorkspace(state);
+      const { user } = renderWithWorkspace(state);
 
       // Panel mounts
       expect(screen.getByTestId('analysis-panel')).toBeInTheDocument();
+
+      // Expand general info
+      await user.click(screen.getByTestId('accordion-trigger-general-info'));
 
       // Resolves device info from state
       expect(screen.getByTestId('general-info-device')).toHaveTextContent(/Thales payShield 10K/i);

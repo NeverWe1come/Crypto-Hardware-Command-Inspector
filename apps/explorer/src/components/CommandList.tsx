@@ -464,25 +464,6 @@ export function CommandList(props: CommandListProps) {
           </div>
         </DndContext>
       </div>
-
-      {/* Footer toolbar: Add command button */}
-      <div className="p-3 border-t border-border bg-card/60 flex items-center justify-between shrink-0">
-        <Button
-          type="button"
-          data-testid="add-command-button"
-          onClick={handleAddCommand}
-          size="sm"
-          className="h-8 text-xs gap-1.5"
-        >
-          <Plus className="size-3.5" />
-          <FormattedMessage id="editor.addCommand" defaultMessage="Nuevo comando" />
-        </Button>
-
-        <span className="text-[11px] text-muted-foreground font-mono">
-          {currentTab.commands.length}{' '}
-          {currentTab.commands.length === 1 ? 'comando' : 'comandos'}
-        </span>
-      </div>
     </div>
   );
 }

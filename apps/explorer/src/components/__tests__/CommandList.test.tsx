@@ -174,20 +174,7 @@ describe('Phase 4: CommandList Component', () => {
     });
   });
 
-  describe('Lifecycle Action Buttons: Add, Duplicate, Delete', () => {
-    it('triggers onAddCommand when clicking the "+ Nuevo comando" button', async () => {
-      const onAdd = vi.fn();
-      const { user } = renderWithIntl(
-        <CommandList tab={mockTab} onAddCommand={onAdd} />
-      );
-
-      const addBtn = screen.getByTestId('add-command-button');
-      expect(addBtn).toBeInTheDocument();
-
-      await user.click(addBtn);
-      expect(onAdd).toHaveBeenCalledTimes(1);
-    });
-
+  describe('Lifecycle Action Buttons: Duplicate and Delete', () => {
     it('triggers onDuplicateCommand with the command ID when clicking duplicate button', async () => {
       const onDuplicate = vi.fn();
       const { user } = renderWithIntl(
@@ -320,9 +307,9 @@ describe('Phase 4: CommandList Component', () => {
       expect(screen.getByTestId('command-item-int_cmd_1')).toBeInTheDocument();
       expect(screen.getByTestId('command-ordinal-int_cmd_1')).toHaveTextContent('#1');
 
-      // Click add command button in integrated context
-      const addBtn = screen.getByTestId('add-command-button');
-      await user.click(addBtn);
+      // Duplicate command in integrated context
+      const dupBtn = screen.getByTestId('command-duplicate-int_cmd_1');
+      await user.click(dupBtn);
 
       // Now 2 commands should appear in the DOM
       const items = screen.getAllByTestId(/^command-item-/);

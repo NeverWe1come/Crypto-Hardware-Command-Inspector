@@ -20,8 +20,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 101: Configure HSM Option"
     },
     "description": {
-      "es": "Ejecuta la operación de Configure HSM Option en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Configure HSM Option operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Configure HSM Option en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Configure HSM Option operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Administración y Opciones",
@@ -48,6 +48,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: Enabling on option 44 degrades performance.",
+        "en": "[CAUTION] CAUTION: Enabling on option 44 degrades performance."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 101 (Configure HSM Option)"
   },
   {
@@ -64,8 +70,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 102: Command Monitoring"
     },
     "description": {
-      "es": "Ejecuta la operación de Command Monitoring en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Command Monitoring operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Command Monitoring en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Command Monitoring operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -92,6 +98,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the serial port and the TCPIP management ports.",
+        "en": "[NOTE] NOTE: This command is only allowed on the serial port and the TCPIP management ports."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 102 (Command Monitoring)"
   },
   {
@@ -108,8 +120,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 105: Install a license"
     },
     "description": {
-      "es": "Ejecuta la operación de Install a license en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Install a license operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Install a license en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Install a license operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Administración y Opciones",
@@ -136,6 +148,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This example does not enable any additional functionality.",
+        "en": "[NOTE] NOTE: This example does not enable any additional functionality."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 105 (Install a license)"
   },
   {
@@ -152,8 +170,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 106: Define Temporary Serial Number"
     },
     "description": {
-      "es": "Ejecuta la operación de Define Temporary Serial Number en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Define Temporary Serial Number operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Define Temporary Serial Number en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Define Temporary Serial Number operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Administración y Opciones",
@@ -180,6 +198,52 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is deprecated. Use the SCA Set Temporary Serial Number feature to install a temporary",
+        "en": "[NOTE] NOTE: This command is deprecated. Use the SCA Set Temporary Serial Number feature to install a temporary"
+      },
+      {
+        "es": "[NOTE] serial number.",
+        "en": "[NOTE] serial number."
+      },
+      {
+        "es": "[CAUTION] CAUTION: This temporary serial number is valid for 120 hours (5 days) from the time that the temporary serial",
+        "en": "[CAUTION] CAUTION: This temporary serial number is valid for 120 hours (5 days) from the time that the temporary serial"
+      },
+      {
+        "es": "[CAUTION] number was set in the HSM. For example, if the HSM receives the temporary serial number on Wednesday at",
+        "en": "[CAUTION] number was set in the HSM. For example, if the HSM receives the temporary serial number on Wednesday at"
+      },
+      {
+        "es": "[CAUTION] 6:30 AM, the temporary serial number will expire at 6:00AM on Monday. If the HSM does not receive a",
+        "en": "[CAUTION] 6:30 AM, the temporary serial number will expire at 6:00AM on Monday. If the HSM does not receive a"
+      },
+      {
+        "es": "[CAUTION] command 105 based on its permanent serial number within 120 hours, all customer-specific",
+        "en": "[CAUTION] command 105 based on its permanent serial number within 120 hours, all customer-specific"
+      },
+      {
+        "es": "[CAUTION] commands and options are disabled. To prevent this from happening, you must perform these two steps",
+        "en": "[CAUTION] commands and options are disabled. To prevent this from happening, you must perform these two steps"
+      },
+      {
+        "es": "[CAUTION] within this 120 hour time period:",
+        "en": "[CAUTION] within this 120 hour time period:"
+      },
+      {
+        "es": "[CAUTION] 1) Contact Atalla technical support and provide the serial numbers of the failed and replacement HSM. They",
+        "en": "[CAUTION] 1) Contact Atalla technical support and provide the serial numbers of the failed and replacement HSM. They"
+      },
+      {
+        "es": "[CAUTION] will generate a new command 105 based on the replacement HSM’s serial number.",
+        "en": "[CAUTION] will generate a new command 105 based on the replacement HSM’s serial number."
+      },
+      {
+        "es": "[CAUTION] 2) Send this new command 105 to the HSM.",
+        "en": "[CAUTION] 2) Send this new command 105 to the HSM."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 106 (Define Temporary Serial Number)"
   },
   {
@@ -196,8 +260,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 107: Confirm Temporary Serial Number"
     },
     "description": {
-      "es": "Ejecuta la operación de Confirm Temporary Serial Number en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Confirm Temporary Serial Number operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Confirm Temporary Serial Number en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Confirm Temporary Serial Number operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Administración y Opciones",
@@ -224,6 +288,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is deprecated. Use the SCA Set Temporary Serial Number feature to install a temporary",
+        "en": "[NOTE] NOTE: This command is deprecated. Use the SCA Set Temporary Serial Number feature to install a temporary"
+      },
+      {
+        "es": "[NOTE] serial number.",
+        "en": "[NOTE] serial number."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 107 (Confirm Temporary Serial Number)"
   },
   {
@@ -240,8 +314,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 108: Define Security Policy"
     },
     "description": {
-      "es": "Ejecuta la operación de Define Security Policy en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Define Security Policy operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Define Security Policy en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Define Security Policy operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Administración y Opciones",
@@ -268,6 +342,28 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is deprecated. Use the SCA HSM Configuration Management feature to configure the",
+        "en": "[NOTE] NOTE: This command is deprecated. Use the SCA HSM Configuration Management feature to configure the"
+      },
+      {
+        "es": "[NOTE] HSM security policy.",
+        "en": "[NOTE] HSM security policy."
+      },
+      {
+        "es": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of",
+        "en": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of"
+      },
+      {
+        "es": "[CAUTION] processing the command. The command <9A#COUNT#> provides the current count value for all commands in",
+        "en": "[CAUTION] processing the command. The command <9A#COUNT#> provides the current count value for all commands in"
+      },
+      {
+        "es": "[CAUTION] the command count table.",
+        "en": "[CAUTION] the command count table."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 108 (Define Security Policy)"
   },
   {
@@ -284,8 +380,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 109: Confirm Security Policy"
     },
     "description": {
-      "es": "Ejecuta la operación de Confirm Security Policy en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Confirm Security Policy operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Confirm Security Policy en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Confirm Security Policy operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Administración y Opciones",
@@ -312,6 +408,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is deprecated. Use the SCA HSM Configuration Management feature to configure the",
+        "en": "[NOTE] NOTE: This command is deprecated. Use the SCA HSM Configuration Management feature to configure the"
+      },
+      {
+        "es": "[NOTE] HSM security policy.",
+        "en": "[NOTE] HSM security policy."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 109 (Confirm Security Policy)"
   },
   {
@@ -328,8 +434,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 11: Export a Working Key in AKB Format"
     },
     "description": {
-      "es": "Ejecuta la operación de Export a Working Key in AKB Format en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Export a Working Key in AKB Format operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Export a Working Key in AKB Format en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Export a Working Key in AKB Format operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -372,8 +478,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1100: HSM Extended Software Version"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Extended Software Version en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Extended Software Version operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Extended Software Version en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Extended Software Version operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -416,8 +522,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1101: HSM Software Version"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Software Version en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Software Version operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Software Version en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Software Version operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -460,8 +566,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1102: HSM Domain Information"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Domain Information en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Domain Information operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Domain Information en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Domain Information operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -488,6 +594,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the serial port and the TCPIP management ports.",
+        "en": "[NOTE] NOTE: This command is only allowed on the serial port and the TCPIP management ports."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1102 (HSM Domain Information)"
   },
   {
@@ -504,8 +616,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1104: HSM Temporary Serial Number Information"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Temporary Serial Number Information en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Temporary Serial Number Information operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Temporary Serial Number Information en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Temporary Serial Number Information operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -548,8 +660,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1105: Install a License in all Domains"
     },
     "description": {
-      "es": "Ejecuta la operación de Install a License in all Domains en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Install a License in all Domains operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Install a License in all Domains en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Install a License in all Domains operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Administración y Opciones",
@@ -576,6 +688,20 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: After sending the command 1105 to the HSM, use the SCA to enable the customer-specific commands",
+        "en": "[NOTE] NOTE: After sending the command 1105 to the HSM, use the SCA to enable the customer-specific commands"
+      },
+      {
+        "es": "[NOTE] and options in each of the Domains. This command must be sent to Domain0.",
+        "en": "[NOTE] and options in each of the Domains. This command must be sent to Domain0."
+      },
+      {
+        "es": "[NOTE] NOTE: This is not a valid example.",
+        "en": "[NOTE] NOTE: This is not a valid example."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1105 (Install a License in all Domains)"
   },
   {
@@ -592,8 +718,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1110: HSM System Configuration Information"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM System Configuration Information en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM System Configuration Information operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM System Configuration Information en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM System Configuration Information operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -636,8 +762,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1111: HSM System Date and Time"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM System Date and Time en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM System Date and Time operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM System Date and Time en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM System Date and Time operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -680,8 +806,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1113: HSM Average CPU Utilization"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Average CPU Utilization en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Average CPU Utilization operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Average CPU Utilization en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Average CPU Utilization operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -724,8 +850,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1120: HSM System Information"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM System Information en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM System Information operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM System Information en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM System Information operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -768,8 +894,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 113: Change 3DES Encryption Mode"
     },
     "description": {
-      "es": "Ejecuta la operación de Change 3DES Encryption Mode en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Change 3DES Encryption Mode operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Change 3DES Encryption Mode en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Change 3DES Encryption Mode operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -812,8 +938,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 117: Import TR-31 Formatted Working Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Import TR-31 Formatted Working Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import TR-31 Formatted Working Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import TR-31 Formatted Working Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import TR-31 Formatted Working Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -840,6 +966,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: For new applications, and applications required to import a key with optional block identifiers, Utimaco",
+        "en": "[NOTE] NOTE: For new applications, and applications required to import a key with optional block identifiers, Utimaco"
+      },
+      {
+        "es": "[NOTE] recommends the use of command 119 instead of this command.",
+        "en": "[NOTE] recommends the use of command 119 instead of this command."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 117 (Import TR-31 Formatted Working Key)"
   },
   {
@@ -856,8 +992,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 118: Export Working Key in TR-31 Format"
     },
     "description": {
-      "es": "Ejecuta la operación de Export Working Key in TR-31 Format en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Export Working Key in TR-31 Format operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Export Working Key in TR-31 Format en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Export Working Key in TR-31 Format operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -884,6 +1020,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: For new applications, and existing applications which are required to export a key with optional block",
+        "en": "[NOTE] NOTE: For new applications, and existing applications which are required to export a key with optional block"
+      },
+      {
+        "es": "[NOTE] identifiers, Utimaco recommends the use of command 11A instead of this command.",
+        "en": "[NOTE] identifiers, Utimaco recommends the use of command 11A instead of this command."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 118 (Export Working Key in TR-31 Format)"
   },
   {
@@ -900,8 +1046,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 119: Import TR-31 Formatted Working Key, versions A, B or C"
     },
     "description": {
-      "es": "Ejecuta la operación de Import TR-31 Formatted Working Key, versions A, B or C en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import TR-31 Formatted Working Key, versions A, B or C operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import TR-31 Formatted Working Key, versions A, B or C en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import TR-31 Formatted Working Key, versions A, B or C operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -944,8 +1090,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 11A: Export Working Key in TR-31 Format, versions A, B or C"
     },
     "description": {
-      "es": "Ejecuta la operación de Export Working Key in TR-31 Format, versions A, B or C en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Export Working Key in TR-31 Format, versions A, B or C operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Export Working Key in TR-31 Format, versions A, B or C en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Export Working Key in TR-31 Format, versions A, B or C operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -988,8 +1134,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 11B: Import Non-AKB Formatted Working Keys"
     },
     "description": {
-      "es": "Ejecuta la operación de Import Non-AKB Formatted Working Keys en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import Non-AKB Formatted Working Keys operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import Non-AKB Formatted Working Keys en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import Non-AKB Formatted Working Keys operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1032,8 +1178,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 11C: Convert Atalla DES Key to 3DES or AMK AKB Format"
     },
     "description": {
-      "es": "Ejecuta la operación de Convert Atalla DES Key to 3DES or AMK AKB Format en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Convert Atalla DES Key to 3DES or AMK AKB Format operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Convert Atalla DES Key to 3DES or AMK AKB Format en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Convert Atalla DES Key to 3DES or AMK AKB Format operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1060,6 +1206,20 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of",
+        "en": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of"
+      },
+      {
+        "es": "[CAUTION] processing the command. The command <9A#COUNT#> will return the current count value for all commands",
+        "en": "[CAUTION] processing the command. The command <9A#COUNT#> will return the current count value for all commands"
+      },
+      {
+        "es": "[CAUTION] in the command count table.",
+        "en": "[CAUTION] in the command count table."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 11C (Convert Atalla DES Key to 3DES or AMK AKB Format)"
   },
   {
@@ -1076,8 +1236,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 11D: Generate a Working Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate a Working Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate a Working Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate a Working Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate a Working Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1120,8 +1280,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 11E: Generate Atalla 2x2 PVN"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Atalla 2x2 PVN en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Atalla 2x2 PVN operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Atalla 2x2 PVN en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Atalla 2x2 PVN operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -1148,6 +1308,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure.",
+        "en": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 11E (Generate Atalla 2x2 PVN)"
   },
   {
@@ -1164,8 +1330,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 120: Generate Asymmetric Key Pair"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Asymmetric Key Pair en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Asymmetric Key Pair operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Asymmetric Key Pair en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Asymmetric Key Pair operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1208,8 +1374,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1200: HSM Compliance Information"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Compliance Information en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Compliance Information operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Compliance Information en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Compliance Information operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -1252,8 +1418,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1204: HSM Log Signing Key Certificate"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Log Signing Key Certificate en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Log Signing Key Certificate operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Log Signing Key Certificate en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Log Signing Key Certificate operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1280,6 +1446,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is only available when the HSM is operating in PCI-HSM mode.",
+        "en": "[NOTE] NOTE: This command is only available when the HSM is operating in PCI-HSM mode."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1204 (HSM Log Signing Key Certificate)"
   },
   {
@@ -1296,8 +1468,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1205: Verify Audit Log Record"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Audit Log Record en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Audit Log Record operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Audit Log Record en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Audit Log Record operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -1324,6 +1496,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is only available when the HSM is operating in PCI-HSM mode.",
+        "en": "[NOTE] NOTE: This command is only available when the HSM is operating in PCI-HSM mode."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1205 (Verify Audit Log Record)"
   },
   {
@@ -1340,8 +1518,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 121: Load RSA Key into RSA Key Table"
     },
     "description": {
-      "es": "Ejecuta la operación de Load RSA Key into RSA Key Table en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Load RSA Key into RSA Key Table operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Load RSA Key into RSA Key Table en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Load RSA Key into RSA Key Table operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1384,8 +1562,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1216: HSM Battery Status"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Battery Status en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Battery Status operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Battery Status en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Battery Status operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -1428,8 +1606,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 122: Generate RSA-AKB for Root Public Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate RSA-AKB for Root Public Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate RSA-AKB for Root Public Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate RSA-AKB for Root Public Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate RSA-AKB for Root Public Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1456,6 +1634,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is deprecated, new applications should use command 12A.",
+        "en": "[NOTE] NOTE: This command is deprecated, new applications should use command 12A."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 122 (Generate RSA-AKB for Root Public Key)"
   },
   {
@@ -1472,8 +1656,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1221: HSM IP Address"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM IP Address en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM IP Address operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM IP Address en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM IP Address operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -1516,8 +1700,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1222: HSM Port Numbers"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Port Numbers en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Port Numbers operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Port Numbers en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Port Numbers operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -1560,8 +1744,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1223: HSM TCP/IP Socket Information"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM TCP/IP Socket Information en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM TCP/IP Socket Information operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM TCP/IP Socket Information en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM TCP/IP Socket Information operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -1604,8 +1788,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1224: HSM Remote Connections"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Remote Connections en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Remote Connections operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Remote Connections en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Remote Connections operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -1648,8 +1832,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1225: HSM MAC Addresses"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM MAC Addresses en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM MAC Addresses operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM MAC Addresses en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM MAC Addresses operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -1692,8 +1876,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1226: HSM Key Check Digits"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Key Check Digits en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Key Check Digits operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Key Check Digits en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Key Check Digits operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1736,8 +1920,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1227: Reset HSM to Factory State"
     },
     "description": {
-      "es": "Ejecuta la operación de Reset HSM to Factory State en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Reset HSM to Factory State operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Reset HSM to Factory State en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Reset HSM to Factory State operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -1764,6 +1948,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the serial port.",
+        "en": "[NOTE] NOTE: This command is only allowed on the serial port."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1227 (Reset HSM to Factory State)"
   },
   {
@@ -1780,8 +1970,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1228: Confirm Reset HSM to Factory State"
     },
     "description": {
-      "es": "Ejecuta la operación de Confirm Reset HSM to Factory State en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Confirm Reset HSM to Factory State operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Confirm Reset HSM to Factory State en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Confirm Reset HSM to Factory State operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -1808,6 +1998,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the serial port.",
+        "en": "[NOTE] NOTE: This command is only allowed on the serial port."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1228 (Confirm Reset HSM to Factory State)"
   },
   {
@@ -1824,8 +2020,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 123: Verify Public Key and Generate RSA-AKB"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Public Key and Generate RSA-AKB en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Public Key and Generate RSA-AKB operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Public Key and Generate RSA-AKB en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Public Key and Generate RSA-AKB operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1868,8 +2064,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1230: Generate Pending TLS Server Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Pending TLS Server Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Pending TLS Server Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Pending TLS Server Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Pending TLS Server Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -1912,8 +2108,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 124: Generate Digital Signature"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Digital Signature en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Digital Signature operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Digital Signature en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Digital Signature operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -1956,8 +2152,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 125: Verify Digital Signature"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Digital Signature en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Digital Signature operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Digital Signature en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Digital Signature operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -2000,8 +2196,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 126: Generate Message Digest"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Message Digest en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Message Digest operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Message Digest en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Message Digest operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -2044,8 +2240,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 128: Change AKB Header"
     },
     "description": {
-      "es": "Ejecuta la operación de Change AKB Header en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Change AKB Header operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Change AKB Header en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Change AKB Header operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2088,8 +2284,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 129: Generate ATM Master Key encrypt with OAEP-SHA256"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate ATM Master Key encrypt with OAEP-SHA256 en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate ATM Master Key encrypt with OAEP-SHA256 operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate ATM Master Key encrypt with OAEP-SHA256 en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate ATM Master Key encrypt with OAEP-SHA256 operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2132,8 +2328,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 12A: Generate AKB of Public Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate AKB of Public Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate AKB of Public Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate AKB of Public Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate AKB of Public Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2176,8 +2372,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 12B: Translate Public or Private Key AKB from MFK to PMFK"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate Public or Private Key AKB from MFK to PMFK en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate Public or Private Key AKB from MFK to PMFK operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate Public or Private Key AKB from MFK to PMFK en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate Public or Private Key AKB from MFK to PMFK operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2220,8 +2416,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 12C: Verify or Delete RSA Key Table Entry"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify or Delete RSA Key Table Entry en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify or Delete RSA Key Table Entry operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify or Delete RSA Key Table Entry en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify or Delete RSA Key Table Entry operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2264,8 +2460,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 12F: Generate ATM Master Key and encrypt with public key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate ATM Master Key and encrypt with public key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate ATM Master Key and encrypt with public key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate ATM Master Key and encrypt with public key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate ATM Master Key and encrypt with public key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2308,8 +2504,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 13: Import a Working Key in AKB Format"
     },
     "description": {
-      "es": "Ejecuta la operación de Import a Working Key in AKB Format en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import a Working Key in AKB Format operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import a Working Key in AKB Format en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import a Working Key in AKB Format operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2352,8 +2548,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 130: RSA Data Encrypt"
     },
     "description": {
-      "es": "Ejecuta la operación de RSA Data Encrypt en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes RSA Data Encrypt operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de RSA Data Encrypt en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes RSA Data Encrypt operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -2396,8 +2592,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 131: EMV Sign Data"
     },
     "description": {
-      "es": "Ejecuta la operación de EMV Sign Data en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes EMV Sign Data operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de EMV Sign Data en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes EMV Sign Data operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -2440,8 +2636,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 132: EMV Recover Data"
     },
     "description": {
-      "es": "Ejecuta la operación de EMV Recover Data en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes EMV Recover Data operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de EMV Recover Data en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes EMV Recover Data operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -2484,8 +2680,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 135: Export RSA Private Key in untrusted format"
     },
     "description": {
-      "es": "Ejecuta la operación de Export RSA Private Key in untrusted format en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Export RSA Private Key in untrusted format operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Export RSA Private Key in untrusted format en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Export RSA Private Key in untrusted format operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2528,8 +2724,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1350: Select HSM Domain"
     },
     "description": {
-      "es": "Ejecuta la operación de Select HSM Domain en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Select HSM Domain operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Select HSM Domain en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Select HSM Domain operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -2556,6 +2752,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the serial port. It should only be sent to an HSM that is configured for",
+        "en": "[NOTE] NOTE: This command is only allowed on the serial port. It should only be sent to an HSM that is configured for"
+      },
+      {
+        "es": "[NOTE] multiple Domains.",
+        "en": "[NOTE] multiple Domains."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1350 (Select HSM Domain)"
   },
   {
@@ -2572,8 +2778,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1351: HSM Domain System Information"
     },
     "description": {
-      "es": "Ejecuta la operación de HSM Domain System Information en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes HSM Domain System Information operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de HSM Domain System Information en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes HSM Domain System Information operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -2600,6 +2806,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the serial port. It should only be sent to an HSM that is configured for",
+        "en": "[NOTE] NOTE: This command is only allowed on the serial port. It should only be sent to an HSM that is configured for"
+      },
+      {
+        "es": "[NOTE] multiple Domains.",
+        "en": "[NOTE] multiple Domains."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1351 (HSM Domain System Information)"
   },
   {
@@ -2616,8 +2832,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 136: Generate a TR-34 Key Block"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate a TR-34 Key Block en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate a TR-34 Key Block operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate a TR-34 Key Block en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate a TR-34 Key Block operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2660,8 +2876,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 137: Combine SCA-generated components"
     },
     "description": {
-      "es": "Ejecuta la operación de Combine SCA-generated components en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Combine SCA-generated components operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Combine SCA-generated components en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Combine SCA-generated components operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -2688,6 +2904,28 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: The algorithm byte of a component header will not indicate the algorithm of the resulting key. The",
+        "en": "[NOTE] NOTE: The algorithm byte of a component header will not indicate the algorithm of the resulting key. The"
+      },
+      {
+        "es": "[NOTE] algorithm byte is $ , indicating it is a component value created by the SCA and cannot be used in any",
+        "en": "[NOTE] algorithm byte is $ , indicating it is a component value created by the SCA and cannot be used in any"
+      },
+      {
+        "es": "[NOTE] cryptographic algorithm as a key. (A component of a 3DES key is not itself a 3DES key.) The algorithm of the",
+        "en": "[NOTE] cryptographic algorithm as a key. (A component of a 3DES key is not itself a 3DES key.) The algorithm of the"
+      },
+      {
+        "es": "[NOTE] key is stored in the target header, so the component cannot be used as any other algorithm. The $ algorithm",
+        "en": "[NOTE] key is stored in the target header, so the component cannot be used as any other algorithm. The $ algorithm"
+      },
+      {
+        "es": "[NOTE] also signals the component AKB format that contains all the extra fields listed.",
+        "en": "[NOTE] also signals the component AKB format that contains all the extra fields listed."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 137 (Combine SCA-generated components)"
   },
   {
@@ -2704,8 +2942,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 138: RSA Data Decrypt"
     },
     "description": {
-      "es": "Ejecuta la operación de RSA Data Decrypt en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes RSA Data Decrypt operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de RSA Data Decrypt en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes RSA Data Decrypt operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -2748,8 +2986,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 139: Sign TR-34 Message"
     },
     "description": {
-      "es": "Ejecuta la operación de Sign TR-34 Message en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Sign TR-34 Message operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Sign TR-34 Message en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Sign TR-34 Message operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -2792,8 +3030,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 13F: Generate ZKA Working Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate ZKA Working Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate ZKA Working Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate ZKA Working Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate ZKA Working Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2836,8 +3074,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 14: Load ATM Master Key, Diebold"
     },
     "description": {
-      "es": "Ejecuta la operación de Load ATM Master Key, Diebold en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Load ATM Master Key, Diebold operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Load ATM Master Key, Diebold en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Load ATM Master Key, Diebold operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2880,8 +3118,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 140: Import Key Wrapping Keys under RSA Encryption"
     },
     "description": {
-      "es": "Ejecuta la operación de Import Key Wrapping Keys under RSA Encryption en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import Key Wrapping Keys under RSA Encryption operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import Key Wrapping Keys under RSA Encryption en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import Key Wrapping Keys under RSA Encryption operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -2908,6 +3146,20 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of",
+        "en": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of"
+      },
+      {
+        "es": "[CAUTION] processing the command. The command <9A#COUNT#> will return the current count value for all commands",
+        "en": "[CAUTION] processing the command. The command <9A#COUNT#> will return the current count value for all commands"
+      },
+      {
+        "es": "[CAUTION] in the command count table.",
+        "en": "[CAUTION] in the command count table."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 140 (Import Key Wrapping Keys under RSA Encryption)"
   },
   {
@@ -2924,8 +3176,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 141: Export Working Key under RSA Encryption"
     },
     "description": {
-      "es": "Ejecuta la operación de Export Working Key under RSA Encryption en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Export Working Key under RSA Encryption operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Export Working Key under RSA Encryption en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Export Working Key under RSA Encryption operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -2968,8 +3220,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 142: Import Key under RSA Encryption"
     },
     "description": {
-      "es": "Ejecuta la operación de Import Key under RSA Encryption en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import Key under RSA Encryption operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import Key under RSA Encryption en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import Key under RSA Encryption operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3012,8 +3264,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 143: Import non-PTS Public Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Import non-PTS Public Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import non-PTS Public Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import non-PTS Public Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import non-PTS Public Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3040,6 +3292,20 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: There is no dual control over this command, so any user of the HSM can introduce a public key.",
+        "en": "[CAUTION] CAUTION: There is no dual control over this command, so any user of the HSM can introduce a public key."
+      },
+      {
+        "es": "[CAUTION] Keys loaded this way can never be used to encrypt PIN keys or key wrapping keys that can protect PIN keys,",
+        "en": "[CAUTION] Keys loaded this way can never be used to encrypt PIN keys or key wrapping keys that can protect PIN keys,"
+      },
+      {
+        "es": "[CAUTION] because PIN keys and the keys that protect them must always be under dual control.",
+        "en": "[CAUTION] because PIN keys and the keys that protect them must always be under dual control."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 143 (Import non-PTS Public Key)"
   },
   {
@@ -3056,8 +3322,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 144: Import Working Key Encrypted under AES No Keyblock"
     },
     "description": {
-      "es": "Ejecuta la operación de Import Working Key Encrypted under AES No Keyblock en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import Working Key Encrypted under AES No Keyblock operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import Working Key Encrypted under AES No Keyblock en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import Working Key Encrypted under AES No Keyblock operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3084,6 +3350,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is deprecated. Where possible, use TR-31 key blocks and command 310.",
+        "en": "[NOTE] NOTE: This command is deprecated. Where possible, use TR-31 key blocks and command 310."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 144 (Import Working Key Encrypted under AES No Keyblock)"
   },
   {
@@ -3100,8 +3372,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 145: Export Working Key Encrypted under AES, No Keyblock"
     },
     "description": {
-      "es": "Ejecuta la operación de Export Working Key Encrypted under AES, No Keyblock en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Export Working Key Encrypted under AES, No Keyblock operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Export Working Key Encrypted under AES, No Keyblock en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Export Working Key Encrypted under AES, No Keyblock operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3128,6 +3400,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is deprecated. Where possible, use TR-31 key blocks and command 311 - Export",
+        "en": "[NOTE] NOTE: This command is deprecated. Where possible, use TR-31 key blocks and command 311 - Export"
+      },
+      {
+        "es": "[NOTE] Working Key in TR-31 Format, version D (AES).",
+        "en": "[NOTE] Working Key in TR-31 Format, version D (AES)."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 145 (Export Working Key Encrypted under AES, No Keyblock)"
   },
   {
@@ -3144,8 +3426,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 146: Translate Encrypted Data"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate Encrypted Data en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate Encrypted Data operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate Encrypted Data en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate Encrypted Data operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3188,8 +3470,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 147: Elliptic Curve Diffie-Hellman"
     },
     "description": {
-      "es": "Ejecuta la operación de Elliptic Curve Diffie-Hellman en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Elliptic Curve Diffie-Hellman operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Elliptic Curve Diffie-Hellman en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Elliptic Curve Diffie-Hellman operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3216,6 +3498,48 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of",
+        "en": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of"
+      },
+      {
+        "es": "[CAUTION] processing the command. The command <9A#COUNT#> will return the current count value for all commands",
+        "en": "[CAUTION] processing the command. The command <9A#COUNT#> will return the current count value for all commands"
+      },
+      {
+        "es": "[CAUTION] in the command count table.",
+        "en": "[CAUTION] in the command count table."
+      },
+      {
+        "es": "[CAUTION] CAUTION: This command should be treated like a command that loads key components in the clear. The",
+        "en": "[CAUTION] CAUTION: This command should be treated like a command that loads key components in the clear. The"
+      },
+      {
+        "es": "[CAUTION] command has no authentication of the entity exchanging keys or the type and purpose of the derived key. If any",
+        "en": "[CAUTION] command has no authentication of the entity exchanging keys or the type and purpose of the derived key. If any"
+      },
+      {
+        "es": "[CAUTION] person or malware can send this command to the HSM while the command is enabled, then the attacker can",
+        "en": "[CAUTION] person or malware can send this command to the HSM while the command is enabled, then the attacker can"
+      },
+      {
+        "es": "[CAUTION] introduce known KEKs/KBPKs into the HSM. That would allow an attacker to compromise all exportable keys in",
+        "en": "[CAUTION] introduce known KEKs/KBPKs into the HSM. That would allow an attacker to compromise all exportable keys in"
+      },
+      {
+        "es": "[CAUTION] the HSM. It is the user's responsibility to authenticate any public key used in this command, verify that key",
+        "en": "[CAUTION] the HSM. It is the user's responsibility to authenticate any public key used in this command, verify that key"
+      },
+      {
+        "es": "[CAUTION] derivation parameters and resulting keys are appropriate, and to prevent calling this command twice with the",
+        "en": "[CAUTION] derivation parameters and resulting keys are appropriate, and to prevent calling this command twice with the"
+      },
+      {
+        "es": "[CAUTION] same ECDH keys.",
+        "en": "[CAUTION] same ECDH keys."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 147 (Elliptic Curve Diffie-Hellman)"
   },
   {
@@ -3232,8 +3556,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 14A: Generate an AS2805 KSKs Validation Request"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate an AS2805 KSKs Validation Request en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate an AS2805 KSKs Validation Request operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate an AS2805 KSKs Validation Request en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate an AS2805 KSKs Validation Request operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3276,8 +3600,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 14B: Generate an AS2805 Send KEKr Validation Response"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate an AS2805 Send KEKr Validation Response en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate an AS2805 Send KEKr Validation Response operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate an AS2805 Send KEKr Validation Response en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate an AS2805 Send KEKr Validation Response operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3320,8 +3644,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 14C: Generate a set of Australia Standards 2805 session keys"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate a set of Australia Standards 2805 session keys en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate a set of Australia Standards 2805 session keys operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate a set of Australia Standards 2805 session keys en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate a set of Australia Standards 2805 session keys operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3364,8 +3688,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 14D: Receive a set of Australia Standards 2805 session keys"
     },
     "description": {
-      "es": "Ejecuta la operación de Receive a set of Australia Standards 2805 session keys en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Receive a set of Australia Standards 2805 session keys operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Receive a set of Australia Standards 2805 session keys en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Receive a set of Australia Standards 2805 session keys operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3392,6 +3716,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: The inclusion of any of these keys is optional, as not all institutions need all three key types.",
+        "en": "[NOTE] NOTE: The inclusion of any of these keys is optional, as not all institutions need all three key types."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 14D (Receive a set of Australia Standards 2805 session keys)"
   },
   {
@@ -3408,8 +3738,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 15: Change ATM Communications Key, Diebold"
     },
     "description": {
-      "es": "Ejecuta la operación de Change ATM Communications Key, Diebold en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Change ATM Communications Key, Diebold operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Change ATM Communications Key, Diebold en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Change ATM Communications Key, Diebold operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3452,8 +3782,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 150: Enroll new user password"
     },
     "description": {
-      "es": "Ejecuta la operación de Enroll new user password en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Enroll new user password operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Enroll new user password en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Enroll new user password operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3496,8 +3826,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 151: Verify Password"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Password en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Password operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Password en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Password operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3540,8 +3870,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 152: Change password"
     },
     "description": {
-      "es": "Ejecuta la operación de Change password en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Change password operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Change password en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Change password operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3584,8 +3914,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 153: Generate temporary password"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate temporary password en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate temporary password operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate temporary password en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate temporary password operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3628,8 +3958,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 154: Generate ISO/IEC 14888-3 Digital Signature using EC-SDSA"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate ISO/IEC 14888-3 Digital Signature using EC-SDSA en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate ISO/IEC 14888-3 Digital Signature using EC-SDSA operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate ISO/IEC 14888-3 Digital Signature using EC-SDSA en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate ISO/IEC 14888-3 Digital Signature using EC-SDSA operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3672,8 +4002,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 155: Verify ISO/IEC 14888-3 Digital Signature using EC-SDSA"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify ISO/IEC 14888-3 Digital Signature using EC-SDSA en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify ISO/IEC 14888-3 Digital Signature using EC-SDSA operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify ISO/IEC 14888-3 Digital Signature using EC-SDSA en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify ISO/IEC 14888-3 Digital Signature using EC-SDSA operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3716,8 +4046,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 156: Generate check digits for an RSA key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate check digits for an RSA key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate check digits for an RSA key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate check digits for an RSA key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate check digits for an RSA key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3760,8 +4090,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 157: Generate and export a KEKs using APCA 2000 RSA"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate and export a KEKs using APCA 2000 RSA en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate and export a KEKs using APCA 2000 RSA operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate and export a KEKs using APCA 2000 RSA en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate and export a KEKs using APCA 2000 RSA operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3804,8 +4134,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 158: Receive a KEKr using APCA 2000 RSA"
     },
     "description": {
-      "es": "Ejecuta la operación de Receive a KEKr using APCA 2000 RSA en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Receive a KEKr using APCA 2000 RSA operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Receive a KEKr using APCA 2000 RSA en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Receive a KEKr using APCA 2000 RSA operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -3848,8 +4178,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 159: Generate random PIN and/or IBM 3624 offset"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate random PIN and/or IBM 3624 offset en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate random PIN and/or IBM 3624 offset operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate random PIN and/or IBM 3624 offset en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate random PIN and/or IBM 3624 offset operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -3892,8 +4222,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 15A: Elliptic Curve Diffie–Hellman for 3-D Secure"
     },
     "description": {
-      "es": "Ejecuta la operación de Elliptic Curve Diffie–Hellman for 3-D Secure en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Elliptic Curve Diffie–Hellman for 3-D Secure operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Elliptic Curve Diffie–Hellman for 3-D Secure en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Elliptic Curve Diffie–Hellman for 3-D Secure operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -3936,8 +4266,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 15B: Authenticated encryption or decryption"
     },
     "description": {
-      "es": "Ejecuta la operación de Authenticated encryption or decryption en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Authenticated encryption or decryption operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Authenticated encryption or decryption en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Authenticated encryption or decryption operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -3980,8 +4310,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 15C: Import RSA Private Key in untrusted format"
     },
     "description": {
-      "es": "Ejecuta la operación de Import RSA Private Key in untrusted format en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import RSA Private Key in untrusted format operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import RSA Private Key in untrusted format en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import RSA Private Key in untrusted format operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4008,6 +4338,20 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of",
+        "en": "[CAUTION] CAUTION: Once the count value reaches zero, the HSM will return an error <00#0300xx#> instead of"
+      },
+      {
+        "es": "[CAUTION] processing the command. The command <9A#COUNT#> will return the current count value for all commands",
+        "en": "[CAUTION] processing the command. The command <9A#COUNT#> will return the current count value for all commands"
+      },
+      {
+        "es": "[CAUTION] in the command count table.",
+        "en": "[CAUTION] in the command count table."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 15C (Import RSA Private Key in untrusted format)"
   },
   {
@@ -4024,8 +4368,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 15D: Import RSA Private Key from Websafe"
     },
     "description": {
-      "es": "Ejecuta la operación de Import RSA Private Key from Websafe en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import RSA Private Key from Websafe operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import RSA Private Key from Websafe en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import RSA Private Key from Websafe operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4068,8 +4412,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 15E: Combine Key Components"
     },
     "description": {
-      "es": "Ejecuta la operación de Combine Key Components en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Combine Key Components operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Combine Key Components en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Combine Key Components operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4096,6 +4440,24 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: It is highly recommended that this command be enabled for a specific number of executions. For",
+        "en": "[CAUTION] CAUTION: It is highly recommended that this command be enabled for a specific number of executions. For"
+      },
+      {
+        "es": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed, see the",
+        "en": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed, see the"
+      },
+      {
+        "es": "[CAUTION] Command Count feature which is documented in the Atalla Secure Configuration Assistant User Guide .",
+        "en": "[CAUTION] Command Count feature which is documented in the Atalla Secure Configuration Assistant User Guide ."
+      },
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port.",
+        "en": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 15E (Combine Key Components)"
   },
   {
@@ -4112,8 +4474,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 16: Encrypt Financial Institution Table, Diebold"
     },
     "description": {
-      "es": "Ejecuta la operación de Encrypt Financial Institution Table, Diebold en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Encrypt Financial Institution Table, Diebold operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Encrypt Financial Institution Table, Diebold en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Encrypt Financial Institution Table, Diebold operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -4156,8 +4518,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 161: Print PIN Letter"
     },
     "description": {
-      "es": "Ejecuta la operación de Print PIN Letter en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Print PIN Letter operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Print PIN Letter en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Print PIN Letter operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -4184,6 +4546,44 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION:",
+        "en": "[CAUTION] CAUTION:"
+      },
+      {
+        "es": "[CAUTION]  The print job will contain the cleartext PIN. Appropriate security measures are required to ensure that",
+        "en": "[CAUTION]  The print job will contain the cleartext PIN. Appropriate security measures are required to ensure that"
+      },
+      {
+        "es": "[CAUTION] only authorized personnel have access to the printer, and that communications between the HSM",
+        "en": "[CAUTION] only authorized personnel have access to the printer, and that communications between the HSM"
+      },
+      {
+        "es": "[CAUTION] and the printer are not monitored.",
+        "en": "[CAUTION] and the printer are not monitored."
+      },
+      {
+        "es": "[CAUTION]  It is highly recommended that this command be enabled for a specific number of executions. For",
+        "en": "[CAUTION]  It is highly recommended that this command be enabled for a specific number of executions. For"
+      },
+      {
+        "es": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed,",
+        "en": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed,"
+      },
+      {
+        "es": "[CAUTION] see the Command Count feature which is documented in the Atalla Secure Configuration Assistant",
+        "en": "[CAUTION] see the Command Count feature which is documented in the Atalla Secure Configuration Assistant"
+      },
+      {
+        "es": "[CAUTION] User Guide.",
+        "en": "[CAUTION] User Guide."
+      },
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port.",
+        "en": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 161 (Print PIN Letter)"
   },
   {
@@ -4200,8 +4600,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 162: PIN Issuance, IBM 3624 Method"
     },
     "description": {
-      "es": "Ejecuta la operación de PIN Issuance, IBM 3624 Method en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes PIN Issuance, IBM 3624 Method operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de PIN Issuance, IBM 3624 Method en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes PIN Issuance, IBM 3624 Method operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -4228,6 +4628,28 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: It is highly recommended that this command be enabled for a specific number of executions. For",
+        "en": "[CAUTION] CAUTION: It is highly recommended that this command be enabled for a specific number of executions. For"
+      },
+      {
+        "es": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed, see the",
+        "en": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed, see the"
+      },
+      {
+        "es": "[CAUTION] Command Count feature which is documented in section 4 of the Atalla Secure Configuration Assistant-3",
+        "en": "[CAUTION] Command Count feature which is documented in section 4 of the Atalla Secure Configuration Assistant-3"
+      },
+      {
+        "es": "[CAUTION] User Guide .",
+        "en": "[CAUTION] User Guide ."
+      },
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port.",
+        "en": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 162 (PIN Issuance, IBM 3624 Method)"
   },
   {
@@ -4244,8 +4666,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 163: PIN Issuance, VISA Method"
     },
     "description": {
-      "es": "Ejecuta la operación de PIN Issuance, VISA Method en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes PIN Issuance, VISA Method operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de PIN Issuance, VISA Method en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes PIN Issuance, VISA Method operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -4272,6 +4694,28 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: It is highly recommended that this command be enabled for a specific number of executions. For",
+        "en": "[CAUTION] CAUTION: It is highly recommended that this command be enabled for a specific number of executions. For"
+      },
+      {
+        "es": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed, see the",
+        "en": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed, see the"
+      },
+      {
+        "es": "[CAUTION] Command Count feature which is documented in section 4 of the Atalla Secure Configuration Assistant-3",
+        "en": "[CAUTION] Command Count feature which is documented in section 4 of the Atalla Secure Configuration Assistant-3"
+      },
+      {
+        "es": "[CAUTION] User Guide .",
+        "en": "[CAUTION] User Guide ."
+      },
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port.",
+        "en": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 163 (PIN Issuance, VISA Method)"
   },
   {
@@ -4288,8 +4732,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 16E: Divide a Key into Components"
     },
     "description": {
-      "es": "Ejecuta la operación de Divide a Key into Components en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Divide a Key into Components operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Divide a Key into Components en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Divide a Key into Components operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4316,6 +4760,28 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: It is highly recommended that this command be enabled for a specific number of executions. For",
+        "en": "[CAUTION] CAUTION: It is highly recommended that this command be enabled for a specific number of executions. For"
+      },
+      {
+        "es": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed, see the",
+        "en": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed, see the"
+      },
+      {
+        "es": "[CAUTION] Command Count feature which is documented in section 4 of the Atalla Secure Configuration Assistant-3",
+        "en": "[CAUTION] Command Count feature which is documented in section 4 of the Atalla Secure Configuration Assistant-3"
+      },
+      {
+        "es": "[CAUTION] User Guide .",
+        "en": "[CAUTION] User Guide ."
+      },
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port.",
+        "en": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 16E (Divide a Key into Components)"
   },
   {
@@ -4332,8 +4798,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 16F: Print Component Letter"
     },
     "description": {
-      "es": "Ejecuta la operación de Print Component Letter en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Print Component Letter operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Print Component Letter en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Print Component Letter operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -4360,6 +4826,44 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION:",
+        "en": "[CAUTION] CAUTION:"
+      },
+      {
+        "es": "[CAUTION]  The print job will contain the cleartext component. Appropriate security measures are required to",
+        "en": "[CAUTION]  The print job will contain the cleartext component. Appropriate security measures are required to"
+      },
+      {
+        "es": "[CAUTION] ensure that only authorized personnel have access to the printer, and that communications between",
+        "en": "[CAUTION] ensure that only authorized personnel have access to the printer, and that communications between"
+      },
+      {
+        "es": "[CAUTION] the HSM and the printer are not monitored.",
+        "en": "[CAUTION] the HSM and the printer are not monitored."
+      },
+      {
+        "es": "[CAUTION]  It is highly recommended that this command be enabled for a specific number of executions. For",
+        "en": "[CAUTION]  It is highly recommended that this command be enabled for a specific number of executions. For"
+      },
+      {
+        "es": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed,",
+        "en": "[CAUTION] information on how to configure the HSM to limit how many times this command can be executed,"
+      },
+      {
+        "es": "[CAUTION] see the Command Count feature which is documented in section 4 of the Atalla Secure Configuration",
+        "en": "[CAUTION] see the Command Count feature which is documented in section 4 of the Atalla Secure Configuration"
+      },
+      {
+        "es": "[CAUTION] Assistant-3 User Guide.",
+        "en": "[CAUTION] Assistant-3 User Guide."
+      },
+      {
+        "es": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port.",
+        "en": "[NOTE] NOTE: This command is only allowed on the NIC1 Print Command Port."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 16F (Print Component Letter)"
   },
   {
@@ -4376,8 +4880,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 178: Verify EMV AES ARQC"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify EMV AES ARQC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify EMV AES ARQC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify EMV AES ARQC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify EMV AES ARQC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -4420,8 +4924,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 179: Generate EMV AES MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate EMV AES MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate EMV AES MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate EMV AES MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate EMV AES MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -4464,8 +4968,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 17B: EMV AES ICC Master Key for Export"
     },
     "description": {
-      "es": "Ejecuta la operación de EMV AES ICC Master Key for Export en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes EMV AES ICC Master Key for Export operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de EMV AES ICC Master Key for Export en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes EMV AES ICC Master Key for Export operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4508,8 +5012,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 18: Generate Visa Working Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Visa Working Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Visa Working Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Visa Working Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Visa Working Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4552,8 +5056,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 182: Recover PIN from offset"
     },
     "description": {
-      "es": "Ejecuta la operación de Recover PIN from offset en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Recover PIN from offset operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Recover PIN from offset en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Recover PIN from offset operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -4596,8 +5100,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 185: Establish Secure Session with Chip Card"
     },
     "description": {
-      "es": "Ejecuta la operación de Establish Secure Session with Chip Card en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Establish Secure Session with Chip Card operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Establish Secure Session with Chip Card en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Establish Secure Session with Chip Card operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -4640,8 +5144,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 187: Verify R-MAC and Decrypt Response Secure Message from Chip Card"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify R-MAC and Decrypt Response Secure Message from Chip Card en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify R-MAC and Decrypt Response Secure Message from Chip Card operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify R-MAC and Decrypt Response Secure Message from Chip Card en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify R-MAC and Decrypt Response Secure Message from Chip Card operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -4684,8 +5188,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 188: Generate CEK and Export with JWE Symmetric Key Wrap"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate CEK and Export with JWE Symmetric Key Wrap en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate CEK and Export with JWE Symmetric Key Wrap operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate CEK and Export with JWE Symmetric Key Wrap en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate CEK and Export with JWE Symmetric Key Wrap operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4728,8 +5232,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 189: Import JWE Wrapped Symmetric Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Import JWE Wrapped Symmetric Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import JWE Wrapped Symmetric Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import JWE Wrapped Symmetric Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import JWE Wrapped Symmetric Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4756,6 +5260,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: The command generates a random CEK, therefore the response will be different every time the",
+        "en": "[NOTE] NOTE: The command generates a random CEK, therefore the response will be different every time the"
+      },
+      {
+        "es": "[NOTE] command is executed.",
+        "en": "[NOTE] command is executed."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 189 (Import JWE Wrapped Symmetric Key)"
   },
   {
@@ -4772,8 +5286,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 18A: Derive ICC Key Set"
     },
     "description": {
-      "es": "Ejecuta la operación de Derive ICC Key Set en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Derive ICC Key Set operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Derive ICC Key Set en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Derive ICC Key Set operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4816,8 +5330,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 18B: Translate Sensitive Data for Personalization"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate Sensitive Data for Personalization en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate Sensitive Data for Personalization operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate Sensitive Data for Personalization en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate Sensitive Data for Personalization operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -4860,8 +5374,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 18C: Protect Secure Message for Chip Card"
     },
     "description": {
-      "es": "Ejecuta la operación de Protect Secure Message for Chip Card en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Protect Secure Message for Chip Card operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Protect Secure Message for Chip Card en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Protect Secure Message for Chip Card operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -4904,8 +5418,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 19: Translate Working Key for Local Storage"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate Working Key for Local Storage en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate Working Key for Local Storage operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate Working Key for Local Storage en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate Working Key for Local Storage operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4948,8 +5462,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1A: Export a 3DES key in non-AKB Format"
     },
     "description": {
-      "es": "Ejecuta la operación de Export a 3DES key in non-AKB Format en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Export a 3DES key in non-AKB Format operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Export a 3DES key in non-AKB Format en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Export a 3DES key in non-AKB Format operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -4976,6 +5490,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command is deprecated. Use commands 11A or 311 to exchange symmetric keys via TR-31.",
+        "en": "[NOTE] NOTE: This command is deprecated. Use commands 11A or 311 to exchange symmetric keys via TR-31."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1A (Export a 3DES key in non-AKB Format)"
   },
   {
@@ -4992,8 +5512,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1D: Translate Communications Key for Local Storage, Specific Variant"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate Communications Key for Local Storage, Specific Variant en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate Communications Key for Local Storage, Specific Variant operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate Communications Key for Local Storage, Specific Variant en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate Communications Key for Local Storage, Specific Variant operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -5036,8 +5556,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 1E: Generate New Initial Key for PIN Pad Using Visa DUKPT"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate New Initial Key for PIN Pad Using Visa DUKPT en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate New Initial Key for PIN Pad Using Visa DUKPT operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate New Initial Key for PIN Pad Using Visa DUKPT en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate New Initial Key for PIN Pad Using Visa DUKPT operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5064,6 +5584,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: This command supports an obsolete/proprietary technique for key loading and is not compatible with",
+        "en": "[NOTE] NOTE: This command supports an obsolete/proprietary technique for key loading and is not compatible with"
+      },
+      {
+        "es": "[NOTE] any current POS terminals. It is not required or recommended in any DUKPT environment.",
+        "en": "[NOTE] any current POS terminals. It is not required or recommended in any DUKPT environment."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 1E (Generate New Initial Key for PIN Pad Using Visa DUKPT)"
   },
   {
@@ -5080,8 +5610,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 30: Encrypt PIN, ANSI Format 0"
     },
     "description": {
-      "es": "Ejecuta la operación de Encrypt PIN, ANSI Format 0 en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Encrypt PIN, ANSI Format 0 operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Encrypt PIN, ANSI Format 0 en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Encrypt PIN, ANSI Format 0 operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5108,6 +5638,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure.",
+        "en": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 30 (Encrypt PIN, ANSI Format 0)"
   },
   {
@@ -5124,8 +5660,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 304: Verify MAC using CMAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify MAC using CMAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify MAC using CMAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify MAC using CMAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify MAC using CMAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -5168,8 +5704,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 305: Generate MAC using CMAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate MAC using CMAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate MAC using CMAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate MAC using CMAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate MAC using CMAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -5212,8 +5748,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 30A: Calculate PIN Offset"
     },
     "description": {
-      "es": "Ejecuta la operación de Calculate PIN Offset en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Calculate PIN Offset operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Calculate PIN Offset en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Calculate PIN Offset operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5256,8 +5792,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 310: Import TR-31 Formatted Working Key, version D (AES)"
     },
     "description": {
-      "es": "Ejecuta la operación de Import TR-31 Formatted Working Key, version D (AES) en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Import TR-31 Formatted Working Key, version D (AES) operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Import TR-31 Formatted Working Key, version D (AES) en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Import TR-31 Formatted Working Key, version D (AES) operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -5300,8 +5836,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 311: Export Working Key in TR-31 Format, version D (AES)"
     },
     "description": {
-      "es": "Ejecuta la operación de Export Working Key in TR-31 Format, version D (AES) en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Export Working Key in TR-31 Format, version D (AES) operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Export Working Key in TR-31 Format, version D (AES) en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Export Working Key in TR-31 Format, version D (AES) operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Diagnóstico y Sistema",
@@ -5344,8 +5880,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 312: Generate PAN Binding Token"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate PAN Binding Token en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate PAN Binding Token operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate PAN Binding Token en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate PAN Binding Token operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -5388,8 +5924,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 313: Verify PAN Binding Token"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify PAN Binding Token en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify PAN Binding Token operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify PAN Binding Token en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify PAN Binding Token operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -5432,8 +5968,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 32: Verify PIN, Atalla 2x2"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify PIN, Atalla 2x2 en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify PIN, Atalla 2x2 operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify PIN, Atalla 2x2 en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify PIN, Atalla 2x2 operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5460,6 +5996,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure.",
+        "en": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 32 (Verify PIN, Atalla 2x2)"
   },
   {
@@ -5476,8 +6018,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 324: Receive APACS 40 Request Message"
     },
     "description": {
-      "es": "Ejecuta la operación de Receive APACS 40 Request Message en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Receive APACS 40 Request Message operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Receive APACS 40 Request Message en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Receive APACS 40 Request Message operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -5520,8 +6062,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 325: Generate APACS 40 Response Message"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate APACS 40 Response Message en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate APACS 40 Response Message operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate APACS 40 Response Message en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate APACS 40 Response Message operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -5564,8 +6106,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 326: Verify APACS 40 Confirmation Message"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify APACS 40 Confirmation Message en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify APACS 40 Confirmation Message operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify APACS 40 Confirmation Message en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify APACS 40 Confirmation Message operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -5608,8 +6150,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 32C: Verify ePIN"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify ePIN en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify ePIN operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify ePIN en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify ePIN operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5652,8 +6194,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 33: Translate PIN, ANSI to ANSI"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate PIN, ANSI to ANSI en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate PIN, ANSI to ANSI operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate PIN, ANSI to ANSI en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate PIN, ANSI to ANSI operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5696,8 +6238,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 335: PIN and PIN-Block Translate"
     },
     "description": {
-      "es": "Ejecuta la operación de PIN and PIN-Block Translate en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes PIN and PIN-Block Translate operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de PIN and PIN-Block Translate en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes PIN and PIN-Block Translate operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5740,8 +6282,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 346: PIN Translate - DUKPT to 3DES and Verify MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de PIN Translate - DUKPT to 3DES and Verify MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes PIN Translate - DUKPT to 3DES and Verify MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de PIN Translate - DUKPT to 3DES and Verify MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes PIN Translate - DUKPT to 3DES and Verify MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5784,8 +6326,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 347: PIN Translate - DUKPT to 3DES and Generate MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de PIN Translate - DUKPT to 3DES and Generate MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes PIN Translate - DUKPT to 3DES and Generate MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de PIN Translate - DUKPT to 3DES and Generate MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes PIN Translate - DUKPT to 3DES and Generate MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5828,8 +6370,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 348: Verify DUKPT MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify DUKPT MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify DUKPT MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify DUKPT MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify DUKPT MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5872,8 +6414,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 35: Translate PIN, Double-Encrypted Input or Output"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate PIN, Double-Encrypted Input or Output en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate PIN, Double-Encrypted Input or Output operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate PIN, Double-Encrypted Input or Output en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate PIN, Double-Encrypted Input or Output operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -5916,8 +6458,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 350: Verify EMV ARQC"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify EMV ARQC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify EMV ARQC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify EMV ARQC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify EMV ARQC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -5960,8 +6502,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 351: EMV PIN Change"
     },
     "description": {
-      "es": "Ejecuta la operación de EMV PIN Change en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes EMV PIN Change operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de EMV PIN Change en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes EMV PIN Change operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -6004,8 +6546,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 352: Generate EMV MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate EMV MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate EMV MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate EMV MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate EMV MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -6048,8 +6590,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 354: Generate EMV ICC Master Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate EMV ICC Master Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate EMV ICC Master Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate EMV ICC Master Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate EMV ICC Master Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -6092,8 +6634,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 356: Validate CAP Token"
     },
     "description": {
-      "es": "Ejecuta la operación de Validate CAP Token en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Validate CAP Token operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Validate CAP Token en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Validate CAP Token operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -6136,8 +6678,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 357: Verify dCVV and dCVV2"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify dCVV and dCVV2 en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify dCVV and dCVV2 operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify dCVV and dCVV2 en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify dCVV and dCVV2 operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -6164,6 +6706,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: Option CA allow HSM to emulate smart card. Emulating a smart card with an HSM should be",
+        "en": "[CAUTION] CAUTION: Option CA allow HSM to emulate smart card. Emulating a smart card with an HSM should be"
+      },
+      {
+        "es": "[CAUTION] limited to test scenarios. Utimaco does not recommend enabling option CA in production systems.",
+        "en": "[CAUTION] limited to test scenarios. Utimaco does not recommend enabling option CA in production systems."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 357 (Verify dCVV and dCVV2)"
   },
   {
@@ -6180,8 +6732,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 358: Generate ISO/IEC 9796-2 Digital Signature"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate ISO/IEC 9796-2 Digital Signature en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate ISO/IEC 9796-2 Digital Signature operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate ISO/IEC 9796-2 Digital Signature en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate ISO/IEC 9796-2 Digital Signature operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -6224,8 +6776,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 359: MasterCard dynamic CVC3 Verify and IVCVC3 Generate"
     },
     "description": {
-      "es": "Ejecuta la operación de MasterCard dynamic CVC3 Verify and IVCVC3 Generate en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes MasterCard dynamic CVC3 Verify and IVCVC3 Generate operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de MasterCard dynamic CVC3 Verify and IVCVC3 Generate en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes MasterCard dynamic CVC3 Verify and IVCVC3 Generate operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -6252,6 +6804,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: Option CA allow HSM to emulate smart card. Emulating a smart card with an HSM should be",
+        "en": "[CAUTION] CAUTION: Option CA allow HSM to emulate smart card. Emulating a smart card with an HSM should be"
+      },
+      {
+        "es": "[CAUTION] limited to test scenarios. Utimaco does not recommend enabling option CA in production systems.",
+        "en": "[CAUTION] limited to test scenarios. Utimaco does not recommend enabling option CA in production systems."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 359 (MasterCard dynamic CVC3 Verify and IVCVC3 Generate)"
   },
   {
@@ -6268,8 +6830,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 35A: Verify AMEX CSC"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify AMEX CSC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify AMEX CSC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify AMEX CSC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify AMEX CSC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -6312,8 +6874,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 35B: Generate AMEX CSC"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate AMEX CSC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate AMEX CSC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate AMEX CSC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate AMEX CSC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -6356,8 +6918,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 35F: Verify Discover DCVV"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Discover DCVV en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Discover DCVV operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Discover DCVV en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Discover DCVV operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -6400,8 +6962,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 36: Verify Double-Encrypted PIN"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Double-Encrypted PIN en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Double-Encrypted PIN operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Double-Encrypted PIN en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Double-Encrypted PIN operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -6444,8 +7006,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 365: Verify Visa Cloud-Based Payments"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Visa Cloud-Based Payments en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Visa Cloud-Based Payments operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Visa Cloud-Based Payments en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Visa Cloud-Based Payments operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -6488,8 +7050,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 368: Create Visa Limited Use Key (LUK)"
     },
     "description": {
-      "es": "Ejecuta la operación de Create Visa Limited Use Key (LUK) en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Create Visa Limited Use Key (LUK) operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Create Visa Limited Use Key (LUK) en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Create Visa Limited Use Key (LUK) operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -6532,8 +7094,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 36A: Verify AMEX Expresspay value - Magstripe Mode"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify AMEX Expresspay value - Magstripe Mode en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify AMEX Expresspay value - Magstripe Mode operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify AMEX Expresspay value - Magstripe Mode en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify AMEX Expresspay value - Magstripe Mode operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -6576,8 +7138,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 37: PIN Change, Atalla DES Bilevel"
     },
     "description": {
-      "es": "Ejecuta la operación de PIN Change, Atalla DES Bilevel en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes PIN Change, Atalla DES Bilevel operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de PIN Change, Atalla DES Bilevel en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes PIN Change, Atalla DES Bilevel operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -6620,8 +7182,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 37B: Generate ePIN Offset"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate ePIN Offset en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate ePIN Offset operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate ePIN Offset en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate ePIN Offset operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -6664,8 +7226,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 386: Generate DUKPT MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate DUKPT MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate DUKPT MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate DUKPT MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate DUKPT MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -6708,8 +7270,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 388: 3DES DUKPT Encrypt/Decrypt Data"
     },
     "description": {
-      "es": "Ejecuta la operación de 3DES DUKPT Encrypt/Decrypt Data en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes 3DES DUKPT Encrypt/Decrypt Data operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de 3DES DUKPT Encrypt/Decrypt Data en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes 3DES DUKPT Encrypt/Decrypt Data operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -6752,8 +7314,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 38C: Derive DUKPT Initial PIN Encryption Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Derive DUKPT Initial PIN Encryption Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Derive DUKPT Initial PIN Encryption Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Derive DUKPT Initial PIN Encryption Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Derive DUKPT Initial PIN Encryption Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -6796,8 +7358,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 38E: Derive Working Key Using AES DUKPT"
     },
     "description": {
-      "es": "Ejecuta la operación de Derive Working Key Using AES DUKPT en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Derive Working Key Using AES DUKPT operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Derive Working Key Using AES DUKPT en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Derive Working Key Using AES DUKPT operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -6840,8 +7402,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 39: Translate PIN and Generate MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate PIN and Generate MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate PIN and Generate MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate PIN and Generate MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate PIN and Generate MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -6884,8 +7446,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 390: Encrypt/Decrypt Data using AES"
     },
     "description": {
-      "es": "Ejecuta la operación de Encrypt/Decrypt Data using AES en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Encrypt/Decrypt Data using AES operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Encrypt/Decrypt Data using AES en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Encrypt/Decrypt Data using AES operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -6928,8 +7490,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 392: Generate Check Digits for an AES Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Check Digits for an AES Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Check Digits for an AES Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Check Digits for an AES Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Check Digits for an AES Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -6972,8 +7534,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 393: Generate Non-Standard Check Values"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Non-Standard Check Values en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Non-Standard Check Values operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Non-Standard Check Values en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Non-Standard Check Values operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7016,8 +7578,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 39A: Generate AES or HMAC Working Key"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate AES or HMAC Working Key en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate AES or HMAC Working Key operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate AES or HMAC Working Key en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate AES or HMAC Working Key operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -7044,6 +7606,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: To increase security, AES and HMAC keys should be generated encrypted under the AES MFK.",
+        "en": "[NOTE] NOTE: To increase security, AES and HMAC keys should be generated encrypted under the AES MFK."
+      },
+      {
+        "es": "[NOTE] Atalla recommends that header byte0 in field 2 contain the number 3.",
+        "en": "[NOTE] Atalla recommends that header byte0 in field 2 contain the number 3."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 39A (Generate AES or HMAC Working Key)"
   },
   {
@@ -7060,8 +7632,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 39B: Generate MAC using HMAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate MAC using HMAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate MAC using HMAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate MAC using HMAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate MAC using HMAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -7104,8 +7676,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 39C: Verify MAC using HMAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify MAC using HMAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify MAC using HMAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify MAC using HMAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify MAC using HMAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -7148,8 +7720,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 3A: Verify Card and PIN, Atalla Bilevel"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Card and PIN, Atalla Bilevel en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Card and PIN, Atalla Bilevel operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Card and PIN, Atalla Bilevel en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Card and PIN, Atalla Bilevel operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -7192,8 +7764,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 3D: Generate PVN and IBM Offset"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate PVN and IBM Offset en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate PVN and IBM Offset operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate PVN and IBM Offset en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate PVN and IBM Offset operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7236,8 +7808,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 3E: Translate PIN, ISO PIN Blocks"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate PIN, ISO PIN Blocks en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate PIN, ISO PIN Blocks operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate PIN, ISO PIN Blocks en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate PIN, ISO PIN Blocks operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -7280,8 +7852,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 3FC: EMV PIN change from IBM 3624 offset"
     },
     "description": {
-      "es": "Ejecuta la operación de EMV PIN change from IBM 3624 offset en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes EMV PIN change from IBM 3624 offset operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de EMV PIN change from IBM 3624 offset en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes EMV PIN change from IBM 3624 offset operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -7324,8 +7896,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 3FD: Authenticate multiple EMV scripts"
     },
     "description": {
-      "es": "Ejecuta la operación de Authenticate multiple EMV scripts en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Authenticate multiple EMV scripts operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Authenticate multiple EMV scripts en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Authenticate multiple EMV scripts operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -7368,8 +7940,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 3FE: Verify ICC Dynamic Number or Data Authentication Code"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify ICC Dynamic Number or Data Authentication Code en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify ICC Dynamic Number or Data Authentication Code operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify ICC Dynamic Number or Data Authentication Code en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify ICC Dynamic Number or Data Authentication Code operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -7412,8 +7984,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 55: Encrypt, Decrypt Or Translate Data"
     },
     "description": {
-      "es": "Ejecuta la operación de Encrypt, Decrypt Or Translate Data en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Encrypt, Decrypt Or Translate Data operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Encrypt, Decrypt Or Translate Data en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Encrypt, Decrypt Or Translate Data operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7456,8 +8028,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 58: MAC Translate"
     },
     "description": {
-      "es": "Ejecuta la operación de MAC Translate en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes MAC Translate operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de MAC Translate en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes MAC Translate operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -7500,8 +8072,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 59: Generate MAC and Encrypt or Translate Data"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate MAC and Encrypt or Translate Data en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate MAC and Encrypt or Translate Data operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate MAC and Encrypt or Translate Data en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate MAC and Encrypt or Translate Data operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -7544,8 +8116,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 5C: Verify and Generate MAC, DUKPT"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify and Generate MAC, DUKPT en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify and Generate MAC, DUKPT operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify and Generate MAC, DUKPT en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify and Generate MAC, DUKPT operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -7588,8 +8160,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 5D: Generate CVV/CVC"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate CVV/CVC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate CVV/CVC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate CVV/CVC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate CVV/CVC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7632,8 +8204,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 5E: Verify CVV/CVC"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify CVV/CVC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify CVV/CVC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify CVV/CVC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify CVV/CVC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7676,8 +8248,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 5F: Verify MAC and Decrypt PIN"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify MAC and Decrypt PIN en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify MAC and Decrypt PIN operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify MAC and Decrypt PIN en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify MAC and Decrypt PIN operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -7704,6 +8276,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure.",
+        "en": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 5F (Verify MAC and Decrypt PIN)"
   },
   {
@@ -7720,8 +8298,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 70: Load Volatile Table Value"
     },
     "description": {
-      "es": "Ejecuta la operación de Load Volatile Table Value en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Load Volatile Table Value operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Load Volatile Table Value en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Load Volatile Table Value operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7764,8 +8342,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 71: Delete Volatile Table Value"
     },
     "description": {
-      "es": "Ejecuta la operación de Delete Volatile Table Value en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Delete Volatile Table Value operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Delete Volatile Table Value en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Delete Volatile Table Value operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7808,8 +8386,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 72: Verify Volatile Table Value"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Volatile Table Value en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Volatile Table Value operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Volatile Table Value en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Volatile Table Value operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7852,8 +8430,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 73: Clear Section of Volatile Table"
     },
     "description": {
-      "es": "Ejecuta la operación de Clear Section of Volatile Table en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Clear Section of Volatile Table operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Clear Section of Volatile Table en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Clear Section of Volatile Table operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7880,6 +8458,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: Before sending this command, make sure no other host application is using the volatile table.",
+        "en": "[CAUTION] CAUTION: Before sending this command, make sure no other host application is using the volatile table."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 73 (Clear Section of Volatile Table)"
   },
   {
@@ -7896,8 +8480,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 74: Load Diebold Number Table"
     },
     "description": {
-      "es": "Ejecuta la operación de Load Diebold Number Table en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Load Diebold Number Table operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Load Diebold Number Table en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Load Diebold Number Table operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -7940,8 +8524,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 7C: Symmetric Key Size"
     },
     "description": {
-      "es": "Ejecuta la operación de Symmetric Key Size en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Symmetric Key Size operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Symmetric Key Size en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Symmetric Key Size operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -7968,6 +8552,28 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION:",
+        "en": "[CAUTION] CAUTION:"
+      },
+      {
+        "es": "[CAUTION] Enabling this command allows anyone with access to the HSM (such as insiders, malware) to determine the",
+        "en": "[CAUTION] Enabling this command allows anyone with access to the HSM (such as insiders, malware) to determine the"
+      },
+      {
+        "es": "[CAUTION] keys that are most vulnerable to cryptanalysis. Users are cautioned that single-DES keys are vulnerable to key",
+        "en": "[CAUTION] keys that are most vulnerable to cryptanalysis. Users are cautioned that single-DES keys are vulnerable to key"
+      },
+      {
+        "es": "[CAUTION] search at trivial cost, so allowing an attacker to pinpoint vulnerable keys is a significant risk.",
+        "en": "[CAUTION] search at trivial cost, so allowing an attacker to pinpoint vulnerable keys is a significant risk."
+      },
+      {
+        "es": "[CAUTION] Utimaco recommends careful analysis of the security tradeoffs of enabling this command.",
+        "en": "[CAUTION] Utimaco recommends careful analysis of the security tradeoffs of enabling this command."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 7C (Symmetric Key Size)"
   },
   {
@@ -7984,8 +8590,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 7E: Generate Check Digits"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Check Digits en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Check Digits operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Check Digits en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Check Digits operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -8012,6 +8618,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[NOTE] NOTE: Method 'V' is the standard for 3DES keys and is used by almost all modern banking implementations.",
+        "en": "[NOTE] NOTE: Method 'V' is the standard for 3DES keys and is used by almost all modern banking implementations."
+      },
+      {
+        "es": "[NOTE] Other methods are maintained for compatibility with older systems.",
+        "en": "[NOTE] Other methods are maintained for compatibility with older systems."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 7E (Generate Check Digits)"
   },
   {
@@ -8028,8 +8644,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 7F: Load Value to a Specific Volatile Table Location"
     },
     "description": {
-      "es": "Ejecuta la operación de Load Value to a Specific Volatile Table Location en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Load Value to a Specific Volatile Table Location operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Load Value to a Specific Volatile Table Location en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Load Value to a Specific Volatile Table Location operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -8072,8 +8688,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 90: Decrypt PIN"
     },
     "description": {
-      "es": "Ejecuta la operación de Decrypt PIN en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Decrypt PIN operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Decrypt PIN en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Decrypt PIN operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -8100,6 +8716,12 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure.",
+        "en": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 90 (Decrypt PIN)"
   },
   {
@@ -8116,8 +8738,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 93: Generate Random Number"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Random Number en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Random Number operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Random Number en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Random Number operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -8160,8 +8782,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 94: Generate Initialization Vector"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate Initialization Vector en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate Initialization Vector operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate Initialization Vector en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate Initialization Vector operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -8204,8 +8826,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 95: Reformat Initialization Vector"
     },
     "description": {
-      "es": "Ejecuta la operación de Reformat Initialization Vector en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Reformat Initialization Vector operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Reformat Initialization Vector en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Reformat Initialization Vector operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -8248,8 +8870,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 96: Verify Initialization Vector"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Initialization Vector en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Initialization Vector operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Initialization Vector en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Initialization Vector operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -8292,8 +8914,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 97: Encrypt/Decrypt Data"
     },
     "description": {
-      "es": "Ejecuta la operación de Encrypt/Decrypt Data en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Encrypt/Decrypt Data operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Encrypt/Decrypt Data en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Encrypt/Decrypt Data operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Operaciones Criptográficas",
@@ -8336,8 +8958,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 98: Generate MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Generate MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Generate MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Generate MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Generate MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -8380,8 +9002,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 99: Verify MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -8424,8 +9046,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 9A: AKB Header Mapping"
     },
     "description": {
-      "es": "Ejecuta la operación de AKB Header Mapping en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes AKB Header Mapping operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de AKB Header Mapping en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes AKB Header Mapping operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -8452,6 +9074,16 @@ export const atallaV860Commands: CommandSpec[] = [
         "required": false
       }
     ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: Once the counter value reaches zero, the HSM will return an error <00#0300xx#> instead of",
+        "en": "[CAUTION] CAUTION: Once the counter value reaches zero, the HSM will return an error <00#0300xx#> instead of"
+      },
+      {
+        "es": "[CAUTION] processing the counted command.",
+        "en": "[CAUTION] processing the counted command."
+      }
+    ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command 9A (AKB Header Mapping)"
   },
   {
@@ -8468,8 +9100,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 9B: Verify ACR Response MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify ACR Response MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify ACR Response MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify ACR Response MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify ACR Response MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Autenticación y MAC",
@@ -8512,8 +9144,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 9D: Translate Working Key from 3DES MFK to AES MFK"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate Working Key from 3DES MFK to AES MFK en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate Working Key from 3DES MFK to AES MFK operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate Working Key from 3DES MFK to AES MFK en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate Working Key from 3DES MFK to AES MFK operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -8556,8 +9188,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 9E: Translate Working Key from Current MFK to Pending MFK"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate Working Key from Current MFK to Pending MFK en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate Working Key from Current MFK to Pending MFK operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate Working Key from Current MFK to Pending MFK en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate Working Key from Current MFK to Pending MFK operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -8600,8 +9232,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command 9F: Replace the Current MFK with the Pending MFK"
     },
     "description": {
-      "es": "Ejecuta la operación de Replace the Current MFK with the Pending MFK en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Replace the Current MFK with the Pending MFK operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Replace the Current MFK with the Pending MFK en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Replace the Current MFK with the Pending MFK operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Gestión de Claves",
@@ -8644,8 +9276,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command BA: PIN Translate (ANSI to PIN/Pad) and MAC Verification"
     },
     "description": {
-      "es": "Ejecuta la operación de PIN Translate (ANSI to PIN/Pad) and MAC Verification en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes PIN Translate (ANSI to PIN/Pad) and MAC Verification operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de PIN Translate (ANSI to PIN/Pad) and MAC Verification en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes PIN Translate (ANSI to PIN/Pad) and MAC Verification operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -8688,8 +9320,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command BB: Translate PIN (ANSI to ANSI) and Verify MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate PIN (ANSI to ANSI) and Verify MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate PIN (ANSI to ANSI) and Verify MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate PIN (ANSI to ANSI) and Verify MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate PIN (ANSI to ANSI) and Verify MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -8732,8 +9364,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command BD: Translate PIN and Generate MAC"
     },
     "description": {
-      "es": "Ejecuta la operación de Translate PIN and Generate MAC en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Translate PIN and Generate MAC operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Translate PIN and Generate MAC en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Translate PIN and Generate MAC operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -8776,8 +9408,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command BE: Verify Visa Stored Value Card (VSVC) S1 Signature and Generate VSVC S2 Signature"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Visa Stored Value Card (VSVC) S1 Signature and Generate VSVC S2 Signature en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Visa Stored Value Card (VSVC) S1 Signature and Generate VSVC S2 Signature operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Visa Stored Value Card (VSVC) S1 Signature and Generate VSVC S2 Signature en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Visa Stored Value Card (VSVC) S1 Signature and Generate VSVC S2 Signature operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -8820,8 +9452,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command BF: Verify Visa Stored Value Card (VSVC) S3 Signature"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Visa Stored Value Card (VSVC) S3 Signature en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Visa Stored Value Card (VSVC) S3 Signature operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Visa Stored Value Card (VSVC) S3 Signature en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Visa Stored Value Card (VSVC) S3 Signature operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -8864,8 +9496,8 @@ export const atallaV860Commands: CommandSpec[] = [
       "en": "Atalla AT1000 Command D0: Verify Clear PIN"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Clear PIN en el HSM Atalla AT1000 de acuerdo al manual v8.60.",
-      "en": "Executes Verify Clear PIN operation on the Atalla AT1000 HSM according to the v8.60 manual."
+      "es": "Ejecuta la operación de Verify Clear PIN en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
+      "en": "Executes Verify Clear PIN operation on the Atalla AT1000 HSM according to the official v8.60 manual."
     },
     "category": {
       "es": "Procesamiento de PIN",
@@ -8890,6 +9522,12 @@ export const atallaV860Commands: CommandSpec[] = [
         },
         "encoding": "ascii",
         "required": false
+      }
+    ],
+    "notes": [
+      {
+        "es": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure.",
+        "en": "[CAUTION] CAUTION: This command processes a clear PIN, it creates a significant security exposure."
       }
     ],
     "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command D0 (Verify Clear PIN)"

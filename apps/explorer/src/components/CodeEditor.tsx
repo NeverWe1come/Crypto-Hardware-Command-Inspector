@@ -439,7 +439,7 @@ export function CodeEditor({
     <div
       ref={containerRef}
       data-testid="code-editor-container"
-      className={`relative w-full rounded-md border border-[#2e3b5b] bg-[#202940] shadow-xs focus-within:border-[#ff7800] focus-within:ring-2 focus-within:ring-[#ff7800]/30 transition-colors ${className}`}
+      className={`relative w-full rounded-md border border-[#2e3b5b] bg-[#202940] shadow-xs focus-within:border-[#ff7800] focus-within:ring-2 focus-within:ring-[#ff7800]/30 transition-colors resize-y overflow-auto min-h-[60px] max-h-[360px] ${className}`}
     />
   );
 }

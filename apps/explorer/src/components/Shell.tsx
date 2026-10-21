@@ -173,14 +173,14 @@ export function Shell() {
                     </Button>
                   </div>
 
-                  {/* Section 1: Contained Command List Block (Bounded Height with own Scroll) */}
-                  <div className="flex-none max-h-52 overflow-y-auto" data-testid="command-list-block">
+                  {/* Section 1: Contained Command List Block (Flexible Top Area) */}
+                  <div className="flex-1 overflow-y-auto" data-testid="command-list-block">
                     <CommandList tab={activeTab} />
                   </div>
 
-                  {/* Section 2: CodeMirror 6 Editor for Active Command (Always Visible & Accessible) */}
+                  {/* Section 2: CodeMirror 6 Editor for Active Command (Pinned to Bottom, Dynamic Height) */}
                   {activeCommand && (
-                    <div className="flex-1 min-h-[240px] flex flex-col space-y-2 pt-2 border-t border-border overflow-hidden" data-testid="code-editor-section">
+                    <div className="flex-none flex flex-col space-y-1.5 pt-2.5 pb-2 px-3 border-t border-border bg-[#131927]" data-testid="code-editor-section">
                       <div className="flex items-center justify-between text-xs font-medium text-muted-foreground shrink-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-[#feffff]">
@@ -194,19 +194,6 @@ export function Shell() {
                             </span>
                           )}
                         </div>
-                        {parseResult && (
-                          <span
-                            className={`text-[11px] px-2 py-0.5 rounded font-medium ${
-                              parseResult.valid
-                                ? 'bg-[#018934]/20 text-[#0da845] border border-[#018934]/40'
-                                : 'bg-[#e11d48]/20 text-[#f87171] border border-[#e11d48]/40'
-                            }`}
-                          >
-                            {parseResult.valid
-                              ? 'Trama Válida'
-                              : `${parseResult.diagnostics.length} Diagnóstico(s)`}
-                          </span>
-                        )}
                       </div>
 
                       <CodeEditor
