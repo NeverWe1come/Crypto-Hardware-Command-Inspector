@@ -252,7 +252,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
     it('gracefully handles unknown / unsupported command code without crashing', () => {
       const unknownCmd: CommandEntry = {
         id: 'cmd_unknown',
-        raw: '<99#invalid_data#>',
+        raw: '<9999#invalid_data#>',
         version: '8.60',
         direction: 'request',
         linkedCommandId: null

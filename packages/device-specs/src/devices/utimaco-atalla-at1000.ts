@@ -4,6 +4,7 @@
  */
 
 import type { DeviceSpec } from '@chci/parser-core';
+import { atallaV860Commands } from './utimaco-atalla-v860-commands.js';
 
 /**
  * Utimaco Atalla AT1000 specification.
@@ -437,11 +438,11 @@ export const atallaAt1000Spec: DeviceSpec = {
         en: 'Firmware v8.60 (Current)'
       },
       releaseNotes: {
-        es: 'Extiende v8.50 con soporte adicional para algoritmos AES en bloques AKB y nuevos subcomandos de PIN ISO-4.',
-        en: 'Extends v8.50 with AES support in AKB blocks and new ISO-4 PIN subcommands.'
+        es: 'Extiende v8.50 con soporte adicional para algoritmos AES en bloques AKB y el catálogo completo de comandos extraído del manual oficial v8.60.',
+        en: 'Extends v8.50 with AES support in AKB blocks and the full command catalog extracted from the official v8.60 manual.'
       },
       extends: '8.50',
-      commands: [],
+      commands: atallaV860Commands,
       errorCodes: {
         '21': {
           code: '21',
