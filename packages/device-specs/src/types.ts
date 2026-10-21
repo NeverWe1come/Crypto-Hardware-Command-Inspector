@@ -23,6 +23,7 @@ export interface DeviceCatalogItem {
   readonly icon?: string;
   readonly summary: LocalizedString;
   readonly defaultVersion?: string;
+  readonly exampleCommand?: string;
 }
 
 /**

@@ -16,12 +16,13 @@ import { WorkspaceTabs } from './WorkspaceTabs';
 import { CommandList } from './CommandList';
 import { CodeEditor } from './CodeEditor';
 import { AnalysisPanel } from './AnalysisPanel';
+import { Button } from './ui/button';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup
 } from './ui/resizable';
-import { Cpu, Sparkles, Layers } from 'lucide-react';
+import { Cpu, Sparkles, Layers, Plus } from 'lucide-react';
 
 /**
  * Root workspace layout component composing the navigation header, web warning banner,
@@ -136,19 +137,17 @@ export function Shell() {
                   data-testid="active-workspace-view"
                 >
                   {/* Device Header Bar */}
-                  <div className="flex items-center justify-between pb-3 border-b border-border">
+                  <div className="flex items-center justify-between pb-3 border-b border-border shrink-0">
                     <div className="flex items-center gap-2.5">
-                      <div className="size-8 rounded-md bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
-                        <Cpu className="size-4" />
+                      <div className="size-8 rounded-md bg-[#283350] text-[#feffff] flex items-center justify-center border border-[#ff7800]/30 shadow-xs">
+                        <Cpu className="size-4 text-[#ff7800]" />
                       </div>
                       <div>
-                        <h2 className="text-sm font-semibold tracking-tight">
+                        <h2 className="text-sm font-semibold tracking-tight text-[#feffff]">
                           {activeDeviceSpec.name}
                         </h2>
-                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                          <span>{activeDeviceSpec.vendor}</span>
-                          <span>•</span>
-                          <span className="font-mono">Firmware v{activeTab.version}</span>
+                        <div className="flex items-center gap-2 text-[11px] text-[#94a3b8]">
+                          <span>Vendor: <strong className="text-[#feffff] font-medium">{activeDeviceSpec.vendor}</strong></span>
                           {activeTab.headerLength !== undefined && (
                             <>
                               <span>•</span>
@@ -160,23 +159,37 @@ export function Shell() {
                         </div>
                       </div>
                     </div>
+
+                    {/* Prominent New Command Action Button */}
+                    <Button
+                      type="button"
+                      data-testid="header-add-command-button"
+                      onClick={() => dispatch({ type: 'ADD_COMMAND' })}
+                      size="sm"
+                      className="h-8 text-xs gap-1.5 bg-[#ff7800] hover:bg-[#e66c00] text-[#131927] font-semibold shadow-xs"
+                    >
+                      <Plus className="size-3.5" />
+                      <FormattedMessage id="editor.addCommand" defaultMessage="Nuevo comando" />
+                    </Button>
                   </div>
 
-                  {/* Sortable Command List */}
-                  <CommandList tab={activeTab} />
+                  {/* Section 1: Contained Command List Block (Bounded Height with own Scroll) */}
+                  <div className="flex-none max-h-52 overflow-y-auto" data-testid="command-list-block">
+                    <CommandList tab={activeTab} />
+                  </div>
 
-                  {/* CodeMirror 6 Editor for Active Command */}
+                  {/* Section 2: CodeMirror 6 Editor for Active Command (Always Visible & Accessible) */}
                   {activeCommand && (
-                    <div className="flex flex-col space-y-2 pt-2" data-testid="code-editor-section">
-                      <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
+                    <div className="flex-1 min-h-[240px] flex flex-col space-y-2 pt-2 border-t border-border overflow-hidden" data-testid="code-editor-section">
+                      <div className="flex items-center justify-between text-xs font-medium text-muted-foreground shrink-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-foreground">
+                          <span className="font-medium text-[#feffff]">
                             {activeCommand.direction === 'request'
                               ? 'Trama de Solicitud (Request)'
                               : 'Trama de Respuesta (Response)'}
                           </span>
                           {parseResult?.commandCode && (
-                            <span className="font-mono bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[11px] font-semibold border border-primary/20">
+                            <span className="font-mono bg-[#0284c7]/20 text-[#38bdf8] px-1.5 py-0.5 rounded text-[11px] font-semibold border border-[#0284c7]/40">
                               Cmd: {parseResult.commandCode}
                             </span>
                           )}
@@ -185,8 +198,8 @@ export function Shell() {
                           <span
                             className={`text-[11px] px-2 py-0.5 rounded font-medium ${
                               parseResult.valid
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                                : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                                ? 'bg-[#018934]/20 text-[#0da845] border border-[#018934]/40'
+                                : 'bg-[#e11d48]/20 text-[#f87171] border border-[#e11d48]/40'
                             }`}
                           >
                             {parseResult.valid

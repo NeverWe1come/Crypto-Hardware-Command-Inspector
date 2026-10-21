@@ -19,6 +19,7 @@ export const thalesPayshield10kSpec: DeviceSpec = {
     en: 'Thales payShield 10K Financial Hardware Security Module with positional header framing, LMK key blocks, TR-31, and PIN encryption.'
   },
   defaultVersion: '2.3',
+  exampleCommand: 'NC',
   framing: {
     type: 'header-positional',
     defaultHeaderLength: 4,

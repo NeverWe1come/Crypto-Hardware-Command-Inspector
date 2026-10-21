@@ -246,7 +246,7 @@ export function CodeEditor({
       '.cm-content': {
         padding: '10px 14px',
         lineHeight: '1.6',
-        caretColor: 'var(--color-primary, #3b82f6)'
+        caretColor: '#ff7800'
       },
       '.cm-line': {
         padding: '0 2px'
@@ -256,40 +256,40 @@ export function CodeEditor({
         fontWeight: '700'
       },
       '.cm-segment-command-code': {
-        color: '#2563eb',
+        color: '#38bdf8',
         fontWeight: '700',
-        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+        backgroundColor: 'rgba(56, 189, 248, 0.15)',
         borderRadius: '2px',
         padding: '0 2px'
       },
       '.cm-segment-field': {
-        color: '#059669',
-        backgroundColor: 'rgba(5, 150, 105, 0.08)',
+        color: '#0da845',
+        backgroundColor: 'rgba(1, 137, 52, 0.15)',
         borderRadius: '2px',
         padding: '0 2px'
       },
       '.cm-segment-header': {
-        color: '#7c3aed',
-        backgroundColor: 'rgba(124, 58, 237, 0.08)',
+        color: '#a78bfa',
+        backgroundColor: 'rgba(167, 139, 250, 0.15)',
         borderRadius: '2px',
         padding: '0 2px'
       },
       '.cm-segment-tag': {
-        color: '#d97706',
+        color: '#ff9233',
         fontWeight: '600',
-        backgroundColor: 'rgba(217, 119, 6, 0.08)',
+        backgroundColor: 'rgba(255, 120, 0, 0.15)',
         borderRadius: '2px',
         padding: '0 2px'
       },
       '.cm-segment-tag-value': {
-        color: '#0891b2',
-        backgroundColor: 'rgba(8, 145, 178, 0.08)',
+        color: '#22d3ee',
+        backgroundColor: 'rgba(34, 211, 238, 0.15)',
         borderRadius: '2px',
         padding: '0 2px'
       },
       '.cm-segment-highlighted': {
-        outline: '2px solid #3b82f6',
-        backgroundColor: 'rgba(59, 130, 246, 0.22) !important',
+        outline: '2px solid #ff7800',
+        backgroundColor: 'rgba(255, 120, 0, 0.25) !important',
         borderRadius: '3px'
       }
     });
@@ -439,7 +439,7 @@ export function CodeEditor({
     <div
       ref={containerRef}
       data-testid="code-editor-container"
-      className={`relative w-full rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors ${className}`}
+      className={`relative w-full rounded-md border border-[#2e3b5b] bg-[#202940] shadow-xs focus-within:border-[#ff7800] focus-within:ring-2 focus-within:ring-[#ff7800]/30 transition-colors ${className}`}
     />
   );
 }

@@ -54,14 +54,13 @@ export function WorkspaceTabs() {
             }}
             className={`group relative flex items-center gap-2 h-8 px-3 rounded-md text-xs font-medium cursor-pointer border transition-all ${
               isActive
-                ? 'bg-background border-border text-foreground shadow-xs'
-                : 'bg-transparent border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                ? 'bg-[#202940] border-[#2e3b5b] border-b-2 border-b-[#ff7800] text-[#feffff] font-semibold shadow-xs'
+                : 'bg-transparent border-transparent text-[#94a3b8] hover:bg-[#283350]/50 hover:text-[#feffff]'
             }`}
             data-testid={`workspace-tab-${tab.deviceId}`}
           >
-            <Cpu className="size-3.5 text-primary/70 shrink-0" />
+            <Cpu className={`size-3.5 shrink-0 ${isActive ? 'text-[#0da845]' : 'text-[#94a3b8]'}`} />
             <span className="truncate max-w-[160px]">{deviceName}</span>
-            <span className="text-[10px] font-mono text-muted-foreground">v{tab.version}</span>
 
             <Button
               variant="ghost"
@@ -70,7 +69,7 @@ export function WorkspaceTabs() {
                 e.stopPropagation();
                 dispatch({ type: 'CLOSE_DEVICE_TAB', payload: { tabId: tab.id } });
               }}
-              className="size-4 p-0 rounded-xs text-muted-foreground hover:text-foreground hover:bg-muted opacity-60 group-hover:opacity-100"
+              className="size-4 p-0 rounded-xs text-[#94a3b8] hover:text-[#feffff] hover:bg-[#283350] opacity-60 group-hover:opacity-100"
               aria-label={intl.formatMessage({
                 id: 'tabs.closeTab',
                 defaultMessage: 'Cerrar pestaña'

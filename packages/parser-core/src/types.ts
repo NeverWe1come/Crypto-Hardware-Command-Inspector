@@ -258,6 +258,7 @@ export interface DeviceSpec {
   readonly icon?: string;
   readonly summary: LocalizedString;
   readonly defaultVersion: string;
+  readonly exampleCommand?: string;
   readonly framing: FramingConfig;
   readonly versions: Readonly<Record<string, DeviceVersionSpec>>;
 }

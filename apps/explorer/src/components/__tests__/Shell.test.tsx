@@ -27,7 +27,7 @@ function renderShell(initialState?: Partial<WorkspaceState>) {
 
 describe('Application Shell Integration', () => {
   describe('Header Navigation & Status', () => {
-    it('renders Header with application title, language toggle, theme toggle, and offline badge', () => {
+    it('renders Header with application title, language toggle, and persistence buttons', () => {
       renderShell();
 
       // Title
@@ -35,14 +35,8 @@ describe('Application Shell Integration', () => {
         screen.getByRole('heading', { name: /Crypto Hardware Command Inspector/i })
       ).toBeInTheDocument();
 
-      // 100% Local status indicator badge
-      const statusBadge = screen.getByTestId('status-indicator');
-      expect(statusBadge).toBeInTheDocument();
-      expect(statusBadge).toHaveTextContent(/100% Local/i);
-
-      // Language and theme selectors
+      // Language toggle
       expect(screen.getByTestId('language-select')).toBeInTheDocument();
-      expect(screen.getByTestId('theme-select')).toBeInTheDocument();
 
       // Quick action buttons for history and sessions
       expect(screen.getByTestId('history-button')).toBeInTheDocument();
@@ -59,66 +53,50 @@ describe('Application Shell Integration', () => {
       await user.click(langButton);
       expect(langButton).toHaveTextContent(/EN/i);
 
-      // Verify that UI labels switched to English
-      expect(screen.getByTestId('status-indicator')).toHaveTextContent(/100% Local & Secure/i);
-
       // Toggle back to Spanish
       await user.click(langButton);
       expect(langButton).toHaveTextContent(/ES/i);
-      expect(screen.getByTestId('status-indicator')).toHaveTextContent(/100% Local y Seguro/i);
-    });
-
-    it('cycles visual theme when clicking theme toggle button', async () => {
-      const { user } = renderShell();
-
-      const themeButton = screen.getByTestId('theme-select');
-      expect(themeButton).toHaveTextContent(/dark/i);
-
-      // Dark -> Light
-      await user.click(themeButton);
-      expect(themeButton).toHaveTextContent(/light/i);
-
-      // Light -> System
-      await user.click(themeButton);
-      expect(themeButton).toHaveTextContent(/system/i);
-
-      // System -> Dark
-      await user.click(themeButton);
-      expect(themeButton).toHaveTextContent(/dark/i);
     });
   });
 
   describe('Sidebar Catalog & Filtering', () => {
-    it('renders the 4 hardware categories (KMS, HSM_FINANCIAL, HSM_GP, HSMAAS) plus ALL', () => {
+    it('renders the 3 hardware categories (HSM, KMS, HSMAAS) and collapse toggle', () => {
       renderShell();
 
-      expect(screen.getByTestId('category-filter-all')).toBeInTheDocument();
-      expect(screen.getByTestId('category-filter-hsm_financial')).toBeInTheDocument();
-      expect(screen.getByTestId('category-filter-hsm_gp')).toBeInTheDocument();
+      expect(screen.getByTestId('category-filter-hsm')).toBeInTheDocument();
       expect(screen.getByTestId('category-filter-kms')).toBeInTheDocument();
       expect(screen.getByTestId('category-filter-hsmaas')).toBeInTheDocument();
+      expect(screen.getByTestId('sidebar-collapse-toggle')).toBeInTheDocument();
     });
 
-    it('filters devices when clicking a category filter pill', async () => {
+    it('filters devices when clicking a category filter pill and allows collapsing', async () => {
       const { user } = renderShell();
 
-      // Initially all devices are visible (supported + coming soon)
+      // In HSMs (default), financial HSMs are visible
       expect(screen.getByTestId('device-card-utimaco-atalla-at1000')).toBeInTheDocument();
-      expect(screen.getByTestId('device-card-aws-kms')).toBeInTheDocument();
+      expect(screen.getByTestId('device-card-thales-payshield-10k')).toBeInTheDocument();
+      expect(screen.getByTestId('device-card-futurex-excrypt')).toBeInTheDocument();
+      // KMS devices are not in HSM view
+      expect(screen.queryByTestId('device-card-aws-kms')).not.toBeInTheDocument();
 
       // Click KMS category
       await user.click(screen.getByTestId('category-filter-kms'));
 
-      // KMS devices remain, financial HSM devices are filtered out
+      // KMS devices appear, financial HSM devices are filtered out
       expect(screen.getByTestId('device-card-aws-kms')).toBeInTheDocument();
       expect(screen.queryByTestId('device-card-utimaco-atalla-at1000')).not.toBeInTheDocument();
 
-      // Click HSM_FINANCIAL category
-      await user.click(screen.getByTestId('category-filter-hsm_financial'));
+      // Click HSM category again
+      await user.click(screen.getByTestId('category-filter-hsm'));
       expect(screen.getByTestId('device-card-utimaco-atalla-at1000')).toBeInTheDocument();
-      expect(screen.getByTestId('device-card-thales-payshield-10k')).toBeInTheDocument();
-      expect(screen.getByTestId('device-card-futurex-excrypt')).toBeInTheDocument();
-      expect(screen.queryByTestId('device-card-aws-kms')).not.toBeInTheDocument();
+
+      // Toggle collapse mode
+      const collapseToggle = screen.getByTestId('sidebar-collapse-toggle');
+      await user.click(collapseToggle);
+      // In collapsed mode, the device card is still clickable by device-id
+      expect(screen.getByTestId('device-card-utimaco-atalla-at1000')).toBeInTheDocument();
+      // Un-collapse
+      await user.click(collapseToggle);
     });
 
     it('filters devices dynamically via search input', () => {
@@ -135,18 +113,20 @@ describe('Application Shell Integration', () => {
       expect(screen.getByTestId('device-card-utimaco-atalla-at1000')).toBeInTheDocument();
     });
 
-    it('displays Soportado badge on MVP devices and Próximamente badge on roadmap devices', () => {
-      renderShell();
+    it('displays Soportado badge on MVP devices and Próximamente badge on roadmap devices', async () => {
+      const { user } = renderShell();
 
-      // Supported MVP badges
+      // Supported MVP badges in HSM category
       expect(screen.getByTestId('badge-supported-utimaco-atalla-at1000')).toHaveTextContent(/Soportado/i);
       expect(screen.getByTestId('badge-supported-thales-payshield-10k')).toHaveTextContent(/Soportado/i);
       expect(screen.getByTestId('badge-supported-futurex-excrypt')).toHaveTextContent(/Soportado/i);
 
-      // Coming-soon roadmap badges
-      expect(screen.getByTestId('badge-coming-soon-aws-kms')).toHaveTextContent(/Próximamente/i);
+      // Coming soon badge in general purpose HSM
       expect(screen.getByTestId('badge-coming-soon-thales-luna-7')).toHaveTextContent(/Próximamente/i);
-      expect(screen.getByTestId('badge-coming-soon-azure-payment-hsm')).toHaveTextContent(/Próximamente/i);
+
+      // Switch to KMS for AWS KMS coming-soon badge
+      await user.click(screen.getByTestId('category-filter-kms'));
+      expect(screen.getByTestId('badge-coming-soon-aws-kms')).toHaveTextContent(/Próximamente/i);
     });
   });
 
@@ -170,7 +150,8 @@ describe('Application Shell Integration', () => {
       // Active workspace view replaces empty state
       expect(screen.queryByTestId('empty-workspace-state')).not.toBeInTheDocument();
       expect(screen.getByTestId('active-workspace-view')).toBeInTheDocument();
-      expect(screen.getByText(/Firmware v8.60/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Atalla AT1000/i })).toBeInTheDocument();
+      expect(screen.getByTestId('header-add-command-button')).toBeInTheDocument();
     });
 
     it('enforces single-tab-per-device rule: clicking already open device does NOT create a duplicate tab', async () => {
@@ -214,6 +195,9 @@ describe('Application Shell Integration', () => {
 
     it('renders coming-soon devices as disabled and prevents opening a tab when clicked', async () => {
       const { user } = renderShell();
+
+      // Switch to KMS category where aws-kms is located
+      await user.click(screen.getByTestId('category-filter-kms'));
 
       const awsCard = screen.getByTestId('device-card-aws-kms');
       expect(awsCard).toHaveAttribute('aria-disabled', 'true');

@@ -10,12 +10,11 @@
  * - UPDATE_COMMAND_DIRECTION
  * - UPDATE_COMMAND_VERSION
  * - UPDATE_TAB_HEADER_LENGTH
- * - LINK_COMMANDS
  * - REORDER_COMMANDS
  * - SELECT_COMMAND
  *
  * Ensures strict immutability, unique ID generation, edge cases (single command deletion,
- * dangling link cleanup, missing tab/command fallbacks), and pure state transitions.
+ * missing tab/command fallbacks), and pure state transitions.
  */
 
 import { describe, expect, it } from 'vitest';
@@ -250,26 +249,6 @@ describe('Phase 4: Workspace Command Actions Reducer', () => {
       expect(tab.activeCommandId).toBe(newCmd.id);
     });
 
-    it('cleans up dangling links when deleting a command that was linked to another command', () => {
-      const commands: CommandEntry[] = [
-        { id: 'cmd_req', raw: '<31#>', version: '8.60', direction: 'request', linkedCommandId: 'cmd_resp' },
-        { id: 'cmd_resp', raw: '<31#00#>', version: '8.60', direction: 'response', linkedCommandId: 'cmd_req' }
-      ];
-      const state = deepFreeze(createTestStateWithTab({ commands, activeCommandId: 'cmd_resp' }));
-
-      const nextState = workspaceReducer(state, {
-        type: 'DELETE_COMMAND',
-        payload: { commandId: 'cmd_resp' }
-      });
-
-      const tab = nextState.tabs[0]!;
-      expect(tab.commands).toHaveLength(1);
-      const remaining = tab.commands[0]!;
-      expect(remaining.id).toBe('cmd_req');
-      // Dangling link must be cleaned up to null
-      expect(remaining.linkedCommandId).toBeNull();
-    });
-
     it('returns state untouched when commandId is not found', () => {
       const state = deepFreeze(createTestStateWithTab());
       const nextState = workspaceReducer(state, {
@@ -311,24 +290,6 @@ describe('Phase 4: Workspace Command Actions Reducer', () => {
       expect(tab.commands[2]?.id).toBe('cmd_2');
       // The duplicated command becomes active
       expect(tab.activeCommandId).toBe(duplicated.id);
-    });
-
-    it('clears linkedCommandId on the duplicate copy to avoid unintended pair linking', () => {
-      const commands: CommandEntry[] = [
-        { id: 'cmd_1', raw: '0000NC', version: '2.3', direction: 'request', linkedCommandId: 'cmd_target' }
-      ];
-      const state = deepFreeze(createTestStateWithTab({ commands, activeCommandId: 'cmd_1' }));
-
-      const nextState = workspaceReducer(state, {
-        type: 'DUPLICATE_COMMAND',
-        payload: { commandId: 'cmd_1', newCommandId: 'cmd_copy' }
-      });
-
-      const tab = nextState.tabs[0]!;
-      expect(tab.commands).toHaveLength(2);
-      const copy = tab.commands[1]!;
-      expect(copy.id).toBe('cmd_copy');
-      expect(copy.linkedCommandId).toBeNull();
     });
 
     it('returns state untouched if commandId does not exist', () => {
@@ -520,109 +481,6 @@ describe('Phase 4: Workspace Command Actions Reducer', () => {
         payload: { headerLength: -1 }
       });
       expect(negativeState).toBe(state);
-    });
-  });
-
-  describe('LINK_COMMANDS', () => {
-    it('links two commands bidirectionally by default', () => {
-      const commands: CommandEntry[] = [
-        { id: 'cmd_req', raw: '<31#>', version: '8.60', direction: 'request', linkedCommandId: null },
-        { id: 'cmd_resp', raw: '<31#00#>', version: '8.60', direction: 'response', linkedCommandId: null }
-      ];
-      const state = deepFreeze(createTestStateWithTab({ commands }));
-
-      const nextState = workspaceReducer(state, {
-        type: 'LINK_COMMANDS',
-        payload: {
-          commandId: 'cmd_req',
-          targetCommandId: 'cmd_resp',
-          bidirectional: true
-        }
-      });
-
-      const tab = nextState.tabs[0]!;
-      const req = tab.commands.find((c) => c.id === 'cmd_req')!;
-      const resp = tab.commands.find((c) => c.id === 'cmd_resp')!;
-
-      expect(req.linkedCommandId).toBe('cmd_resp');
-      expect(resp.linkedCommandId).toBe('cmd_req');
-    });
-
-    it('unlinks both commands when targetCommandId is null', () => {
-      const commands: CommandEntry[] = [
-        { id: 'cmd_req', raw: '<31#>', version: '8.60', direction: 'request', linkedCommandId: 'cmd_resp' },
-        { id: 'cmd_resp', raw: '<31#00#>', version: '8.60', direction: 'response', linkedCommandId: 'cmd_req' }
-      ];
-      const state = deepFreeze(createTestStateWithTab({ commands }));
-
-      const nextState = workspaceReducer(state, {
-        type: 'LINK_COMMANDS',
-        payload: {
-          commandId: 'cmd_req',
-          targetCommandId: null
-        }
-      });
-
-      const tab = nextState.tabs[0]!;
-      const req = tab.commands.find((c) => c.id === 'cmd_req')!;
-      const resp = tab.commands.find((c) => c.id === 'cmd_resp')!;
-
-      expect(req.linkedCommandId).toBeNull();
-      expect(resp.linkedCommandId).toBeNull();
-    });
-
-    it('handles re-linking cleanly: frees previous partner when linked to a new target', () => {
-      const commands: CommandEntry[] = [
-        { id: 'cmd_req1', raw: '<31#>', version: '8.60', direction: 'request', linkedCommandId: 'cmd_resp' },
-        { id: 'cmd_resp', raw: '<31#00#>', version: '8.60', direction: 'response', linkedCommandId: 'cmd_req1' },
-        { id: 'cmd_req2', raw: '<32#>', version: '8.60', direction: 'request', linkedCommandId: null }
-      ];
-      const state = deepFreeze(createTestStateWithTab({ commands }));
-
-      // Link req2 with resp (resp previously linked to req1)
-      const nextState = workspaceReducer(state, {
-        type: 'LINK_COMMANDS',
-        payload: {
-          commandId: 'cmd_req2',
-          targetCommandId: 'cmd_resp',
-          bidirectional: true
-        }
-      });
-
-      const tab = nextState.tabs[0]!;
-      const req1 = tab.commands.find((c) => c.id === 'cmd_req1')!;
-      const resp = tab.commands.find((c) => c.id === 'cmd_resp')!;
-      const req2 = tab.commands.find((c) => c.id === 'cmd_req2')!;
-
-      expect(req1.linkedCommandId).toBeNull(); // previous link cleared
-      expect(req2.linkedCommandId).toBe('cmd_resp');
-      expect(resp.linkedCommandId).toBe('cmd_req2');
-    });
-
-    it('ignores linking a command to itself', () => {
-      const state = deepFreeze(createTestStateWithTab());
-      const nextState = workspaceReducer(state, {
-        type: 'LINK_COMMANDS',
-        payload: {
-          commandId: 'cmd_1',
-          targetCommandId: 'cmd_1'
-        }
-      });
-
-      expect(nextState).toBe(state);
-    });
-
-    it('returns state untouched if commandId or targetCommandId does not exist', () => {
-      const state = deepFreeze(createTestStateWithTab());
-      const nextState = workspaceReducer(state, {
-        type: 'LINK_COMMANDS',
-        payload: {
-          commandId: 'cmd_1',
-          targetCommandId: 'unknown_cmd'
-        }
-      });
-
-      expect(nextState).toBe(state);
     });
   });
 

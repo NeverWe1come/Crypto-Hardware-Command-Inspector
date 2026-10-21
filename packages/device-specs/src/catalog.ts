@@ -25,6 +25,7 @@ export const DEVICE_CATALOG: readonly DeviceCatalogEntry[] = [
     vendor: 'Amazon Web Services',
     category: 'KMS',
     status: 'coming-soon',
+    exampleCommand: 'kms:Encrypt',
     summary: {
       es: 'Servicio gestionado de gestión de claves y cifrado de sobres criptográficos en la nube de Amazon Web Services.',
       en: 'Managed key management service and envelope encryption in the Amazon Web Services cloud.'
@@ -36,6 +37,7 @@ export const DEVICE_CATALOG: readonly DeviceCatalogEntry[] = [
     vendor: 'HashiCorp',
     category: 'KMS',
     status: 'coming-soon',
+    exampleCommand: 'transit/encrypt',
     summary: {
       es: 'Motor de cifrado como servicio (Transit Secrets Engine) para gestión de claves, firma y hashing.',
       en: 'Encryption-as-a-service Transit Secrets Engine for key management, digital signatures, and hashing.'
@@ -49,6 +51,7 @@ export const DEVICE_CATALOG: readonly DeviceCatalogEntry[] = [
     vendor: 'Thales',
     category: 'HSM_GP',
     status: 'coming-soon',
+    exampleCommand: 'C_Initialize()',
     summary: {
       es: 'Módulo de seguridad de hardware de propósito general con soporte para API PKCS#11, Microsoft CAPI/CNG y JCE.',
       en: 'General-purpose Hardware Security Module supporting PKCS#11, Microsoft CAPI/CNG, and JCE interfaces.'
@@ -60,6 +63,7 @@ export const DEVICE_CATALOG: readonly DeviceCatalogEntry[] = [
     vendor: 'Marvell',
     category: 'HSM_GP',
     status: 'coming-soon',
+    exampleCommand: 'KRN_STATUS',
     summary: {
       es: 'HSM de alta densidad para entornos de nube y centros de datos con múltiples particiones virtuales.',
       en: 'High-density cloud and data center Hardware Security Module with multi-tenant virtual partitions.'
@@ -73,6 +77,7 @@ export const DEVICE_CATALOG: readonly DeviceCatalogEntry[] = [
     vendor: 'Microsoft Azure',
     category: 'HSMAAS',
     status: 'coming-soon',
+    exampleCommand: 'NC',
     summary: {
       es: 'Servicio de HSM de pagos dedicado en la nube de Azure basado en infraestructura física Thales payShield 10K.',
       en: 'Dedicated cloud payment HSM service in Microsoft Azure backed by Thales payShield 10K hardware.'

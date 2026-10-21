@@ -18,7 +18,7 @@ export type AppTheme = 'dark' | 'light' | 'system';
 /**
  * Filter for devices in the catalog sidebar: all devices or a specific hardware category.
  */
-export type CategoryFilter = 'ALL' | DeviceCategory;
+export type CategoryFilter = 'ALL' | 'HSM' | DeviceCategory;
 
 /**
  * Represents a single inspected cryptographic command within a device workspace tab.
@@ -128,15 +128,6 @@ export type WorkspaceAction =
       readonly payload: {
         readonly headerLength: number;
         readonly tabId?: string;
-      };
-    }
-  | {
-      readonly type: 'LINK_COMMANDS';
-      readonly payload: {
-        readonly commandId: string;
-        readonly targetCommandId: string | null;
-        readonly tabId?: string;
-        readonly bidirectional?: boolean;
       };
     }
   | {

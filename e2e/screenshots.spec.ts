@@ -14,34 +14,14 @@ test.describe('CHCI Visual Workflows & Automated High-Res Screenshots', () => {
     await expect(page.getByTestId('app-header')).toBeVisible();
 
     // -------------------------------------------------------------
-    // Screenshot 1: Overview and Hardware Catalog (Light Mode)
+    // Screenshot 1 & 2: Overview and Hardware Catalog
     // -------------------------------------------------------------
-    // Ensure light mode is set
-    const themeButton = page.getByTestId('theme-select');
-    // If current theme is not light, click until light
-    for (let i = 0; i < 3; i++) {
-      const themeText = await themeButton.innerText();
-      if (themeText.toLowerCase().includes('light')) break;
-      await themeButton.click();
-      await page.waitForTimeout(200);
-    }
     await page.waitForTimeout(400);
 
     await page.screenshot({
       path: path.join('docs', 'assets', 'screenshots', '01-catalog-overview-light.png'),
       fullPage: true
     });
-
-    // -------------------------------------------------------------
-    // Screenshot 2: Overview and Hardware Catalog (Dark Mode)
-    // -------------------------------------------------------------
-    for (let i = 0; i < 3; i++) {
-      const themeText = await themeButton.innerText();
-      if (themeText.toLowerCase().includes('dark')) break;
-      await themeButton.click();
-      await page.waitForTimeout(200);
-    }
-    await page.waitForTimeout(400);
 
     await page.screenshot({
       path: path.join('docs', 'assets', 'screenshots', '02-catalog-overview-dark.png'),
@@ -107,10 +87,10 @@ test.describe('CHCI Visual Workflows & Automated High-Res Screenshots', () => {
     });
 
     // -------------------------------------------------------------
-    // Screenshot 5: Request ↔ Response Linked Correlation
+    // Screenshot 5: Expected Response & Command Lifecycle
     // -------------------------------------------------------------
-    // Add response command in Thales tab
-    const addCmdBtn = page.getByTestId('add-command-button');
+    // Add command in Thales tab via header button
+    const addCmdBtn = page.getByTestId('header-add-command-button');
     await addCmdBtn.click();
     await page.waitForTimeout(300);
 
@@ -121,11 +101,11 @@ test.describe('CHCI Visual Workflows & Automated High-Res Screenshots', () => {
     await page.keyboard.insertText('A100');
     await page.waitForTimeout(400);
 
-    // Open Correlation accordion in analysis panel
-    const correlationTrigger = page.getByTestId('accordion-trigger-correlation');
-    if (await correlationTrigger.isVisible()) {
-      if ((await correlationTrigger.getAttribute('aria-expanded')) === 'false') {
-        await correlationTrigger.click();
+    // Open Expected Response accordion in analysis panel
+    const expectedRespTrigger = page.getByTestId('accordion-trigger-expected-response');
+    if (await expectedRespTrigger.isVisible()) {
+      if ((await expectedRespTrigger.getAttribute('aria-expanded')) === 'false') {
+        await expectedRespTrigger.click();
       }
     }
     await page.waitForTimeout(300);

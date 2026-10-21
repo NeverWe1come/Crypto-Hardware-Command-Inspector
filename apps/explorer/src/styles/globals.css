@@ -6,60 +6,49 @@
 /** Dark Mode Variant **/
 @custom-variant dark (&:is(.dark *));
 
-/** Colors - https://tailwindcss.com/docs/colors **/
-:root {
-  --background: var(--color-white);
-  --foreground: var(--color-zinc-950);
-  --card: var(--color-white);
-  --card-foreground: var(--color-zinc-950);
-  --popover: var(--color-white);
-  --popover-foreground: var(--color-zinc-950);
-  --primary: var(--color-zinc-900);
-  --primary-foreground: var(--color-white);
-  --secondary: var(--color-zinc-100);
-  --secondary-foreground: var(--color-zinc-900);
-  --muted: var(--color-zinc-100);
-  --muted-foreground: var(--color-zinc-500);
-  --accent: var(--color-zinc-100);
-  --accent-foreground: var(--color-zinc-900);
-  --destructive: var(--color-red-600);
-  --destructive-foreground: var(--color-white);
-  --chart-1: var(--color-blue-500);
-  --chart-2: var(--color-green-500);
-  --chart-3: var(--color-yellow-500);
-  --chart-4: var(--color-red-500);
-  --chart-5: var(--color-purple-500);
-  --border: oklch(94% 0.004 286.32); /* between --color-zinc-100 and --color-zinc-200 */
-  --input: var(--color-zinc-200);
-  --ring: var(--color-zinc-400);
-  --radius: 0.5rem;
-}
-
+/** Colors - High Contrast Permanent Dark Palette (#202940, #018934, #ff7800, #feffff) **/
+:root,
 .dark {
-  --background: var(--color-zinc-950);
-  --foreground: var(--color-zinc-50);
-  --card: var(--color-zinc-950);
-  --card-foreground: var(--color-zinc-50);
-  --popover: var(--color-zinc-950);
-  --popover-foreground: var(--color-zinc-50);
-  --primary: var(--color-zinc-300);
-  --primary-foreground: var(--color-zinc-950);
-  --secondary: var(--color-zinc-800);
-  --secondary-foreground: var(--color-zinc-50);
-  --muted: var(--color-zinc-900);
-  --muted-foreground: var(--color-zinc-500);
-  --accent: var(--color-zinc-900);
-  --accent-foreground: var(--color-zinc-50);
-  --destructive: var(--color-red-600);
-  --destructive-foreground: var(--color-white);
-  --chart-1: var(--color-blue-500);
-  --chart-2: var(--color-green-500);
-  --chart-3: var(--color-yellow-500);
-  --chart-4: var(--color-red-500);
-  --chart-5: var(--color-purple-500);
-  --border: var(--color-zinc-800);
-  --input: var(--color-zinc-800);
-  --ring: var(--color-zinc-600);
+  --background: #131927;
+  --foreground: #feffff;
+  --card: #202940;
+  --card-foreground: #feffff;
+  --popover: #283350;
+  --popover-foreground: #feffff;
+  --primary: #feffff;
+  --primary-foreground: #202940;
+  --secondary: #283350;
+  --secondary-foreground: #feffff;
+  --muted: #1a2236;
+  --muted-foreground: #94a3b8;
+  --accent: rgba(255, 120, 0, 0.16);
+  --accent-foreground: #ff9233;
+  --destructive: #f87171;
+  --destructive-foreground: #131927;
+  --border: #2e3b5b;
+  --input: #2e3b5b;
+  --ring: #ff7800;
+  --radius: 0.5rem;
+
+  /* Custom Brand Tokens */
+  --brand-principal: #202940;
+  --brand-green: #018934;
+  --brand-orange: #ff7800;
+  --brand-white: #feffff;
+
+  /* ReUI / Metronic Badges & Alerts */
+  --color-success-accent: #0da845;
+  --color-success-foreground: #feffff;
+  --color-success-soft: rgba(1, 137, 52, 0.22);
+  --color-warning-accent: #ff7800;
+  --color-warning-foreground: #feffff;
+  --color-warning-soft: rgba(255, 120, 0, 0.22);
+  --color-info-accent: #38bdf8;
+  --color-info-foreground: #131927;
+  --color-info-soft: rgba(56, 189, 248, 0.22);
+  --color-destructive-accent: #f87171;
+  --color-destructive-foreground: #131927;
+  --color-destructive-soft: rgba(248, 113, 113, 0.22);
 }
 
 /** Theme Setup **/

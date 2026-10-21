@@ -26,13 +26,11 @@ import type { CommandDirection } from '@chci/parser-core';
 import { useOptionalWorkspace } from '../state/workspace-context';
 import type { CommandEntry, WorkspaceTab } from '../state/types';
 import { Button } from './ui/button';
-import { Badge } from './ui/badge';
 import {
   Plus,
   Copy,
   Trash2,
   GripVertical,
-  Link2,
   ArrowUpRight,
   ArrowDownLeft
 } from 'lucide-react';
@@ -59,8 +57,6 @@ export interface CommandListProps {
   readonly onUpdateDirection?: (commandId: string, direction: CommandDirection) => void;
   /** Callback fired when a command's firmware version is modified. */
   readonly onUpdateVersion?: (commandId: string, version: string) => void;
-  /** Callback fired when linking or unlinking a request to a response command. */
-  readonly onLinkCommands?: (commandId: string, targetCommandId: string | null) => void;
   /** Callback fired when updating header length for header-positional devices. */
   readonly onUpdateHeaderLength?: (headerLength: number) => void;
 }
@@ -77,7 +73,6 @@ function arrayMove<T>(array: readonly T[], from: number, to: number): T[] {
 interface SortableCommandItemProps {
   readonly cmd: CommandEntry;
   readonly index: number;
-  readonly tab: WorkspaceTab;
   readonly isActive: boolean;
   readonly versions: readonly string[];
   readonly onSelect: (id: string) => void;
@@ -85,21 +80,18 @@ interface SortableCommandItemProps {
   readonly onDelete: (id: string) => void;
   readonly onUpdateDirection: (id: string, dir: CommandDirection) => void;
   readonly onUpdateVersion: (id: string, ver: string) => void;
-  readonly onLink: (id: string, targetId: string | null) => void;
 }
 
 const SortableCommandItem = React.memo(function SortableCommandItem({
   cmd,
   index,
-  tab,
   isActive,
   versions,
   onSelect,
   onDuplicate,
   onDelete,
   onUpdateDirection,
-  onUpdateVersion,
-  onLink
+  onUpdateVersion
 }: SortableCommandItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: cmd.id });
@@ -112,9 +104,6 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
   };
 
   const isRequest = cmd.direction === 'request';
-  const targetIndex = cmd.linkedCommandId
-    ? tab.commands.findIndex((c) => c.id === cmd.linkedCommandId)
-    : -1;
 
   return (
     <div
@@ -133,10 +122,10 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
           onSelect(cmd.id);
         }
       }}
-      className={`group flex items-center justify-between p-2 rounded-md border text-xs transition-all cursor-pointer select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary ${
+      className={`group flex items-center justify-between p-2.5 rounded-md border text-xs transition-all cursor-pointer select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#ff7800] ${
         isActive
-          ? 'bg-primary/10 border-primary/60 shadow-xs'
-          : 'bg-card border-border/50 hover:border-border hover:bg-muted/30'
+          ? 'bg-[#283350] border-[#ff7800] border-l-4 border-l-[#ff7800] shadow-md shadow-[#ff7800]/15 text-[#feffff]'
+          : 'bg-[#202940] border-[#2e3b5b] hover:border-[#3d4d75] hover:bg-[#25304b] text-[#feffff]/90'
       }`}
     >
       <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -148,7 +137,7 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
           {...listeners}
           onClick={(e) => e.stopPropagation()}
           aria-label={`Reordenar comando #${index + 1}`}
-          className="cursor-grab active:cursor-grabbing p-1 text-muted-foreground hover:text-foreground shrink-0 rounded-xs hover:bg-muted"
+          className="cursor-grab active:cursor-grabbing p-1 text-muted-foreground hover:text-foreground shrink-0 rounded-xs hover:bg-[#1c2438]"
         >
           <GripVertical className="size-3.5" />
         </button>
@@ -156,10 +145,17 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
         {/* Ordinal indicator */}
         <span
           data-testid={`command-ordinal-${cmd.id}`}
-          className="font-mono text-xs font-bold text-foreground/80 shrink-0 min-w-[24px]"
+          className="font-mono text-xs font-bold text-foreground shrink-0 min-w-[24px]"
         >
           #{index + 1}
         </span>
+
+        {/* Active badge */}
+        {isActive && (
+          <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#ff7800]/20 text-[#ff7800] border border-[#ff7800]/40 shrink-0">
+            Activo
+          </span>
+        )}
 
         {/* Direction toggle button */}
         <button
@@ -171,8 +167,8 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
           }}
           className={`flex items-center gap-1 px-2 py-0.5 rounded-sm font-medium text-[11px] shrink-0 transition-colors ${
             isRequest
-              ? 'bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 border border-blue-500/30'
-              : 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30'
+              ? 'bg-[#0284c7]/20 text-[#38bdf8] hover:bg-[#0284c7]/30 border border-[#0284c7]/40'
+              : 'bg-[#018934]/20 text-[#0da845] hover:bg-[#018934]/30 border border-[#018934]/40'
           }`}
           aria-label={isRequest ? 'Dirección: Petición' : 'Dirección: Respuesta'}
         >
@@ -196,49 +192,13 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => onUpdateVersion(cmd.id, e.target.value)}
           aria-label={`Versión de firmware del comando #${index + 1}`}
-          className="h-6 px-1.5 text-[11px] font-mono bg-muted/50 border border-border rounded-sm text-foreground shrink-0"
+          className="h-6 px-1.5 text-[11px] font-mono bg-[#1a2236] border border-[#2e3b5b] rounded-sm text-[#feffff] shrink-0"
         >
           {versions.map((ver) => (
             <option key={ver} value={ver}>
               v{ver}
             </option>
           ))}
-        </select>
-
-        {/* Linked status badge */}
-        {targetIndex !== -1 && (
-          <Badge
-            variant="outline"
-            size="xs"
-            data-testid={`command-link-badge-${cmd.id}`}
-            className="gap-1 font-mono text-[10px] bg-primary/5 text-primary border-primary/20 shrink-0"
-          >
-            <Link2 className="size-2.5" />
-            #{targetIndex + 1}
-          </Badge>
-        )}
-
-        {/* Linked Target Selector */}
-        <select
-          data-testid={`command-link-select-${cmd.id}`}
-          value={cmd.linkedCommandId ?? 'none'}
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => onLink(cmd.id, e.target.value === 'none' ? null : e.target.value)}
-          aria-label={`Vincular comando #${index + 1}`}
-          className="h-6 px-1.5 text-[11px] bg-muted/40 border border-border/60 rounded-sm text-muted-foreground hover:text-foreground shrink-0 max-w-[130px] truncate"
-        >
-          <option value="none">Desvincular</option>
-          {tab.commands
-            .filter((c) => c.id !== cmd.id)
-            .map((c) => {
-              const cIdx = tab.commands.indexOf(c);
-              const dirLabel = c.direction === 'request' ? 'Petición' : 'Respuesta';
-              return (
-                <option key={c.id} value={c.id}>
-                  #{cIdx + 1} ({dirLabel})
-                </option>
-              );
-            })}
         </select>
       </div>
 
@@ -379,17 +339,6 @@ export function CommandList(props: CommandListProps) {
     }
   };
 
-  const handleLinkCommands = (id: string, targetId: string | null) => {
-    if (props.onLinkCommands) {
-      props.onLinkCommands(id, targetId);
-    } else if (workspace?.dispatch) {
-      workspace.dispatch({
-        type: 'LINK_COMMANDS',
-        payload: { commandId: id, targetCommandId: targetId }
-      });
-    }
-  };
-
   const handleReorder = (ids: readonly string[]) => {
     if (props.onReorderCommands) {
       props.onReorderCommands(ids);
@@ -501,7 +450,6 @@ export function CommandList(props: CommandListProps) {
                     key={cmd.id}
                     cmd={cmd}
                     index={index}
-                    tab={currentTab}
                     isActive={cmd.id === activeCommandId}
                     versions={availableVersions}
                     onSelect={handleSelectCommand}
@@ -509,7 +457,6 @@ export function CommandList(props: CommandListProps) {
                     onDelete={handleDeleteCommand}
                     onUpdateDirection={handleUpdateDirection}
                     onUpdateVersion={handleUpdateVersion}
-                    onLink={handleLinkCommands}
                   />
                 ))}
               </div>

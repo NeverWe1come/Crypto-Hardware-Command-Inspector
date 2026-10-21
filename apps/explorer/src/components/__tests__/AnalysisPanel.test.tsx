@@ -36,7 +36,6 @@ import {
 } from '@chci/device-specs';
 import {
   parseCommand,
-  correlateCommands,
   type ParseResult
 } from '@chci/parser-core';
 import { getMessages } from '../../i18n';
@@ -1117,97 +1116,6 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
   });
 
   // =========================================================================
-  // 9. Block 7: Request ↔ Response Correlation Analysis
-  // =========================================================================
-  describe('Block 7: Request ↔ Response Correlation Analysis', () => {
-    it('renders full correlation report when a linked command exists in the tab', () => {
-      const correlation = correlateCommands(
-        thalesParsedRequest,
-        thalesParsedSuccessResponse,
-        thalesPayshield10kSpec
-      );
-
-      renderWithIntl(
-        <AnalysisPanel
-          deviceSpec={thalesPayshield10kSpec}
-          tab={mockTab}
-          activeCommand={mockCommands[0]}
-          parseResult={thalesParsedRequest}
-          linkedParseResult={thalesParsedSuccessResponse}
-          correlationResult={correlation}
-        />
-      );
-
-      const analysisContainer = screen.getByTestId('correlation-analysis');
-      expect(analysisContainer).toBeInTheDocument();
-
-      // Overall status badge
-      const statusBadge = screen.getByTestId('correlation-status-badge');
-      expect(statusBadge).toHaveTextContent(/Correlacionado|Éxito/i);
-
-      // Linked info
-      expect(screen.getByTestId('correlation-linked-info')).toHaveTextContent(/cmd_2|#2/i);
-
-      // 4 Verification checklist items
-      expect(screen.getByTestId('correlation-check-direction-order')).toBeInTheDocument();
-      expect(screen.getByTestId('correlation-check-command-pair')).toBeInTheDocument();
-      expect(screen.getByTestId('correlation-check-header-echo')).toBeInTheDocument();
-      expect(screen.getByTestId('correlation-check-response-status')).toBeInTheDocument();
-    });
-
-    it('renders failed check when linked response reports an error code', () => {
-      const errCorrelation = correlateCommands(
-        thalesParsedRequest,
-        thalesParsedErrorResponse,
-        thalesPayshield10kSpec
-      );
-
-      renderWithIntl(
-        <AnalysisPanel
-          deviceSpec={thalesPayshield10kSpec}
-          tab={mockTab}
-          activeCommand={mockCommands[0]}
-          parseResult={thalesParsedRequest}
-          linkedParseResult={thalesParsedErrorResponse}
-          correlationResult={errCorrelation}
-        />
-      );
-
-      const statusCheck = screen.getByTestId('correlation-check-response-status');
-      expect(statusCheck).toHaveAttribute('data-passed', 'false');
-      expect(statusCheck).toHaveTextContent(/10/);
-    });
-
-    it('renders guidance prompt to link a command when no linked command is configured', () => {
-      const unlinkedCmd: CommandEntry = {
-        id: 'cmd_solo',
-        raw: thalesRawRequest,
-        version: '2.3',
-        direction: 'request',
-        linkedCommandId: null
-      };
-
-      renderWithIntl(
-        <AnalysisPanel
-          deviceSpec={thalesPayshield10kSpec}
-          tab={{
-            ...mockTab,
-            commands: [unlinkedCmd],
-            activeCommandId: 'cmd_solo'
-          }}
-          activeCommand={unlinkedCmd}
-          parseResult={thalesParsedRequest}
-          correlationResult={null}
-        />
-      );
-
-      const unlinkedContainer = screen.getByTestId('correlation-unlinked');
-      expect(unlinkedContainer).toBeInTheDocument();
-      expect(unlinkedContainer).toHaveTextContent(/No hay comando de respuesta vinculado/i);
-    });
-  });
-
-  // =========================================================================
   // 10. Block 8: Manufacturer Notes & Firmware Particularities
   // =========================================================================
   describe('Block 8: Manufacturer Notes & Firmware Particularities', () => {
@@ -1273,7 +1181,6 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(screen.getByTestId('accordion-trigger-diagnostics')).toHaveTextContent(/Diagnósticos/i);
       expect(screen.getByTestId('accordion-trigger-error-code')).toHaveTextContent(/Código de Respuesta \/ Error/i);
       expect(screen.getByTestId('accordion-trigger-expected-response')).toHaveTextContent(/Respuesta Esperada/i);
-      expect(screen.getByTestId('accordion-trigger-correlation')).toHaveTextContent(/Correlación Petición ↔ Respuesta/i);
       expect(screen.getByTestId('accordion-trigger-notes')).toHaveTextContent(/Notas del Fabricante/i);
     });
 
@@ -1294,7 +1201,6 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(screen.getByTestId('accordion-trigger-diagnostics')).toHaveTextContent(/Diagnostics/i);
       expect(screen.getByTestId('accordion-trigger-error-code')).toHaveTextContent(/Response \/ Error Code/i);
       expect(screen.getByTestId('accordion-trigger-expected-response')).toHaveTextContent(/Expected Response/i);
-      expect(screen.getByTestId('accordion-trigger-correlation')).toHaveTextContent(/Request ↔ Response Correlation/i);
       expect(screen.getByTestId('accordion-trigger-notes')).toHaveTextContent(/Manufacturer Notes/i);
     });
   });
@@ -1324,7 +1230,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(itemGeneral).toBeInTheDocument();
     });
 
-    it('verifies aria-expanded and aria-controls on all 8 accordion triggers', () => {
+    it('verifies aria-expanded and aria-controls on all 7 accordion triggers', () => {
       renderWithIntl(
         <AnalysisPanel
           deviceSpec={atallaAt1000Spec}
@@ -1345,7 +1251,6 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
         'error-code',
         'diagnostics',
         'expected-response',
-        'correlation',
         'notes'
       ];
 

@@ -266,14 +266,8 @@ export function workspaceReducer(
         return { ...state, tabs: nextTabs };
       }
 
-      // Filter out deleted command and clean up dangling links pointing to it
-      const remainingCommands = tab.commands
-        .filter((c) => c.id !== action.payload.commandId)
-        .map((c) =>
-          c.linkedCommandId === action.payload.commandId
-            ? { ...c, linkedCommandId: null }
-            : c
-        );
+      // Filter out deleted command
+      const remainingCommands = tab.commands.filter((c) => c.id !== action.payload.commandId);
 
       let nextActiveId = tab.activeCommandId;
       if (tab.activeCommandId === action.payload.commandId) {
@@ -406,62 +400,6 @@ export function workspaceReducer(
         ...tab,
         headerLength: len
       };
-      const nextTabs = [...state.tabs];
-      nextTabs[tabIndex] = updatedTab;
-      return { ...state, tabs: nextTabs };
-    }
-
-    case 'LINK_COMMANDS': {
-      const target = findTargetTab(state, action.payload.tabId);
-      if (!target) return state;
-      const { tab, tabIndex } = target;
-
-      const { commandId, targetCommandId, bidirectional = true } = action.payload;
-      if (commandId === targetCommandId) return state;
-
-      const cmdIndex = tab.commands.findIndex((c) => c.id === commandId);
-      if (cmdIndex === -1) return state;
-
-      if (targetCommandId !== null) {
-        const targetIndex = tab.commands.findIndex((c) => c.id === targetCommandId);
-        if (targetIndex === -1) return state;
-      }
-
-      // If unlinking: targetCommandId is null
-      if (targetCommandId === null) {
-        const oldTargetId = tab.commands[cmdIndex]?.linkedCommandId;
-        const nextCommands = tab.commands.map((c) => {
-          if (c.id === commandId) return { ...c, linkedCommandId: null };
-          if (oldTargetId && c.id === oldTargetId) return { ...c, linkedCommandId: null };
-          return c;
-        });
-        const updatedTab: WorkspaceTab = { ...tab, commands: nextCommands };
-        const nextTabs = [...state.tabs];
-        nextTabs[tabIndex] = updatedTab;
-        return { ...state, tabs: nextTabs };
-      }
-
-      // Linking:
-      const oldCmdPartner = tab.commands[cmdIndex]?.linkedCommandId;
-      const oldTargetPartner = tab.commands.find((c) => c.id === targetCommandId)?.linkedCommandId;
-
-      const nextCommands = tab.commands.map((c) => {
-        if (c.id === commandId) {
-          return { ...c, linkedCommandId: targetCommandId };
-        }
-        if (c.id === targetCommandId && bidirectional) {
-          return { ...c, linkedCommandId: commandId };
-        }
-        if (oldCmdPartner && c.id === oldCmdPartner && oldCmdPartner !== targetCommandId) {
-          return { ...c, linkedCommandId: null };
-        }
-        if (oldTargetPartner && c.id === oldTargetPartner && oldTargetPartner !== commandId) {
-          return { ...c, linkedCommandId: null };
-        }
-        return c;
-      });
-
-      const updatedTab: WorkspaceTab = { ...tab, commands: nextCommands };
       const nextTabs = [...state.tabs];
       nextTabs[tabIndex] = updatedTab;
       return { ...state, tabs: nextTabs };

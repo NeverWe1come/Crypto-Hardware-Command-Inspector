@@ -19,6 +19,7 @@ export const atallaAt1000Spec: DeviceSpec = {
     en: 'Utimaco Atalla AT1000 Financial Hardware Security Module with delimited frame architecture and AKB key blocks.'
   },
   defaultVersion: '8.60',
+  exampleCommand: '00#',
   framing: {
     type: 'delimited-positional',
     startDelimiter: '<',

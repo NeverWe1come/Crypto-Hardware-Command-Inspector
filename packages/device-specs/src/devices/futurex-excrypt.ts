@@ -19,6 +19,7 @@ export const futurexExcryptSpec: DeviceSpec = {
     en: 'Futurex Excrypt Financial Hardware Security Module with tag-value [TAGVAL;] delimited framing architecture and financial key cryptography.'
   },
   defaultVersion: '7.6.1',
+  exampleCommand: '[A:ECHO]',
   framing: {
     type: 'tag-value',
     startDelimiter: '[',

@@ -16,10 +16,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import {
-  correlateCommands,
   parseCommand,
   resolveDeviceVersion,
-  type CorrelationResult,
   type DeviceSpec,
   type FrameSegment,
   type LocalizedString,
@@ -34,7 +32,6 @@ import {
   ChevronRight,
   AlertTriangle,
   CheckCircle2,
-  XCircle,
   Eye,
   EyeOff,
   ArrowRight,
@@ -51,10 +48,6 @@ export interface AnalysisPanelProps {
   readonly activeCommand?: CommandEntry | null;
   /** Precomputed parse result for activeCommand */
   readonly parseResult?: ParseResult | null;
-  /** Parsed result of linked command (if any) */
-  readonly linkedParseResult?: ParseResult | null;
-  /** Correlation analysis result between request and response */
-  readonly correlationResult?: CorrelationResult | null;
   /** Currently highlighted / hovered segment ID */
   readonly highlightedSegmentId?: string | null;
   /** Currently selected segment ID */
@@ -118,31 +111,6 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
     });
   }, [props.parseResult, activeCommand, deviceSpec, activeTab?.headerLength]);
 
-  const linkedCommand = useMemo(() => {
-    if (!activeTab || !activeCommand?.linkedCommandId) return null;
-    return activeTab.commands.find((c) => c.id === activeCommand.linkedCommandId) ?? null;
-  }, [activeTab, activeCommand?.linkedCommandId]);
-
-  const linkedParseResult = useMemo(() => {
-    if (props.linkedParseResult !== undefined) return props.linkedParseResult;
-    if (!linkedCommand || !deviceSpec) return null;
-    return parseCommand(linkedCommand.raw, deviceSpec, {
-      version: linkedCommand.version,
-      expectedDirection: linkedCommand.direction,
-      headerLength: activeTab?.headerLength
-    });
-  }, [props.linkedParseResult, linkedCommand, deviceSpec, activeTab?.headerLength]);
-
-  const correlationResult = useMemo(() => {
-    if (props.correlationResult !== undefined) return props.correlationResult;
-    if (!parseResult || !linkedParseResult || !deviceSpec) return null;
-
-    if (parseResult.detectedDirection === 'request' || activeCommand?.direction === 'request') {
-      return correlateCommands(parseResult, linkedParseResult, deviceSpec);
-    }
-    return correlateCommands(linkedParseResult, parseResult, deviceSpec);
-  }, [props.correlationResult, parseResult, linkedParseResult, deviceSpec, activeCommand?.direction]);
-
   // 3. UI State: Accordion sections, Sensitive fields masking
   const [openSections, setOpenSections] = useState<Set<string>>(
     () =>
@@ -153,7 +121,6 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
         'error-code',
         'diagnostics',
         'expected-response',
-        'correlation',
         'notes'
       ])
   );
@@ -720,17 +687,17 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
 
                     const roleClassMap: Record<string, string> = {
                       delimiter:
-                        'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20 font-bold',
+                        'bg-[#1a2236] text-[#94a3b8] border-[#2e3b5b] font-bold',
                       header:
-                        'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20 font-semibold',
+                        'bg-purple-500/20 text-purple-300 border-purple-500/40 font-semibold',
                       'command-code':
-                        'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30 font-bold',
+                        'bg-[#0284c7]/20 text-[#38bdf8] border-[#0284c7]/40 font-bold',
                       field:
-                        'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+                        'bg-[#018934]/20 text-[#0da845] border-[#018934]/40',
                       tag:
-                        'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 font-semibold',
+                        'bg-[#ff7800]/20 text-[#ff9233] border-[#ff7800]/40 font-semibold',
                       'tag-value':
-                        'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20'
+                        'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
                     };
 
                     const badgeClass =
@@ -755,7 +722,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                           }
                         }}
                         className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-mono border cursor-pointer transition-all select-none ${badgeClass} ${
-                          isHighlighted ? 'ring-2 ring-primary ring-offset-1 font-bold' : ''
+                          isHighlighted ? 'ring-2 ring-[#ff7800] ring-offset-1 ring-offset-[#202940] font-bold shadow-xs' : ''
                         }`}
                       >
                         {displaySegValue}
@@ -1023,104 +990,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
         </div>
 
         {/* ================================================================= */}
-        {/* Block 7: Request ↔ Response Correlation                           */}
-        {/* ================================================================= */}
-        <div data-testid="accordion-item-correlation" className="flex flex-col">
-          <button
-            type="button"
-            id="accordion-trigger-correlation"
-            data-testid="accordion-trigger-correlation"
-            aria-expanded={openSections.has('correlation')}
-            aria-controls="accordion-content-correlation"
-            onClick={() => toggleSection('correlation')}
-            className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/40 transition-colors select-none text-left"
-          >
-            <span>
-              <FormattedMessage
-                id="analysis.correlation"
-                defaultMessage="Correlación Petición ↔ Respuesta"
-              />
-            </span>
-            {openSections.has('correlation') ? (
-              <ChevronDown className="size-3.5 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="size-3.5 text-muted-foreground" />
-            )}
-          </button>
-
-          {openSections.has('correlation') && (
-            <div
-              id="accordion-content-correlation"
-              data-testid="accordion-content-correlation"
-              className="p-3 text-xs bg-card/20 space-y-3"
-            >
-              {!activeCommand.linkedCommandId ? (
-                <div
-                  data-testid="correlation-unlinked"
-                  className="p-3 text-muted-foreground text-xs italic bg-muted/20 border border-dashed rounded-md leading-relaxed"
-                >
-                  <FormattedMessage
-                    id="analysis.correlation.unlinked"
-                    defaultMessage="No hay comando de respuesta vinculado. Puedes vincularlo desde la lista de comandos."
-                  />
-                </div>
-              ) : (
-                <div data-testid="correlation-analysis" className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span
-                      data-testid="correlation-status-badge"
-                      className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                        correlationResult?.isCorrelated
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                          : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20'
-                      }`}
-                    >
-                      {correlationResult?.isCorrelated
-                        ? 'Correlacionado con Éxito'
-                        : 'Correlación Incompleta / Con Advertencias'}
-                    </span>
-                    <span
-                      data-testid="correlation-linked-info"
-                      className="text-[11px] text-muted-foreground font-mono"
-                    >
-                      {linkedCommand
-                        ? `#${effectiveTab.commands.indexOf(linkedCommand) + 1} (${linkedCommand.id})`
-                        : ''}
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    {correlationResult?.checks.map((check) => (
-                      <div
-                        key={check.id}
-                        data-testid={`correlation-check-${check.id}`}
-                        data-passed={check.passed ? 'true' : 'false'}
-                        className="flex items-start gap-2 p-2 rounded border border-border bg-card text-xs"
-                      >
-                        {check.passed ? (
-                          <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                        ) : (
-                          <XCircle className="size-3.5 text-destructive shrink-0 mt-0.5" />
-                        )}
-                        <div className="flex-1">
-                          <span className="font-medium text-foreground">
-                            {resolveText(check.label)}
-                          </span>
-                          <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                            {resolveText(check.details)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* ================================================================= */}
-        {/* Block 8: Manufacturer Notes & Firmware Particularities            */}
+        {/* Block 7: Manufacturer Notes & Firmware Particularities            */}
         {/* ================================================================= */}
         <div data-testid="accordion-item-notes" className="flex flex-col">
           <button

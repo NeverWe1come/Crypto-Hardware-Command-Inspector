@@ -7,7 +7,6 @@
  * - Active command selection and highlight state
  * - Direction toggle/selector ('request' vs 'response')
  * - Firmware version selector
- * - Request ↔ response linking selector ("Vinculado al comando #...")
  * - Action buttons: Add command, duplicate command, delete command
  * - Drag-and-drop sortable structure with @dnd-kit
  * - Header length configuration for header-positional hardware (Thales)
@@ -59,22 +58,19 @@ const mockCommands: readonly CommandEntry[] = [
     id: 'cmd_1',
     raw: '<31#1#1#N#>',
     version: '8.60',
-    direction: 'request',
-    linkedCommandId: 'cmd_2'
+    direction: 'request'
   },
   {
     id: 'cmd_2',
     raw: '<31#00#Y#>',
     version: '8.60',
-    direction: 'response',
-    linkedCommandId: 'cmd_1'
+    direction: 'response'
   },
   {
     id: 'cmd_3',
     raw: '<00#>',
     version: '8.60',
-    direction: 'request',
-    linkedCommandId: null
+    direction: 'request'
   }
 ];
 
@@ -178,53 +174,6 @@ describe('Phase 4: CommandList Component', () => {
     });
   });
 
-  describe('Request / Response Linking Selector', () => {
-    it('displays linked status badge when a command is linked to another command', () => {
-      renderWithIntl(
-        <CommandList tab={mockTab} activeCommandId="cmd_1" />
-      );
-
-      const linkBadge = screen.getByTestId('command-link-badge-cmd_1');
-      expect(linkBadge).toBeInTheDocument();
-      // cmd_1 is linked to cmd_2 (#2)
-      expect(linkBadge).toHaveTextContent(/#2/);
-    });
-
-    it('allows linking a command to another target command in the tab via selector', async () => {
-      const onLink = vi.fn();
-      const { user } = renderWithIntl(
-        <CommandList
-          tab={mockTab}
-          activeCommandId="cmd_3"
-          onLinkCommands={onLink}
-        />
-      );
-
-      const linkSelect = screen.getByTestId('command-link-select-cmd_3');
-      expect(linkSelect).toBeInTheDocument();
-
-      // Link cmd_3 to cmd_2
-      await user.selectOptions(linkSelect, 'cmd_2');
-      expect(onLink).toHaveBeenCalledWith('cmd_3', 'cmd_2');
-    });
-
-    it('allows unlinking a command by selecting none/desvincular', async () => {
-      const onLink = vi.fn();
-      const { user } = renderWithIntl(
-        <CommandList
-          tab={mockTab}
-          activeCommandId="cmd_1"
-          onLinkCommands={onLink}
-        />
-      );
-
-      const linkSelect = screen.getByTestId('command-link-select-cmd_1');
-      // Unlink
-      await user.selectOptions(linkSelect, 'none');
-      expect(onLink).toHaveBeenCalledWith('cmd_1', null);
-    });
-  });
-
   describe('Lifecycle Action Buttons: Add, Duplicate, Delete', () => {
     it('triggers onAddCommand when clicking the "+ Nuevo comando" button', async () => {
       const onAdd = vi.fn();
@@ -313,8 +262,7 @@ describe('Phase 4: CommandList Component', () => {
             id: 'thales_cmd_1',
             raw: '0000NC',
             version: '2.3',
-            direction: 'request',
-            linkedCommandId: null
+            direction: 'request'
           }
         ],
         activeCommandId: 'thales_cmd_1'
@@ -358,8 +306,7 @@ describe('Phase 4: CommandList Component', () => {
             id: 'int_cmd_1',
             raw: '<31#1#1#N#>',
             version: '8.60',
-            direction: 'request',
-            linkedCommandId: null
+            direction: 'request'
           }
         ],
         activeCommandId: 'int_cmd_1'
