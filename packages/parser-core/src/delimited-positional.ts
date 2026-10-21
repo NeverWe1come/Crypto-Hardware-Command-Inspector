@@ -395,50 +395,75 @@ export function parseDelimitedPositional(
   }
 
   // Parse & validate fields against matchedCommand.fields
-  if (matchedCommand) {
-    const specFields = matchedCommand.fields;
+  const specFields = matchedCommand?.fields ?? [];
 
-    if (!isErrorResponse) {
-      if (fieldTokens.length < specFields.length) {
-        valid = false;
-        diagnostics.push({
-          code: 'MISSING_REQUIRED_FIELD',
-          severity: 'error',
-          message: {
-            es: `Se esperaban ${specFields.length} campos pero se recibieron ${fieldTokens.length}.`,
-            en: `Expected ${specFields.length} fields but received ${fieldTokens.length}.`
-          }
-        });
-      } else if (fieldTokens.length > specFields.length) {
-        valid = false;
-        diagnostics.push({
-          code: 'EXTRA_UNEXPECTED_FIELD',
-          severity: 'error',
-          message: {
-            es: `Se esperaban ${specFields.length} campos pero se recibieron ${fieldTokens.length}.`,
-            en: `Expected ${specFields.length} fields but received ${fieldTokens.length}.`
-          },
-          start: fieldTokens[specFields.length]?.start,
-          end: fieldTokens[fieldTokens.length - 1]?.end
-        });
-      }
+  if (matchedCommand && !isErrorResponse) {
+    if (fieldTokens.length < specFields.length) {
+      valid = false;
+      diagnostics.push({
+        code: 'MISSING_REQUIRED_FIELD',
+        severity: 'error',
+        message: {
+          es: `Se esperaban ${specFields.length} campos pero se recibieron ${fieldTokens.length}.`,
+          en: `Expected ${specFields.length} fields but received ${fieldTokens.length}.`
+        }
+      });
+    } else if (fieldTokens.length > specFields.length) {
+      valid = false;
+      diagnostics.push({
+        code: 'EXTRA_UNEXPECTED_FIELD',
+        severity: 'error',
+        message: {
+          es: `Se esperaban ${specFields.length} campos pero se recibieron ${fieldTokens.length}.`,
+          en: `Expected ${specFields.length} fields but received ${fieldTokens.length}.`
+        },
+        start: fieldTokens[specFields.length]?.start,
+        end: fieldTokens[fieldTokens.length - 1]?.end
+      });
     }
+  }
 
-    for (let i = 0; i < fieldTokens.length; i++) {
-      const tok = fieldTokens[i]!;
-      const fSpec: FieldSpec | undefined = specFields[i];
+  for (let i = 0; i < fieldTokens.length; i++) {
+    const tok = fieldTokens[i]!;
+    const fSpec: FieldSpec | undefined = specFields[i];
 
-      if (!fSpec) {
-        segments.push({
-          id: `seg-extra-field-${i}`,
-          role: 'field',
-          label: { es: `Campo Extra ${i + 1}`, en: `Extra Field ${i + 1}` },
-          rawValue: tok.value,
-          start: tok.start,
-          end: tok.end
-        });
-        continue;
-      }
+    if (!fSpec) {
+      const extraFieldId = `field-${i + 1}`;
+      const extraName = {
+        es: matchedCommand ? `Campo Extra ${i + 1}` : `Campo ${i + 1}`,
+        en: matchedCommand ? `Extra Field ${i + 1}` : `Field ${i + 1}`
+      };
+      const extraDesc = {
+        es: `Campo delimitado en posición ${i + 1}`,
+        en: `Delimited field at position ${i + 1}`
+      };
+
+      fields.push({
+        id: extraFieldId,
+        name: extraName,
+        description: extraDesc,
+        rawValue: tok.value,
+        decodedValue: tok.value,
+        maskedValue: tok.value,
+        start: tok.start,
+        end: tok.end,
+        encoding: 'ascii',
+        sensitive: false,
+        valid: true,
+        position: i
+      });
+
+      segments.push({
+        id: `seg-field-${extraFieldId}`,
+        role: 'field',
+        label: extraName,
+        rawValue: tok.value,
+        start: tok.start,
+        end: tok.end,
+        fieldId: extraFieldId
+      });
+      continue;
+    }
 
       let fieldValid = true;
 
@@ -548,7 +573,6 @@ export function parseDelimitedPositional(
         fieldId: fSpec.id
       });
     }
-  }
 
   // Record end delimiter segment
   segments.push({

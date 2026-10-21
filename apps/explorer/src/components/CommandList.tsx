@@ -150,13 +150,6 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
           #{index + 1}
         </span>
 
-        {/* Active badge */}
-        {isActive && (
-          <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#ff7800]/20 text-[#ff7800] border border-[#ff7800]/40 shrink-0">
-            Activo
-          </span>
-        )}
-
         {/* Direction toggle button */}
         <button
           type="button"

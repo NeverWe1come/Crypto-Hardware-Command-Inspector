@@ -422,6 +422,27 @@ describe('parseDelimitedPositional (Utimaco Atalla AT1000 style)', () => {
       expect(resBadLen.diagnostics.some((d) => d.code === 'INVALID_FIELD_LENGTH')).toBe(true);
     });
 
+    it('preserves and breaks down all fields even for unregistered or extra-field commands', () => {
+      // Unregistered command should still extract all delimited fields
+      const resUnregistered = parseDelimitedPositional('<UNKNOWN#VAL1#VAL2#VAL3#VAL4#>', atallaTestSpec);
+      expect(resUnregistered.commandCode).toBe('UNKNOWN');
+      expect(resUnregistered.fields.length).toBe(4);
+      expect(resUnregistered.fields[0]?.rawValue).toBe('VAL1');
+      expect(resUnregistered.fields[1]?.rawValue).toBe('VAL2');
+      expect(resUnregistered.fields[2]?.rawValue).toBe('VAL3');
+      expect(resUnregistered.fields[3]?.rawValue).toBe('VAL4');
+      expect(resUnregistered.fields[0]?.name.es).toBe('Campo 1');
+
+      // Command with extra fields beyond spec should also include all fields
+      const resExtra = parseDelimitedPositional('<00#1234#EXTRA1#EXTRA2#>', atallaTestSpec);
+      expect(resExtra.fields.length).toBe(3);
+      expect(resExtra.fields[0]?.id).toBe('echo-data');
+      expect(resExtra.fields[1]?.rawValue).toBe('EXTRA1');
+      expect(resExtra.fields[1]?.name.es).toBe('Campo Extra 2');
+      expect(resExtra.fields[2]?.rawValue).toBe('EXTRA2');
+      expect(resExtra.fields[2]?.name.es).toBe('Campo Extra 3');
+    });
+
     it('throws when called with incompatible framing type', () => {
       const headerFramingSpec = {
         ...atallaTestSpec,

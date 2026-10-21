@@ -9444,16 +9444,16 @@ export const atallaV860Commands: CommandSpec[] = [
     "direction": "request",
     "pairedCode": "CF",
     "name": {
-      "es": "Verify Visa Stored Value Card (VSVC) S3 Signature (Petición)",
+      "es": "Verificar Firma S3 de Tarjeta Visa de Valor Almacenado (VSVC) (Petición)",
       "en": "Verify Visa Stored Value Card (VSVC) S3 Signature (Request)"
     },
     "summary": {
-      "es": "Comando Atalla AT1000 BF: Verify Visa Stored Value Card (VSVC) S3 Signature",
-      "en": "Atalla AT1000 Command BF: Verify Visa Stored Value Card (VSVC) S3 Signature"
+      "es": "Verifica la firma S3 calculada por la tarjeta VSVC tras comprobar la firma S2",
+      "en": "Verifies the S3 Signature that is calculated by the VSVC after the S2 Signature is verified"
     },
     "description": {
-      "es": "Ejecuta la operación de Verify Visa Stored Value Card (VSVC) S3 Signature en el HSM Atalla AT1000 de acuerdo al manual oficial v8.60.",
-      "en": "Executes Verify Visa Stored Value Card (VSVC) S3 Signature operation on the Atalla AT1000 HSM according to the official v8.60 manual."
+      "es": "El comando BF verifica la firma S3 generada por una tarjeta chip VSVC utilizando la clave maestra VSVC (AKB o Variant) bajo la MFK.",
+      "en": "Command BF verifies the S3 Signature calculated by the VSVC chip card using the VSVC Master Key (AKB or Variant) under the MFK."
     },
     "category": {
       "es": "Tarjetas y EMV",
@@ -9461,29 +9461,307 @@ export const atallaV860Commands: CommandSpec[] = [
     },
     "fields": [
       {
-        "id": "payload",
-        "name": {
-          "es": "Parámetros del Comando",
-          "en": "Command Parameters"
-        },
+        "id": "vsvc-master-key",
+        "name": { "es": "Clave Maestra VSVC", "en": "VSVC Master Key" },
         "description": {
-          "es": "Campos y parámetros para Verify Visa Stored Value Card (VSVC) S3 Signature",
-          "en": "Fields and parameters for Verify Visa Stored Value Card (VSVC) S3 Signature"
+          "es": "Clave maestra VSVC cifrada bajo MFK (74 caracteres imprimibles en formato AKB tipo 1mVN*, o 32 hex bajo Variant 9).",
+          "en": "The VSVC Master Key encrypted under MFK (74 printable chars in AKB format 1mVN*, or 32 hex chars under Variant 9)."
         },
         "position": 0,
-        "length": {
-          "kind": "range",
-          "min": 0,
-          "max": 2048
+        "length": { "kind": "range", "min": 16, "max": 74 },
+        "encoding": "ascii",
+        "required": true,
+        "sensitive": true
+      },
+      {
+        "id": "ppiep",
+        "name": { "es": "Identificador Proveedor Monedero (Ppiep)", "en": "Purse Provider Identifier (Ppiep)" },
+        "description": {
+          "es": "Identificador del proveedor de monedero (6 caracteres hexadecimales). Utilizado para derivar la clave diversificada VSVC.",
+          "en": "The Purse Provider Identifier (6 hex characters). Used in the generation of the VSVC Diversified Key."
         },
+        "position": 1,
+        "length": { "kind": "fixed", "length": 6 },
+        "encoding": "hex-ascii",
+        "required": true
+      },
+      {
+        "id": "iepid",
+        "name": { "es": "Identificador Monedero Electrónico (IEPid)", "en": "IEP Identifier (IEPid)" },
+        "description": {
+          "es": "Identificador del monedero electrónico interceptor (10 caracteres hexadecimales).",
+          "en": "The IEP (Interceptor Electronic Purse) Identifier (10 hex characters)."
+        },
+        "position": 2,
+        "length": { "kind": "fixed", "length": 10 },
+        "encoding": "hex-ascii",
+        "required": true
+      },
+      {
+        "id": "dexpiep",
+        "name": { "es": "Fecha de Expiración Monedero (DEXPiep)", "en": "Expiration Date IEP (DEXPiep)" },
+        "description": {
+          "es": "Fecha de caducidad del IEP (6 caracteres hexadecimales formato AAMMDD).",
+          "en": "The expiration date of the IEP (6 hex characters)."
+        },
+        "position": 3,
+        "length": { "kind": "fixed", "length": 6 },
+        "encoding": "hex-ascii",
+        "required": true
+      },
+      {
+        "id": "ntiep",
+        "name": { "es": "Número de Transacción Monedero (NTiep)", "en": "Transaction Number IEP (NTiep)" },
+        "description": {
+          "es": "Número de transacción secuencial del monedero (4 caracteres hexadecimales).",
+          "en": "The transaction number of the IEP (4 hex characters)."
+        },
+        "position": 4,
+        "length": { "kind": "fixed", "length": 4 },
+        "encoding": "hex-ascii",
+        "required": true
+      },
+      {
+        "id": "s3-data",
+        "name": { "es": "Datos de Firma S3 (S3 Data)", "en": "S3 Signature Data (S3 Data)" },
+        "description": {
+          "es": "Datos concatenados: PPSAMID/Acquirer BIN (8 hex) + R/Timestamp (8 hex) + CCiep/Código Completación (4 hex) (20 caracteres hexadecimales en total).",
+          "en": "The S3 Signature data: PPSAMID (8 hex) + R (8 hex) + CCiep (4 hex) = 20 hex characters."
+        },
+        "position": 5,
+        "length": { "kind": "fixed", "length": 20 },
+        "encoding": "hex-ascii",
+        "required": true
+      },
+      {
+        "id": "s3-signature",
+        "name": { "es": "Criptograma de Firma S3", "en": "S3 Signature Cryptogram" },
+        "description": {
+          "es": "Firma criptográfica S3 a verificar calculada por la tarjeta VSVC (16 caracteres hexadecimales).",
+          "en": "The S3 signature to be verified (16 hex characters)."
+        },
+        "position": 6,
+        "length": { "kind": "fixed", "length": 16 },
+        "encoding": "hex-ascii",
+        "required": true,
+        "sensitive": true
+      }
+    ],
+    "notes": [
+      {
+        "es": "> **NOTE:** Command BF verifies the S3 Signature that is calculated by the VSVC after the S2 Signature is verified. Reference Information: Section 7, “Processing EMV and Visa stored value cards.”",
+        "en": "> **NOTE:** Command BF verifies the S3 Signature that is calculated by the VSVC after the S2 Signature is verified. Reference Information: Section 7, “Processing EMV and Visa stored value cards.”"
+      },
+      {
+        "es": "> **CAUTION:** The VSVC Master Key can be a 3key-3DES key only when the HSM is configured with a 3key-3DES key MFK.",
+        "en": "> **CAUTION:** The VSVC Master Key can be a 3key-3DES key only when the HSM is configured with a 3key-3DES key MFK."
+      }
+    ],
+    "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Page 647"
+  },
+  {
+    "id": "atalla-cf-res",
+    "code": "CF",
+    "direction": "response",
+    "pairedCode": "BF",
+    "name": {
+      "es": "Respuesta de Verificación Firma S3 VSVC",
+      "en": "Verify VSVC S3 Signature Response"
+    },
+    "summary": {
+      "es": "Resultado de la verificación de firma S3 de tarjeta monedero Visa",
+      "en": "Outcome of VSVC S3 signature verification"
+    },
+    "description": {
+      "es": "Devuelve la bandera de verificación Y/N y los dígitos de control de la clave diversificada y de la clave de sesión.",
+      "en": "Returns Y/N verification flag and check digits of the diversified key and session key."
+    },
+    "category": {
+      "es": "Tarjetas y EMV",
+      "en": "Cards & EMV"
+    },
+    "fields": [
+      {
+        "id": "verification-flag",
+        "name": { "es": "Bandera de Verificación", "en": "Verification Flag" },
+        "description": {
+          "es": "Bandera de verificación de firma: Y = verificada con éxito, N = no verificada.",
+          "en": "S3 signature verification flag: Y = verified, N = did not verify."
+        },
+        "position": 0,
+        "length": { "kind": "fixed", "length": 1 },
+        "encoding": "ascii",
+        "required": true,
+        "enumValues": [
+          { "value": "Y", "label": { "es": "Firma S3 verificada con éxito", "en": "S3 signature verified" } },
+          { "value": "N", "label": { "es": "Firma S3 inválida / no coincide", "en": "S3 signature did not verify" } }
+        ]
+      },
+      {
+        "id": "diversified-key-kcv",
+        "name": { "es": "Dígitos de Control Clave Diversificada", "en": "Diversified Key Check Digits" },
+        "description": {
+          "es": "4 o 6 caracteres hexadecimales resultantes de cifrar ceros bajo la clave diversificada.",
+          "en": "4 or 6 hex check digits resulting from encrypting zeros under the Diversified Key."
+        },
+        "position": 1,
+        "length": { "kind": "range", "min": 4, "max": 6 },
+        "encoding": "hex-ascii",
+        "required": false
+      },
+      {
+        "id": "session-key-kcv",
+        "name": { "es": "Dígitos de Control Clave de Sesión", "en": "Session Key Check Digits" },
+        "description": {
+          "es": "4 o 6 caracteres hexadecimales resultantes de cifrar ceros bajo la clave de sesión.",
+          "en": "4 or 6 hex check digits resulting from encrypting zeros under the Session Key."
+        },
+        "position": 2,
+        "length": { "kind": "range", "min": 4, "max": 6 },
+        "encoding": "hex-ascii",
+        "required": false
+      }
+    ],
+    "notes": [
+      {
+        "es": "> **NOTE:** If option 88 is enabled, the leftmost six check digits are returned instead of four.",
+        "en": "> **NOTE:** If option 88 is enabled, the leftmost six check digits are returned instead of four."
+      }
+    ],
+    "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Page 648"
+  },
+  {
+    "id": "atalla-10-req",
+    "code": "10",
+    "direction": "request",
+    "pairedCode": "20",
+    "name": {
+      "es": "Generar Clave de Trabajo 3DES, Cualquier Tipo (Petición)",
+      "en": "Generate 3DES Working Key, Any Type (Request)"
+    },
+    "summary": {
+      "es": "Genera claves simétricas de trabajo 3DES bajo MFK y opcionalmente KEK",
+      "en": "Generates 3DES working keys under MFK and optionally KEK"
+    },
+    "description": {
+      "es": "El comando 10 genera claves de trabajo 3DES para PIN, datos o MAC usando el DRBG del HSM.",
+      "en": "Command 10 generates a variety of 3DES Working Keys using the HSM Deterministic Random Bit Generator."
+    },
+    "category": {
+      "es": "Gestión de Claves",
+      "en": "Key Management"
+    },
+    "fields": [
+      {
+        "id": "key-usage",
+        "name": { "es": "Uso / Encabezado de la Clave", "en": "Key Usage / Header" },
+        "description": {
+          "es": "Encabezado AKB (8 caracteres tipo 1PUNE000, 1KDNE000) o variante decimal (1-2 dígitos).",
+          "en": "AKB header (8 chars e.g. 1PUNE000, 1KDNE000) or decimal variant (1-2 digits)."
+        },
+        "position": 0,
+        "length": { "kind": "range", "min": 1, "max": 8 },
+        "encoding": "ascii",
+        "required": true
+      },
+      {
+        "id": "kek",
+        "name": { "es": "Clave de Intercambio (KEK)", "en": "Key Exchange Key (KEK)" },
+        "description": {
+          "es": "Clave KEK cifrada bajo MFK (74 caracteres AKB o 16/32 hex Variant) o vacía.",
+          "en": "KEK encrypted under MFK (74 chars AKB or 16/32 hex Variant) or empty."
+        },
+        "position": 1,
+        "length": { "kind": "range", "min": 0, "max": 74 },
+        "encoding": "ascii",
+        "required": false,
+        "sensitive": true
+      },
+      {
+        "id": "key-length",
+        "name": { "es": "Longitud de Clave", "en": "Key Length" },
+        "description": {
+          "es": "Longitud opcional de la clave: S = Single-length, D = Double-length (2key-3DES), T = Triple-length (3key-3DES).",
+          "en": "Optional key length: S = single, D = double (2key-3DES), T = triple (3key-3DES)."
+        },
+        "position": 2,
+        "length": { "kind": "range", "min": 0, "max": 1 },
         "encoding": "ascii",
         "required": false
       }
     ],
-    "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Command BF (Verify Visa Stored Value Card (VSVC) S3 Signature)"
+    "notes": [
+      {
+        "es": "> **NOTE:** The Working Key can be generated in two forms: one for storing locally, encrypted under the MFK, and optionally one for transmitting to another network node encrypted under the KEK.",
+        "en": "> **NOTE:** The Working Key can be generated in two forms: one for storing locally, encrypted under the MFK, and optionally one for transmitting to another network node encrypted under the KEK."
+      }
+    ],
+    "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Page 135"
   },
   {
-    "id": "atalla-d0-req",
+    "id": "atalla-20-res",
+    "code": "20",
+    "direction": "response",
+    "pairedCode": "10",
+    "name": {
+      "es": "Respuesta de Generación de Clave de Trabajo 3DES",
+      "en": "Generate 3DES Working Key Response"
+    },
+    "summary": {
+      "es": "Devuelve la clave de trabajo generada cifrada bajo MFK y opcionalmente KEK",
+      "en": "Returns generated working key cryptogram under MFK and optionally KEK"
+    },
+    "description": {
+      "es": "Retorna la clave generada bajo MFK, la clave generada bajo KEK (si se solicitó) y los dígitos de control (KCV).",
+      "en": "Returns MFK-encrypted working key, KEK-encrypted working key, and check digits."
+    },
+    "category": {
+      "es": "Gestión de Claves",
+      "en": "Key Management"
+    },
+    "fields": [
+      {
+        "id": "working-key-mfk",
+        "name": { "es": "Clave de Trabajo (Cifrada bajo MFK)", "en": "Working Key (MFK Encrypted)" },
+        "description": {
+          "es": "Clave de trabajo cifrada bajo la MFK para almacenamiento local (74 chars AKB o 16/32 hex).",
+          "en": "Working key encrypted under MFK for local storage (74 chars AKB or 16/32 hex)."
+        },
+        "position": 0,
+        "length": { "kind": "range", "min": 16, "max": 74 },
+        "encoding": "ascii",
+        "required": true,
+        "sensitive": true
+      },
+      {
+        "id": "working-key-kek",
+        "name": { "es": "Clave de Trabajo (Cifrada bajo KEK)", "en": "Working Key (KEK Encrypted)" },
+        "description": {
+          "es": "Clave de trabajo cifrada bajo KEK para transmisión de red (74 chars AKB o 16/32 hex o vacía).",
+          "en": "Working key encrypted under KEK for network transmission (74 chars AKB or 16/32 hex or empty)."
+        },
+        "position": 1,
+        "length": { "kind": "range", "min": 0, "max": 74 },
+        "encoding": "ascii",
+        "required": false,
+        "sensitive": true
+      },
+      {
+        "id": "check-digits",
+        "name": { "es": "Dígitos de Control (KCV)", "en": "Check Digits (KCV)" },
+        "description": {
+          "es": "Dígitos de control de la clave de trabajo (4 o 6 caracteres hexadecimales).",
+          "en": "Working Key check digits (4 or 6 hexadecimal characters)."
+        },
+        "position": 2,
+        "length": { "kind": "range", "min": 4, "max": 6 },
+        "encoding": "hex-ascii",
+        "required": false
+      }
+    ],
+    "source": "Atalla AT1000 HSM Command Reference Manual v8.60, Page 136"
+  },
+  {    "id": "atalla-d0-req",
     "code": "D0",
     "direction": "request",
     "pairedCode": "E0",

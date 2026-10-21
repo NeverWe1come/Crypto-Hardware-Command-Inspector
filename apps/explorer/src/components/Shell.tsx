@@ -34,6 +34,9 @@ import { Cpu, Sparkles, Layers, Plus } from 'lucide-react';
 export function Shell() {
   const { state, dispatch } = useWorkspace();
 
+  const sidebarPanelRef = useRef<React.ComponentRef<typeof ResizablePanel>>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
   const [hoveredSegment, setHoveredSegment] = useState<FrameSegment | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<FrameSegment | null>(null);
 
@@ -108,13 +111,38 @@ export function Shell() {
           {/* Panel 1: Hardware & KMS Catalog Sidebar */}
           <ResizablePanel
             id="sidebar-panel"
-            defaultSize={22}
-            minSize={15}
-            maxSize={35}
+            ref={sidebarPanelRef}
+            defaultSize={20}
+            minSize={12}
+            maxSize={40}
+            collapsible={true}
+            collapsedSize={4}
+            onCollapse={() => setIsSidebarCollapsed(true)}
+            onExpand={() => setIsSidebarCollapsed(false)}
             aria-label="Panel de catálogo"
             data-testid="sidebar-panel"
           >
-            <CatalogSidebar />
+            <CatalogSidebar
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => {
+                const panel = sidebarPanelRef.current;
+                if (panel) {
+                  try {
+                    if (panel.isCollapsed()) {
+                      panel.expand();
+                      setIsSidebarCollapsed(false);
+                    } else {
+                      panel.collapse();
+                      setIsSidebarCollapsed(true);
+                    }
+                    return;
+                  } catch {
+                    // Fallback in environments without layout geometry (e.g. jsdom)
+                  }
+                }
+                setIsSidebarCollapsed((prev) => !prev);
+              }}
+            />
           </ResizablePanel>
 
           <ResizableHandle withHandle />

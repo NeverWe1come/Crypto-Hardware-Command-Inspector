@@ -33,16 +33,27 @@ const MAIN_CATEGORIES: readonly MainCategoryOption[] = [
   { id: 'HSMAAS', label: 'HSMaaS', icon: Cloud }
 ];
 
+export interface CatalogSidebarProps {
+  /** Optional controlled collapsed state (from parent ResizablePanel). */
+  readonly isCollapsed?: boolean;
+  /** Optional callback to toggle collapse state. */
+  readonly onToggleCollapse?: () => void;
+}
+
 /**
  * Hardware catalog sidebar with search bar, 3 main category filters (HSMs, KMS, HSMaaS),
  * collapsible sidebar view, and detailed device cards with example commands.
  *
+ * @param props - Optional controlled collapse props.
  * @returns Catalog sidebar JSX element.
  */
-export function CatalogSidebar() {
+export function CatalogSidebar(props?: CatalogSidebarProps) {
   const intl = useIntl();
   const { state, dispatch } = useWorkspace();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [internalIsCollapsed, setInternalIsCollapsed] = useState(false);
+  const isCollapsed = props?.isCollapsed ?? internalIsCollapsed;
+  const toggleCollapse =
+    props?.onToggleCollapse ?? (() => setInternalIsCollapsed((prev) => !prev));
 
   // Active category: if currently 'ALL' or 'HSM_FINANCIAL' or 'HSM_GP', treat as 'HSM'
   const activeCategory: CategoryFilter =
@@ -158,11 +169,11 @@ export function CatalogSidebar() {
           isSupported
             ? 'cursor-pointer ' +
               (isTabActive
-                ? 'bg-[#283350] border-[#ff7800] border-l-4 border-l-[#ff7800] shadow-md shadow-[#ff7800]/10 text-[#feffff]'
+                ? 'bg-[#283350] border-[#ff7800] border-l-4 border-l-[#ff7800] shadow-md shadow-[#ff7800]/15 text-[#feffff]'
                 : isTabOpen
-                  ? 'bg-[#202940] border-[#018934] border-l-4 border-l-[#018934] shadow-xs text-[#feffff]'
-                  : 'bg-[#202940] border-[#2e3b5b] hover:border-[#3d4d75] hover:bg-[#25304b] text-[#feffff]/90')
-            : 'cursor-not-allowed opacity-50 border-dashed border-[#2e3b5b] bg-[#1a2236]'
+                  ? 'bg-[#1b2f29] border-[#018934] border-l-4 border-l-[#018934] shadow-xs text-[#feffff]'
+                  : 'bg-[#1a263d] border-[#2e4066] hover:border-emerald-500/50 hover:bg-[#20304e] hover:shadow-sm text-[#feffff]')
+            : 'cursor-not-allowed opacity-40 border-dashed border-[#232b3e] bg-[#141b29] text-muted-foreground'
         }`}
         data-testid={`device-card-${device.id}`}
       >
@@ -172,14 +183,13 @@ export function CatalogSidebar() {
             {device.name}
           </span>
           {isSupported ? (
-            <Badge
-              variant="success"
-              appearance="light"
-              size="xs"
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.3)] shrink-0"
               data-testid={`badge-supported-${device.id}`}
             >
+              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <FormattedMessage id="sidebar.badges.supported" defaultMessage="Soportado" />
-            </Badge>
+            </span>
           ) : (
             <Badge
               variant="secondary"
@@ -213,8 +223,8 @@ export function CatalogSidebar() {
   return (
     <aside
       data-testid="catalog-sidebar"
-      className={`flex flex-col h-full bg-[#161f33] select-none border-r border-border overflow-hidden transition-all duration-200 ${
-        isCollapsed ? 'w-16 min-w-[64px] max-w-[64px]' : 'w-72 min-w-[288px]'
+      className={`flex flex-col h-full w-full bg-[#161f33] select-none border-r border-border overflow-hidden ${
+        isCollapsed ? 'min-w-[64px]' : 'min-w-[200px]'
       }`}
     >
       {/* Sidebar search input + Collapse Toggle */}
@@ -244,7 +254,7 @@ export function CatalogSidebar() {
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={toggleCollapse}
           className="size-8 p-0 text-muted-foreground hover:text-foreground hover:bg-[#283350] shrink-0"
           title={isCollapsed ? 'Expandir catálogo' : 'Colapsar catálogo'}
           aria-label={isCollapsed ? 'Expandir catálogo' : 'Colapsar catálogo'}

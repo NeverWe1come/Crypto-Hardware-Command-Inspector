@@ -9,6 +9,7 @@
 
 import { describe, expect, it } from 'vitest';
 import {
+  parseCommand,
   resolveDeviceVersion,
   validateDeviceSpec,
   type LocalizedString
@@ -267,6 +268,49 @@ describe('Version Inheritance Hierarchy (`resolveDeviceVersion`)', () => {
       for (const errCode of Object.keys(resolved85.errorCodes)) {
         expect(resolved86.errorCodes[errCode], `Error code ${errCode} not inherited into v8.60`).toBeDefined();
       }
+    });
+
+    it('accurately parses Command BF (Verify VSVC S3 Signature) with all 7 parameters broken down', () => {
+      const rawCmd =
+        '<BF#1mVNE000,238046ABFEB1D0FEBDBF663EFA990245087B3A4D7EBA33C5,E63E7035EEAEB721#451861#0000000011#970731#000E#0000002E0000015A9000#1B48ED0AF1BA1A98#>';
+      const parsed = parseCommand(rawCmd, atallaAt1000Spec, { version: '8.60' });
+
+      expect(parsed.valid).toBe(true);
+      expect(parsed.commandCode).toBe('BF');
+      expect(parsed.matchedCommand?.id).toBe('atalla-bf-req');
+      expect(parsed.fields.length).toBe(7);
+
+      // Field 0: VSVC Master Key
+      expect(parsed.fields[0]?.id).toBe('vsvc-master-key');
+      expect(parsed.fields[0]?.sensitive).toBe(true);
+      expect(parsed.fields[0]?.maskedValue).toBe('••••••••');
+      expect(parsed.fields[0]?.rawValue).toContain('1mVNE000');
+
+      // Field 1: Ppiep
+      expect(parsed.fields[1]?.id).toBe('ppiep');
+      expect(parsed.fields[1]?.rawValue).toBe('451861');
+
+      // Field 2: IEPid
+      expect(parsed.fields[2]?.id).toBe('iepid');
+      expect(parsed.fields[2]?.rawValue).toBe('0000000011');
+
+      // Field 3: DEXPiep
+      expect(parsed.fields[3]?.id).toBe('dexpiep');
+      expect(parsed.fields[3]?.rawValue).toBe('970731');
+
+      // Field 4: NTiep
+      expect(parsed.fields[4]?.id).toBe('ntiep');
+      expect(parsed.fields[4]?.rawValue).toBe('000E');
+
+      // Field 5: S3 Data
+      expect(parsed.fields[5]?.id).toBe('s3-data');
+      expect(parsed.fields[5]?.rawValue).toBe('0000002E0000015A9000');
+
+      // Field 6: S3 Signature
+      expect(parsed.fields[6]?.id).toBe('s3-signature');
+      expect(parsed.fields[6]?.rawValue).toBe('1B48ED0AF1BA1A98');
+      expect(parsed.fields[6]?.sensitive).toBe(true);
+      expect(parsed.fields[6]?.maskedValue).toBe('••••••••');
     });
   });
 
