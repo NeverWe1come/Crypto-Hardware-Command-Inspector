@@ -49,6 +49,10 @@ describe('Application Shell Integration', () => {
       const langButton = screen.getByTestId('language-select');
       expect(langButton).toHaveTextContent(/ES/i);
 
+      // Toggle to Galician
+      await user.click(langButton);
+      expect(langButton).toHaveTextContent(/GL/i);
+
       // Toggle to English
       await user.click(langButton);
       expect(langButton).toHaveTextContent(/EN/i);
@@ -113,20 +117,18 @@ describe('Application Shell Integration', () => {
       expect(screen.getByTestId('device-card-utimaco-atalla-at1000')).toBeInTheDocument();
     });
 
-    it('displays Soportado badge on MVP devices and Próximamente badge on roadmap devices', async () => {
+    it('displays Soportado badge on supported devices across all categories', async () => {
       const { user } = renderShell();
 
-      // Supported MVP badges in HSM category
+      // Supported badges in financial and general purpose HSM category
       expect(screen.getByTestId('badge-supported-utimaco-atalla-at1000')).toHaveTextContent(/Soportado/i);
       expect(screen.getByTestId('badge-supported-thales-payshield-10k')).toHaveTextContent(/Soportado/i);
       expect(screen.getByTestId('badge-supported-futurex-excrypt')).toHaveTextContent(/Soportado/i);
+      expect(screen.getByTestId('badge-supported-thales-luna-7')).toHaveTextContent(/Soportado/i);
 
-      // Coming soon badge in general purpose HSM
-      expect(screen.getByTestId('badge-coming-soon-thales-luna-7')).toHaveTextContent(/Próximamente/i);
-
-      // Switch to KMS for AWS KMS coming-soon badge
+      // Switch to KMS for AWS KMS supported badge
       await user.click(screen.getByTestId('category-filter-kms'));
-      expect(screen.getByTestId('badge-coming-soon-aws-kms')).toHaveTextContent(/Próximamente/i);
+      expect(screen.getByTestId('badge-supported-aws-kms')).toHaveTextContent(/Soportado/i);
     });
   });
 
@@ -193,21 +195,21 @@ describe('Application Shell Integration', () => {
       expect(screen.getByTestId('empty-workspace-state')).toBeInTheDocument();
     });
 
-    it('renders coming-soon devices as disabled and prevents opening a tab when clicked', async () => {
+    it('opens a workspace tab when clicking a KMS device card like aws-kms', async () => {
       const { user } = renderShell();
 
       // Switch to KMS category where aws-kms is located
       await user.click(screen.getByTestId('category-filter-kms'));
 
       const awsCard = screen.getByTestId('device-card-aws-kms');
-      expect(awsCard).toHaveAttribute('aria-disabled', 'true');
+      expect(awsCard).toHaveAttribute('aria-disabled', 'false');
 
-      // Click disabled card
+      // Click card
       await user.click(awsCard);
 
-      // No tab should be opened
-      expect(screen.queryByTestId('workspace-tabs-bar')).not.toBeInTheDocument();
-      expect(screen.getByTestId('empty-workspace-state')).toBeInTheDocument();
+      // Tab should be opened
+      expect(screen.getByTestId('workspace-tabs-bar')).toBeInTheDocument();
+      expect(screen.getByTestId('workspace-tab-aws-kms')).toBeInTheDocument();
     });
   });
 

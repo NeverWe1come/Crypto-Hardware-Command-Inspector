@@ -11,7 +11,8 @@ import type { DeviceSpec, FieldModeVariant, FieldSpec } from './types';
  */
 export const LocalizedStringSchema = z.object({
   es: z.string().trim().min(1, 'Spanish translation must not be empty'),
-  en: z.string().trim().min(1, 'English translation must not be empty')
+  en: z.string().trim().min(1, 'English translation must not be empty'),
+  gl: z.string().trim().min(1).optional()
 });
 
 /**
@@ -150,13 +151,39 @@ export const TagValueFramingConfigSchema = z.object({
 });
 
 /**
+ * Zod schema for structured protocol framing configuration (REST JSON, KMIP XML, Callable APIs, CLIs).
+ */
+export const StructuredFramingConfigSchema = z.object({
+  type: z.literal('structured'),
+  format: z.enum(['json', 'xml', 'callable', 'cli']),
+  commandKey: z.string().optional(),
+  errorKey: z.string().optional(),
+  successCodes: z.array(z.string()).optional()
+});
+
+/**
  * Discriminated union of all framing configurations.
  */
 export const FramingConfigSchema = z.discriminatedUnion('type', [
   DelimitedPositionalFramingConfigSchema,
   HeaderPositionalFramingConfigSchema,
-  TagValueFramingConfigSchema
+  TagValueFramingConfigSchema,
+  StructuredFramingConfigSchema
 ]);
+
+/**
+ * Zod schema for hardware device interfaces (Standard / Proprietary).
+ */
+export const DeviceInterfaceSpecSchema = z.object({
+  id: z.string().min(1),
+  name: LocalizedStringSchema,
+  shortLabel: z.string().min(1),
+  kind: z.enum(['standard', 'proprietary']),
+  wireFormat: z.enum(['ascii-frame', 'json', 'xml', 'callable', 'cli', 'binary-hex']),
+  description: LocalizedStringSchema,
+  framing: FramingConfigSchema,
+  exampleCommand: z.string().optional()
+});
 
 /**
  * Zod schema for command examples.
@@ -185,7 +212,8 @@ export const CommandSpecSchema = z.object({
   source: z.string().min(1),
   notes: z.array(LocalizedStringSchema).optional(),
   examples: z.array(CommandExampleSpecSchema).optional(),
-  markdownDoc: LocalizedStringSchema.optional()
+  markdownDoc: LocalizedStringSchema.optional(),
+  interfaceId: z.string().optional()
 });
 
 /**
@@ -233,8 +261,11 @@ export const DeviceSpecSchema: z.ZodType<DeviceSpec> = z
     icon: z.string().optional(),
     summary: LocalizedStringSchema,
     defaultVersion: z.string().min(1),
+    exampleCommand: z.string().optional(),
     framing: FramingConfigSchema,
     versions: z.record(z.string(), DeviceVersionSpecSchema),
+    defaultInterface: z.string().optional(),
+    interfaces: z.array(DeviceInterfaceSpecSchema).optional(),
     documentationSections: z.array(HardwareDocSectionSpecSchema).optional()
   })
   .refine((data) => data.defaultVersion in data.versions, {

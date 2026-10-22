@@ -24,7 +24,7 @@ export function Header() {
   const [historyOpen, setHistoryOpen] = useState(false);
 
   const handleToggleLocale = () => {
-    const nextLocale = state.locale === 'es' ? 'en' : 'es';
+    const nextLocale = state.locale === 'es' ? 'gl' : state.locale === 'gl' ? 'en' : 'es';
     dispatch({ type: 'SET_LOCALE', payload: nextLocale });
   };
 

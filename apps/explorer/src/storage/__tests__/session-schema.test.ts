@@ -67,7 +67,8 @@ describe('Session Zod Schema & Serialization (chci-session-v1.json)', () => {
         }
       ],
       catalogSearchQuery: 'atalla',
-      selectedCategory: 'HSM_FINANCIAL'
+      selectedCategory: 'HSM_FINANCIAL',
+      hardwareConnections: []
     }
   };
 

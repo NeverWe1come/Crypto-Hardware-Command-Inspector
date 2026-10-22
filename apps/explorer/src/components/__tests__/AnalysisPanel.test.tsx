@@ -1207,7 +1207,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
 
       expect(screen.getByTestId('accordion-trigger-general-info')).toHaveTextContent(/Información General/i);
       expect(screen.getByTestId('accordion-trigger-fields')).toHaveTextContent(/Desglose de Parámetros/i);
-      expect(screen.getByTestId('accordion-trigger-frame-view')).toHaveTextContent(/Vista de Trama/i);
+      expect(screen.getByTestId('accordion-trigger-frame-view')).toHaveTextContent(/Vista de Comando/i);
       expect(screen.getByTestId('accordion-trigger-unified-diagnostics')).toHaveTextContent(/Estado de Respuesta y Diagnósticos/i);
       expect(screen.getByTestId('accordion-trigger-notes')).toHaveTextContent(/Notas del Fabricante/i);
     });
@@ -1225,7 +1225,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
 
       expect(screen.getByTestId('accordion-trigger-general-info')).toHaveTextContent(/General Information/i);
       expect(screen.getByTestId('accordion-trigger-fields')).toHaveTextContent(/Parameter Breakdown/i);
-      expect(screen.getByTestId('accordion-trigger-frame-view')).toHaveTextContent(/Frame View/i);
+      expect(screen.getByTestId('accordion-trigger-frame-view')).toHaveTextContent(/Command View/i);
       expect(screen.getByTestId('accordion-trigger-unified-diagnostics')).toHaveTextContent(/Estado de Respuesta y Diagnósticos|Response Status/i);
       expect(screen.getByTestId('accordion-trigger-notes')).toHaveTextContent(/Manufacturer Notes/i);
     });

@@ -21,7 +21,30 @@ export const atallaAt1000Spec: DeviceSpec = {
     en: 'Utimaco Atalla AT1000 Financial Hardware Security Module with delimited frame architecture and AKB key blocks.'
   },
   defaultVersion: '8.60',
+  defaultInterface: 'atalla-crypt',
   exampleCommand: '00#',
+  interfaces: [
+    {
+      id: 'atalla-crypt',
+      name: { es: 'Protocolo Criptográfico Atalla', en: 'Atalla Cryptographic Protocol' },
+      shortLabel: 'Atalla',
+      kind: 'proprietary',
+      wireFormat: 'ascii-frame',
+      description: {
+        es: 'Sintaxis delimitada clásica <CMD#param1#param2#>',
+        en: 'Classic delimited syntax <CMD#param1#param2#>'
+      },
+      framing: {
+        type: 'delimited-positional',
+        startDelimiter: '<',
+        endDelimiter: '>',
+        fieldDelimiter: '#',
+        requireTrailingDelimiter: true,
+        contextTagPrefix: '^'
+      },
+      exampleCommand: '00#'
+    }
+  ],
   documentationSections: ATALLA_DOCUMENTATION_SECTIONS,
   framing: {
     type: 'delimited-positional',

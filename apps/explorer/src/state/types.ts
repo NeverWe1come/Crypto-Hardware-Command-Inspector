@@ -8,12 +8,31 @@ import type { CommandDirection, DeviceCategory } from '@chci/parser-core';
 /**
  * Supported application interface locales.
  */
-export type AppLocale = 'es' | 'en';
+export type AppLocale = 'es' | 'en' | 'gl';
 
 /**
  * Supported interface visual themes.
  */
 export type AppTheme = 'dark' | 'light' | 'system';
+
+/**
+ * Supported hardware connection protocols.
+ */
+export type HardwareConnectionType = 'TCP' | 'TLS' | 'mTLS';
+
+/**
+ * Configuration for direct communication with a cryptographic hardware device.
+ */
+export interface HardwareConnectionConfig {
+  readonly id: string;
+  readonly deviceId: string;
+  readonly host: string;
+  readonly port: number;
+  readonly connectionType: HardwareConnectionType;
+  readonly caCertPem?: string;
+  readonly clientCertPem?: string;
+  readonly clientKeyPem?: string;
+}
 
 /**
  * Filter for devices in the catalog sidebar: all devices or a specific hardware category.
@@ -29,6 +48,16 @@ export interface CommandEntry {
   readonly version: string;
   readonly direction: CommandDirection;
   readonly linkedCommandId?: string | null;
+  /** Configurable header length per command (especially for header-positional devices like Thales). */
+  readonly headerLength?: number;
+  /** Active interface ID used to parse this command (e.g. 'pkcs11-c', 'rest-json', 'lunash-cli'). */
+  readonly interfaceId?: string;
+  /** Whether direct hardware execution is toggled on for this request command. */
+  readonly liveExecutionEnabled?: boolean;
+  /** Selected connection ID to execute against. */
+  readonly selectedConnectionId?: string;
+  /** Raw response command received from live hardware execution. */
+  readonly liveResponseRaw?: string;
 }
 
 /**
@@ -39,6 +68,7 @@ export interface WorkspaceTab {
   readonly deviceId: string;
   readonly version: string;
   readonly headerLength?: number;
+  readonly interfaceId?: string;
   readonly commands: readonly CommandEntry[];
   readonly activeCommandId: string | null;
 }
@@ -53,6 +83,18 @@ export interface WorkspaceState {
   readonly tabs: readonly WorkspaceTab[];
   readonly catalogSearchQuery: string;
   readonly selectedCategory: CategoryFilter;
+  readonly hardwareConnections: readonly HardwareConnectionConfig[];
+}
+
+/**
+ * Reference payload for loading an entry recorded in `.chci_history`.
+ */
+export interface HistoryEntryRef {
+  readonly deviceId: string;
+  readonly version: string;
+  readonly direction: CommandDirection;
+  readonly raw: string;
+  readonly interfaceId?: string;
 }
 
 /**
@@ -81,7 +123,9 @@ export type WorkspaceAction =
         readonly initialRaw?: string;
         readonly initialDirection?: CommandDirection;
         readonly initialVersion?: string;
+        readonly initialInterfaceId?: string;
         readonly commandId?: string;
+        readonly headerLength?: number;
       };
     }
   | {
@@ -96,6 +140,21 @@ export type WorkspaceAction =
       readonly payload: {
         readonly commandId: string;
         readonly newCommandId?: string;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'UPDATE_COMMAND_INTERFACE';
+      readonly payload: {
+        readonly commandId: string;
+        readonly interfaceId: string;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'UPDATE_TAB_INTERFACE';
+      readonly payload: {
+        readonly interfaceId: string;
         readonly tabId?: string;
       };
     }
@@ -124,10 +183,61 @@ export type WorkspaceAction =
       };
     }
   | {
+      readonly type: 'UPDATE_COMMAND_HEADER_LENGTH';
+      readonly payload: {
+        readonly commandId: string;
+        readonly headerLength: number;
+        readonly tabId?: string;
+      };
+    }
+  | {
       readonly type: 'UPDATE_TAB_HEADER_LENGTH';
       readonly payload: {
         readonly headerLength: number;
         readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'LOAD_FROM_HISTORY';
+      readonly payload: {
+        readonly entry: HistoryEntryRef;
+        readonly mode: 'replace-active' | 'add-new';
+      };
+    }
+  | {
+      readonly type: 'SET_COMMAND_LIVE_EXECUTION';
+      readonly payload: {
+        readonly commandId: string;
+        readonly enabled: boolean;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'SET_COMMAND_SELECTED_CONNECTION';
+      readonly payload: {
+        readonly commandId: string;
+        readonly connectionId: string;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'SET_COMMAND_LIVE_RESPONSE';
+      readonly payload: {
+        readonly commandId: string;
+        readonly responseRaw: string;
+        readonly tabId?: string;
+      };
+    }
+  | {
+      readonly type: 'SAVE_HARDWARE_CONNECTION';
+      readonly payload: {
+        readonly connection: HardwareConnectionConfig;
+      };
+    }
+  | {
+      readonly type: 'DELETE_HARDWARE_CONNECTION';
+      readonly payload: {
+        readonly connectionId: string;
       };
     }
   | {

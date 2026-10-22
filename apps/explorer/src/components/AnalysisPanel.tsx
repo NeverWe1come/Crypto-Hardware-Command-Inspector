@@ -109,7 +109,8 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
     return parseCommand(activeCommand.raw, deviceSpec, {
       version: activeCommand.version,
       expectedDirection: activeCommand.direction,
-      headerLength: activeTab?.headerLength
+      headerLength: activeTab?.headerLength,
+      interfaceId: activeCommand.interfaceId
     });
   }, [props.parseResult, activeCommand, deviceSpec, activeTab?.headerLength]);
 
@@ -287,6 +288,12 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
 
   const isResponse = activeCommand.direction === 'response';
 
+  const activeInterfaceId =
+    activeCommand.interfaceId ??
+    parseResult?.detectedInterfaceId ??
+    deviceSpec?.defaultInterface;
+  const activeInterface = deviceSpec?.interfaces?.find((i) => i.id === activeInterfaceId);
+
   return (
     <div
       data-testid="analysis-panel"
@@ -454,6 +461,44 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                     className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-muted text-foreground border border-border"
                   >
                     {activeCommand.direction === 'request' ? 'Petición' : 'Respuesta'}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-[11px] text-muted-foreground block font-medium">
+                    Interfaz
+                  </span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span
+                      data-testid="general-info-interface"
+                      className="font-semibold text-foreground text-xs"
+                    >
+                      {activeInterface ? (locale === 'en' ? activeInterface.name.en : activeInterface.name.es) : (parseResult?.detectedInterfaceId ?? '-')}
+                    </span>
+                    {activeInterface && (
+                      <span
+                        data-testid="general-info-interface-badge"
+                        className={`px-1 py-0.2 rounded-xs text-[9px] font-bold uppercase tracking-wider ${
+                          activeInterface.kind === 'standard'
+                            ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                            : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                        }`}
+                      >
+                        {activeInterface.kind === 'standard' ? 'STD' : 'PROP'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[11px] text-muted-foreground block font-medium">
+                    Formato de Trama
+                  </span>
+                  <span
+                    data-testid="general-info-wire-format"
+                    className="font-mono text-xs font-semibold text-foreground"
+                  >
+                    {activeInterface?.wireFormat.toUpperCase() ?? deviceSpec?.framing.type.toUpperCase() ?? '-'}
                   </span>
                 </div>
               </div>
@@ -808,7 +853,14 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                                     <div className="space-y-2.5 text-xs">
                                       {field.variants && field.variants.length > 0 ? (
                                         <div className="space-y-2">
-                                          {field.variants.map((v, vIdx) => {
+                                          {field.variants
+                                            .filter((v) => {
+                                              if (field.detectedMode && field.detectedMode !== 'both') {
+                                                return v.mode === field.detectedMode;
+                                              }
+                                              return true;
+                                            })
+                                            .map((v, vIdx) => {
                                             if (v.mode === 'akb') {
                                               return (
                                                 <div

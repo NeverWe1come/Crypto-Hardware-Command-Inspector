@@ -6,6 +6,7 @@
 import { parseDelimitedPositional } from './delimited-positional';
 import { parseHeaderPositional } from './header-positional';
 import { normalizeInput } from './normalizer';
+import { parseStructuredFraming } from './structured-framing';
 import { parseTagValue } from './tag-value';
 import type {
   CommandSpec,
@@ -126,20 +127,40 @@ export function parseCommand(
     };
   }
 
+  let activeFraming = deviceSpec.framing;
+  const activeInterfaceId = options?.interfaceId ?? deviceSpec.defaultInterface;
+
+  if (deviceSpec.interfaces && deviceSpec.interfaces.length > 0) {
+    if (options?.interfaceId) {
+      const selectedInterface = deviceSpec.interfaces.find((iface) => iface.id === options.interfaceId);
+      if (selectedInterface) {
+        activeFraming = selectedInterface.framing;
+      }
+    } else if (deviceSpec.defaultInterface) {
+      const defaultIface = deviceSpec.interfaces.find((iface) => iface.id === deviceSpec.defaultInterface);
+      if (defaultIface) {
+        activeFraming = defaultIface.framing;
+      }
+    }
+  }
+
   let result: ParseResult;
 
-  switch (deviceSpec.framing.type) {
+  switch (activeFraming.type) {
     case 'delimited-positional':
-      result = parseDelimitedPositional(raw, deviceSpec, options);
+      result = parseDelimitedPositional(raw, deviceSpec, { ...options, interfaceId: activeInterfaceId });
       break;
     case 'header-positional':
-      result = parseHeaderPositional(raw, deviceSpec, options);
+      result = parseHeaderPositional(raw, deviceSpec, { ...options, interfaceId: activeInterfaceId });
       break;
     case 'tag-value':
-      result = parseTagValue(raw, deviceSpec, options);
+      result = parseTagValue(raw, deviceSpec, { ...options, interfaceId: activeInterfaceId });
+      break;
+    case 'structured':
+      result = parseStructuredFraming(raw, deviceSpec, { ...options, interfaceId: activeInterfaceId }, activeFraming);
       break;
     default: {
-      const _exhaustive: never = deviceSpec.framing;
+      const _exhaustive: never = activeFraming;
       throw new Error(`Unsupported framing type: ${JSON.stringify(_exhaustive)}`);
     }
   }

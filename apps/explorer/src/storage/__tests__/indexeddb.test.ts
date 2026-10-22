@@ -65,7 +65,8 @@ describe('IndexedDB Persistence Layer (chci_db v1)', () => {
       }
     ],
     catalogSearchQuery: '',
-    selectedCategory: 'HSM_FINANCIAL'
+    selectedCategory: 'HSM_FINANCIAL',
+    hardwareConnections: []
   };
 
   const mockSession1: SavedSession = {

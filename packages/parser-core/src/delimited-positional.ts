@@ -493,6 +493,8 @@ export function parseDelimitedPositional(
           fSpec.variants.some((v) => validateFieldLength(tok.value, v.length)));
 
       let detectedMode: 'akb' | 'variant' | 'both' | undefined = undefined;
+      let resolvedDescription = fSpec.description;
+
       if (fSpec.variants && fSpec.variants.length > 0) {
         const akbVar = fSpec.variants.find((v) => v.mode === 'akb');
         const variantVar = fSpec.variants.find((v) => v.mode === 'variant');
@@ -506,13 +508,17 @@ export function parseDelimitedPositional(
 
         if (isAkbMatch && !isVariantMatch) {
           detectedMode = 'akb';
+          if (akbVar?.description) resolvedDescription = akbVar.description;
         } else if (isVariantMatch && !isAkbMatch) {
           detectedMode = 'variant';
+          if (variantVar?.description) resolvedDescription = variantVar.description;
         } else if (isAkbMatch && isVariantMatch) {
           if (tok.value.includes(',') || /^[13][A-Za-z0-9]{7}/.test(tok.value)) {
             detectedMode = 'akb';
+            if (akbVar?.description) resolvedDescription = akbVar.description;
           } else {
             detectedMode = 'variant';
+            if (variantVar?.description) resolvedDescription = variantVar.description;
           }
         }
       }
@@ -581,7 +587,7 @@ export function parseDelimitedPositional(
       fields.push({
         id: fSpec.id,
         name: fSpec.name,
-        description: fSpec.description,
+        description: resolvedDescription,
         rawValue: tok.value,
         decodedValue: tok.value,
         maskedValue,

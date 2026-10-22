@@ -5,6 +5,7 @@
 
 import esMessages from './locales/es.json';
 import enMessages from './locales/en.json';
+import glMessages from './locales/gl.json';
 import type { AppLocale } from '../state/types';
 
 /**
@@ -12,7 +13,8 @@ import type { AppLocale } from '../state/types';
  */
 export const LOCALE_MESSAGES: Record<AppLocale, Record<string, string>> = {
   es: esMessages,
-  en: enMessages
+  en: enMessages,
+  gl: glMessages
 };
 
 /**

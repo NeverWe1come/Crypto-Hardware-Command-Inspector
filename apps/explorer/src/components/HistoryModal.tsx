@@ -96,29 +96,25 @@ export function HistoryModal({ open, onOpenChange }: HistoryModalProps) {
     () => workspaceState.tabs.find((t) => t.id === workspaceState.activeTabId),
     [workspaceState.tabs, workspaceState.activeTabId]
   );
+  const hasActiveTab = Boolean(activeTab);
 
-  const handleInsertActive = (raw: string) => {
-    if (!activeTab || !activeTab.activeCommandId) return;
+  const handleInsertActive = (entry: HistoryEntry) => {
     dispatch({
-      type: 'UPDATE_COMMAND_RAW',
+      type: 'LOAD_FROM_HISTORY',
       payload: {
-        commandId: activeTab.activeCommandId,
-        raw,
-        tabId: activeTab.id
+        entry,
+        mode: 'replace-active'
       }
     });
     onOpenChange(false);
   };
 
   const handleAddNewCommand = (entry: HistoryEntry) => {
-    if (!activeTab) return;
     dispatch({
-      type: 'ADD_COMMAND',
+      type: 'LOAD_FROM_HISTORY',
       payload: {
-        tabId: activeTab.id,
-        initialRaw: entry.raw,
-        initialDirection: entry.direction,
-        initialVersion: entry.version
+        entry,
+        mode: 'add-new'
       }
     });
     onOpenChange(false);
@@ -293,8 +289,8 @@ export function HistoryModal({ open, onOpenChange }: HistoryModalProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={!activeTab || !activeTab.activeCommandId}
-                    onClick={() => handleInsertActive(entry.raw)}
+                    onClick={() => handleInsertActive(entry)}
+                    disabled={!hasActiveTab}
                     data-testid={`history-insert-active-${idx}`}
                     aria-label={intl.formatMessage({
                       id: 'history.action.loadIntoActive',
@@ -318,8 +314,8 @@ export function HistoryModal({ open, onOpenChange }: HistoryModalProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={!activeTab}
                     onClick={() => handleAddNewCommand(entry)}
+                    disabled={!hasActiveTab}
                     data-testid={`history-add-new-${idx}`}
                     aria-label={intl.formatMessage({
                       id: 'history.action.addToWorkspace',

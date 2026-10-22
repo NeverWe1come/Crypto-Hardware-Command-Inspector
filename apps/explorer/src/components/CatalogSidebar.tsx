@@ -18,8 +18,10 @@ import {
   Cloud,
   KeyRound,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  Settings
 } from 'lucide-react';
+import { HardwareConnectionsModal } from './HardwareConnectionsModal';
 
 interface MainCategoryOption {
   readonly id: CategoryFilter;
@@ -51,6 +53,7 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
   const intl = useIntl();
   const { state, dispatch } = useWorkspace();
   const [internalIsCollapsed, setInternalIsCollapsed] = useState(false);
+  const [selectedDeviceForConnections, setSelectedDeviceForConnections] = useState<string | null>(null);
   const isCollapsed = props?.isCollapsed ?? internalIsCollapsed;
   const toggleCollapse =
     props?.onToggleCollapse ?? (() => setInternalIsCollapsed((prev) => !prev));
@@ -159,12 +162,18 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
           : device.category;
 
     return (
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={isSupported ? 0 : -1}
         key={device.id}
-        disabled={!isSupported}
         aria-disabled={!isSupported}
         onClick={() => handleOpenDevice(device.id, device.status)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleOpenDevice(device.id, device.status);
+          }
+        }}
         className={`w-full text-left p-3 rounded-md border transition-all text-xs flex flex-col gap-2 select-none ${
           isSupported
             ? 'cursor-pointer ' +
@@ -177,29 +186,46 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
         }`}
         data-testid={`device-card-${device.id}`}
       >
-        {/* Title: ONLY device name + status badge */}
+        {/* Title: ONLY device name + status badge + connections settings */}
         <div className="flex items-center justify-between gap-1.5">
           <span className="font-semibold text-foreground text-xs truncate">
             {device.name}
           </span>
-          {isSupported ? (
-            <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.3)] shrink-0"
-              data-testid={`badge-supported-${device.id}`}
-            >
-              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <FormattedMessage id="sidebar.badges.supported" defaultMessage="Soportado" />
-            </span>
-          ) : (
-            <Badge
-              variant="secondary"
-              appearance="outline"
-              size="xs"
-              data-testid={`badge-coming-soon-${device.id}`}
-            >
-              <FormattedMessage id="sidebar.badges.comingSoon" defaultMessage="Próximamente" />
-            </Badge>
-          )}
+          <div className="flex items-center gap-1 shrink-0">
+            {isSupported && (
+              <button
+                type="button"
+                data-testid={`device-connections-button-${device.id}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedDeviceForConnections(device.id);
+                }}
+                className="p-1 rounded text-muted-foreground hover:text-[#feffff] hover:bg-[#283350] transition-colors"
+                title="Configurar conexiones directas (IP, Puerto, TLS/mTLS)"
+                aria-label={`Configurar conexiones para ${device.name}`}
+              >
+                <Settings className="size-3.5" />
+              </button>
+            )}
+            {isSupported ? (
+              <span
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.3)] shrink-0"
+                data-testid={`badge-supported-${device.id}`}
+              >
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <FormattedMessage id="sidebar.badges.supported" defaultMessage="Soportado" />
+              </span>
+            ) : (
+              <Badge
+                variant="secondary"
+                appearance="outline"
+                size="xs"
+                data-testid={`badge-coming-soon-${device.id}`}
+              >
+                <FormattedMessage id="sidebar.badges.comingSoon" defaultMessage="Próximamente" />
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Second Line: Vendor (left) and Type: Payment/General (right) */}
@@ -214,9 +240,9 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
 
         {/* Third Line: Description (example command removed) */}
         <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
-          {device.summary[state.locale] ?? device.summary.en}
+          {device.summary[state.locale] ?? device.summary.en ?? device.summary.es}
         </p>
-      </button>
+      </div>
     );
   };
 
@@ -341,6 +367,12 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
           </div>
         )}
       </div>
+      {/* Hardware Connections Configuration Modal */}
+      <HardwareConnectionsModal
+        open={!!selectedDeviceForConnections}
+        onOpenChange={(open) => !open && setSelectedDeviceForConnections(null)}
+        deviceId={selectedDeviceForConnections}
+      />
     </aside>
   );
 }

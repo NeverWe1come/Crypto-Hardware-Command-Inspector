@@ -6,6 +6,7 @@
 import { getDeviceSpec } from '@chci/device-specs';
 import type {
   CommandEntry,
+  HardwareConnectionConfig,
   WorkspaceAction,
   WorkspaceState,
   WorkspaceTab
@@ -20,7 +21,8 @@ export const initialWorkspaceState: WorkspaceState = {
   activeTabId: null,
   tabs: [],
   catalogSearchQuery: '',
-  selectedCategory: 'ALL'
+  selectedCategory: 'ALL',
+  hardwareConnections: []
 };
 
 /**
@@ -99,12 +101,17 @@ export function workspaceReducer(
         '1.0';
 
       const initialCommandId = action.payload.commandId ?? createId('cmd');
+      const initialHeaderLen =
+        spec.framing.type === 'header-positional' ? spec.framing.defaultHeaderLength ?? 4 : undefined;
+      const initialInterface = spec.defaultInterface ?? spec.interfaces?.[0]?.id;
       const initialCommand: CommandEntry = {
         id: initialCommandId,
         raw: '',
         version,
         direction: 'request',
-        linkedCommandId: null
+        linkedCommandId: null,
+        headerLength: initialHeaderLen,
+        interfaceId: initialInterface
       };
 
       const tabId = action.payload.tabId ?? createId(`tab_${deviceId}`);
@@ -112,8 +119,8 @@ export function workspaceReducer(
         id: tabId,
         deviceId,
         version,
-        headerLength:
-          spec.framing.type === 'header-positional' ? spec.framing.defaultHeaderLength : undefined,
+        headerLength: initialHeaderLen,
+        interfaceId: initialInterface,
         commands: [initialCommand],
         activeCommandId: initialCommandId
       };
@@ -218,13 +225,26 @@ export function workspaceReducer(
       if (!target) return state;
       const { tab, tabIndex } = target;
 
+      const spec = getDeviceSpec(tab.deviceId);
+      const defaultHeaderLen =
+        spec?.framing.type === 'header-positional'
+          ? (tab.headerLength ?? spec.framing.defaultHeaderLength ?? 4)
+          : undefined;
+
       const newId = action.payload?.commandId ?? createId('cmd');
+      const newInterface =
+        action.payload?.initialInterfaceId ??
+        tab.interfaceId ??
+        spec?.defaultInterface ??
+        spec?.interfaces?.[0]?.id;
       const newCommand: CommandEntry = {
         id: newId,
         raw: action.payload?.initialRaw ?? '',
         direction: action.payload?.initialDirection ?? 'request',
         version: action.payload?.initialVersion ?? tab.version,
-        linkedCommandId: null
+        linkedCommandId: null,
+        headerLength: action.payload?.headerLength ?? defaultHeaderLen,
+        interfaceId: newInterface
       };
 
       const updatedTab: WorkspaceTab = {
@@ -388,6 +408,31 @@ export function workspaceReducer(
       return { ...state, tabs: nextTabs };
     }
 
+    case 'UPDATE_COMMAND_HEADER_LENGTH': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+      const cmd = tab.commands[cmdIndex];
+      if (!cmd) return state;
+
+      const len = action.payload.headerLength;
+      if (len < 0 || cmd.headerLength === len) return state;
+
+      const nextCommands = [...tab.commands];
+      nextCommands[cmdIndex] = { ...cmd, headerLength: len };
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: nextCommands
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
     case 'UPDATE_TAB_HEADER_LENGTH': {
       const target = findTargetTab(state, action.payload.tabId);
       if (!target) return state;
@@ -403,6 +448,226 @@ export function workspaceReducer(
       const nextTabs = [...state.tabs];
       nextTabs[tabIndex] = updatedTab;
       return { ...state, tabs: nextTabs };
+    }
+
+    case 'UPDATE_COMMAND_INTERFACE': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+      const cmd = tab.commands[cmdIndex];
+      if (!cmd) return state;
+      if (cmd.interfaceId === action.payload.interfaceId) return state;
+
+      const nextCommands = [...tab.commands];
+      nextCommands[cmdIndex] = { ...cmd, interfaceId: action.payload.interfaceId };
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: nextCommands
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'UPDATE_TAB_INTERFACE': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      if (tab.interfaceId === action.payload.interfaceId) return state;
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        interfaceId: action.payload.interfaceId
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'LOAD_FROM_HISTORY': {
+      const { entry, mode } = action.payload;
+      const { deviceId, version, direction, raw } = entry;
+
+      // Check if a tab for this deviceId already exists
+      const existingTabIndex = state.tabs.findIndex((t) => t.deviceId === deviceId);
+      const nextTabs = [...state.tabs];
+      let targetTabId: string;
+
+      if (existingTabIndex === -1) {
+        // Open a new tab for deviceId
+        const spec = getDeviceSpec(deviceId);
+        const resolvedVersion =
+          version || (spec ? spec.defaultVersion ?? Object.keys(spec.versions)[0] ?? '1.0' : '1.0');
+        const initialCommandId = createId('cmd');
+        const initialHeaderLen =
+          spec?.framing.type === 'header-positional' ? spec.framing.defaultHeaderLength ?? 4 : undefined;
+        const initialCommand: CommandEntry = {
+          id: initialCommandId,
+          raw,
+          version: resolvedVersion,
+          direction,
+          linkedCommandId: null,
+          headerLength: initialHeaderLen
+        };
+        targetTabId = createId(`tab_${deviceId}`);
+        const newTab: WorkspaceTab = {
+          id: targetTabId,
+          deviceId,
+          version: resolvedVersion,
+          headerLength: initialHeaderLen,
+          commands: [initialCommand],
+          activeCommandId: initialCommandId
+        };
+        nextTabs.push(newTab);
+      } else {
+        const tab = nextTabs[existingTabIndex]!;
+        targetTabId = tab.id;
+        if (mode === 'replace-active' && tab.activeCommandId) {
+          const cmdIndex = tab.commands.findIndex((c) => c.id === tab.activeCommandId);
+          if (cmdIndex !== -1) {
+            const currentCmd = tab.commands[cmdIndex]!;
+            const updatedCmd: CommandEntry = {
+              ...currentCmd,
+              raw,
+              version: version || currentCmd.version,
+              direction: direction || currentCmd.direction
+            };
+            const updatedCommands = [...tab.commands];
+            updatedCommands[cmdIndex] = updatedCmd;
+            nextTabs[existingTabIndex] = {
+              ...tab,
+              commands: updatedCommands
+            };
+          }
+        } else {
+          // add-new mode or no active command
+          const newId = createId('cmd');
+          const newCmd: CommandEntry = {
+            id: newId,
+            raw,
+            version: version || tab.version,
+            direction: direction || 'request',
+            linkedCommandId: null,
+            headerLength: tab.headerLength
+          };
+          nextTabs[existingTabIndex] = {
+            ...tab,
+            commands: [...tab.commands, newCmd],
+            activeCommandId: newId
+          };
+        }
+      }
+
+      return {
+        ...state,
+        tabs: nextTabs,
+        activeTabId: targetTabId
+      };
+    }
+
+    case 'SET_COMMAND_LIVE_EXECUTION': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+      const cmd = tab.commands[cmdIndex];
+      if (!cmd) return state;
+
+      const nextCommands = [...tab.commands];
+      nextCommands[cmdIndex] = {
+        ...cmd,
+        liveExecutionEnabled: action.payload.enabled
+      };
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: nextCommands
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'SET_COMMAND_SELECTED_CONNECTION': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+      const cmd = tab.commands[cmdIndex];
+      if (!cmd) return state;
+
+      const nextCommands = [...tab.commands];
+      nextCommands[cmdIndex] = {
+        ...cmd,
+        selectedConnectionId: action.payload.connectionId
+      };
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: nextCommands
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'SET_COMMAND_LIVE_RESPONSE': {
+      const target = findTargetTab(state, action.payload.tabId);
+      if (!target) return state;
+      const { tab, tabIndex } = target;
+
+      const cmdIndex = tab.commands.findIndex((c) => c.id === action.payload.commandId);
+      if (cmdIndex === -1) return state;
+      const cmd = tab.commands[cmdIndex];
+      if (!cmd) return state;
+
+      const nextCommands = [...tab.commands];
+      nextCommands[cmdIndex] = {
+        ...cmd,
+        liveResponseRaw: action.payload.responseRaw
+      };
+
+      const updatedTab: WorkspaceTab = {
+        ...tab,
+        commands: nextCommands
+      };
+      const nextTabs = [...state.tabs];
+      nextTabs[tabIndex] = updatedTab;
+      return { ...state, tabs: nextTabs };
+    }
+
+    case 'SAVE_HARDWARE_CONNECTION': {
+      const { connection } = action.payload;
+      const existsIndex = state.hardwareConnections.findIndex((c) => c.id === connection.id);
+      let nextConnections: HardwareConnectionConfig[];
+      if (existsIndex >= 0) {
+        nextConnections = [...state.hardwareConnections];
+        nextConnections[existsIndex] = connection;
+      } else {
+        nextConnections = [...state.hardwareConnections, connection];
+      }
+      return {
+        ...state,
+        hardwareConnections: nextConnections
+      };
+    }
+
+    case 'DELETE_HARDWARE_CONNECTION': {
+      return {
+        ...state,
+        hardwareConnections: state.hardwareConnections.filter(
+          (c) => c.id !== action.payload.connectionId
+        )
+      };
     }
 
     case 'REORDER_COMMANDS': {
@@ -456,6 +721,7 @@ export function workspaceReducer(
     case 'LOAD_WORKSPACE': {
       return {
         ...action.payload,
+        hardwareConnections: action.payload.hardwareConnections ?? [],
         tabs: action.payload.tabs.map((tab) => ({
           ...tab,
           commands: tab.commands.map((cmd) => ({ ...cmd }))

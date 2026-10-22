@@ -23,7 +23,7 @@ export interface CommandInfoModalProps {
   readonly onClose: () => void;
   readonly commandSpec?: CommandSpec | null;
   readonly deviceSpec?: DeviceSpec | null;
-  readonly locale: 'es' | 'en';
+  readonly locale: 'es' | 'en' | 'gl';
 }
 
 /**
@@ -41,9 +41,9 @@ export function CommandInfoModal({
 
   if (!commandSpec) return null;
 
-  const resolve = (ls?: { es: string; en: string } | null) => {
+  const resolve = (ls?: { es: string; en: string; gl?: string } | null) => {
     if (!ls) return '';
-    return ls[locale] ?? ls.es ?? ls.en ?? '';
+    return (ls as Record<string, string>)[locale] ?? ls.es ?? ls.en ?? '';
   };
 
   const rawDoc = resolve(commandSpec.markdownDoc);

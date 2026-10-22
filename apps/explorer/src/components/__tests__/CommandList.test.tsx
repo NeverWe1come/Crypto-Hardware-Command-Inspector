@@ -316,4 +316,46 @@ describe('Phase 4: CommandList Component', () => {
       expect(items).toHaveLength(2);
     });
   });
+
+  describe('Multi-Interface Selection (Standard vs Proprietary)', () => {
+    it('renders interface selector dropdown and STD/PROP badge for multi-interface devices (e.g. Thales Luna 7)', async () => {
+      const lunaTab: WorkspaceTab = {
+        id: 'tab_luna_1',
+        deviceId: 'thales-luna-7',
+        version: '7.8.0',
+        commands: [
+          {
+            id: 'luna_cmd_1',
+            raw: 'C_Encrypt(hSession, &mechanism, hKey, pData, ulDataLen, pEncryptedData, &pulEncryptedDataLen)',
+            version: '7.8.0',
+            direction: 'request',
+            interfaceId: 'pkcs11'
+          }
+        ],
+        activeCommandId: 'luna_cmd_1'
+      };
+
+      const handleUpdateInterface = vi.fn();
+
+      const { user } = renderWithIntl(
+        <CommandList
+          tab={lunaTab}
+          activeCommandId="luna_cmd_1"
+          onUpdateInterface={handleUpdateInterface}
+        />
+      );
+
+      const ifaceSelect = screen.getByTestId('command-interface-luna_cmd_1');
+      expect(ifaceSelect).toBeInTheDocument();
+      expect(ifaceSelect).toHaveValue('pkcs11');
+
+      // Check badge displays STD for PKCS#11
+      const badge = screen.getByTestId('command-interface-badge-luna_cmd_1');
+      expect(badge).toHaveTextContent('STD');
+
+      // Change interface to lunash-cli
+      await user.selectOptions(ifaceSelect, 'lunash-cli');
+      expect(handleUpdateInterface).toHaveBeenCalledWith('luna_cmd_1', 'lunash-cli');
+    });
+  });
 });

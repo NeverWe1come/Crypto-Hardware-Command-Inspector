@@ -4,6 +4,8 @@
  */
 
 import type { DeviceSpec } from '@chci/parser-core';
+import { futurexExcryptCommands } from './futurex-excrypt-commands';
+import { futurexExcryptDocs } from './futurex-excrypt-docs';
 
 /**
  * Futurex Excrypt hardware specification.
@@ -19,7 +21,35 @@ export const futurexExcryptSpec: DeviceSpec = {
     en: 'Futurex Excrypt Financial Hardware Security Module with tag-value [TAGVAL;] delimited framing architecture and financial key cryptography.'
   },
   defaultVersion: '7.6.1',
+  defaultInterface: 'excrypt-tag',
   exampleCommand: '[A:ECHO]',
+  interfaces: [
+    {
+      id: 'excrypt-tag',
+      name: { es: 'Protocolo Etiqueta-Valor Excrypt', en: 'Excrypt Tag-Value Protocol' },
+      shortLabel: 'Excrypt',
+      kind: 'proprietary',
+      wireFormat: 'ascii-frame',
+      description: {
+        es: 'Protocolo delimitado por corchetes y punto y coma [AO...;TAGval;]',
+        en: 'Bracket and semicolon delimited protocol [AO...;TAGval;]'
+      },
+      framing: {
+        type: 'tag-value',
+        startDelimiter: '[',
+        endDelimiter: ']',
+        pairDelimiter: ';',
+        commandTag: 'AO',
+        tagLength: 2,
+        errorCommandCode: 'ERRO',
+        errorCodeTag: 'AM',
+        offendingTagTag: 'AN',
+        errorMessageTag: 'BB'
+      },
+      exampleCommand: '[A:ECHO]'
+    }
+  ],
+  documentationSections: futurexExcryptDocs,
   framing: {
     type: 'tag-value',
     startDelimiter: '[',
@@ -292,7 +322,10 @@ export const futurexExcryptSpec: DeviceSpec = {
             }
           ],
           source: 'Futurex Excrypt Host Command Reference Manual v7.6.1, Section 1.5, Error Handling'
-        }
+        },
+        ...futurexExcryptCommands.filter(
+          (c) => !['ECHO', 'ESTA', 'MKEY', 'ERRO'].includes(c.code)
+        )
       ],
       errorCodes: {
         '00': {

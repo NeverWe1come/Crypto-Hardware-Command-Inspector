@@ -23,8 +23,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup
 } from './ui/resizable';
-import { Cpu, Sparkles, Layers, Plus, BookOpen } from 'lucide-react';
+import { Cpu, Sparkles, Layers, Plus, BookOpen, Play, Loader2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
+import { sendHardwareCommand } from '../services/hardware-client';
+import { ExecutionErrorModal } from './ExecutionErrorModal';
 
 /**
  * Root workspace layout component composing the navigation header, web warning banner,
@@ -35,18 +37,26 @@ import { useIntl } from 'react-intl';
  */
 export function Shell() {
   const intl = useIntl();
-  const locale = (intl.locale === 'en' ? 'en' : 'es') as 'es' | 'en';
+  const locale = (intl.locale === 'en' ? 'en' : intl.locale === 'gl' ? 'gl' : 'es') as 'es' | 'en' | 'gl';
   const { state, dispatch } = useWorkspace();
 
   const sidebarPanelRef = useRef<React.ComponentRef<typeof ResizablePanel>>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
+  const [isLiveExecuting, setIsLiveExecuting] = useState(false);
+  const [executionError, setExecutionError] = useState<string | null>(null);
+  const [analyzingResponse, setAnalyzingResponse] = useState(false);
 
   const [hoveredSegment, setHoveredSegment] = useState<FrameSegment | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<FrameSegment | null>(null);
 
   const activeTab = state.tabs.find((tab) => tab.id === state.activeTabId);
   const activeDeviceSpec = activeTab ? getDeviceSpec(activeTab.deviceId) : undefined;
+
+  const activeConnections = useMemo(
+    () => (activeTab ? state.hardwareConnections.filter((c) => c.deviceId === activeTab.deviceId) : []),
+    [activeTab, state.hardwareConnections]
+  );
 
   const activeCommand = useMemo(() => {
     if (!activeTab || activeTab.commands.length === 0) return null;
@@ -60,16 +70,71 @@ export function Shell() {
   React.useEffect(() => {
     setHoveredSegment(null);
     setSelectedSegment(null);
+    setAnalyzingResponse(false);
   }, [activeCommand?.id]);
+
+  const activeRawToParse =
+    activeCommand && activeCommand.liveResponseRaw && analyzingResponse
+      ? activeCommand.liveResponseRaw
+      : (activeCommand?.raw ?? '');
+
+  const activeDirectionToParse =
+    activeCommand && activeCommand.liveResponseRaw && analyzingResponse
+      ? 'response'
+      : (activeCommand?.direction ?? 'request');
 
   const parseResult = useMemo(() => {
     if (!activeCommand || !activeDeviceSpec || !activeTab) return null;
-    return parseCommand(activeCommand.raw, activeDeviceSpec, {
+    return parseCommand(activeRawToParse, activeDeviceSpec, {
       version: activeCommand.version,
-      expectedDirection: activeCommand.direction,
-      headerLength: activeTab.headerLength
+      expectedDirection: activeDirectionToParse,
+      headerLength: activeCommand.headerLength ?? activeTab.headerLength ?? 4,
+      interfaceId: activeCommand.interfaceId ?? activeTab.interfaceId
     });
-  }, [activeCommand, activeDeviceSpec, activeTab]);
+  }, [activeCommand, activeDeviceSpec, activeTab, activeRawToParse, activeDirectionToParse]);
+
+  const handleExecuteLiveCommand = async () => {
+    if (!activeCommand || !activeTab) return;
+    const connId = activeCommand.selectedConnectionId ?? activeConnections[0]?.id;
+    const conn = activeConnections.find((c) => c.id === connId) ?? activeConnections[0];
+    if (!conn) {
+      setExecutionError(
+        'No hay ninguna conexión configurada para este dispositivo. Pulsa en el icono de engranaje (ruletita) en el panel izquierdo para añadir una IP y puerto.'
+      );
+      return;
+    }
+
+    if (!activeCommand.raw.trim()) {
+      setExecutionError('El comando de solicitud a enviar está vacío.');
+      return;
+    }
+
+    setIsLiveExecuting(true);
+    setExecutionError(null);
+
+    try {
+      const res = await sendHardwareCommand(conn, activeCommand.raw, activeDeviceSpec?.framing.type);
+      if (res.success && res.response !== undefined) {
+        dispatch({
+          type: 'SET_COMMAND_LIVE_RESPONSE',
+          payload: {
+            commandId: activeCommand.id,
+            responseRaw: res.response,
+            tabId: activeTab.id
+          }
+        });
+        setAnalyzingResponse(true);
+      } else {
+        setExecutionError(res.error || 'Error desconocido al comunicar con el dispositivo.');
+      }
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : typeof err === 'string' ? err : JSON.stringify(err);
+      setExecutionError(message);
+    } finally {
+      setIsLiveExecuting(false);
+    }
+  };
 
   // Automatically log non-empty commands to history on debounce
   const lastLoggedRef = useRef<string>('');
@@ -232,8 +297,8 @@ export function Shell() {
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-[#feffff]">
                             {activeCommand.direction === 'request'
-                              ? 'Trama de Solicitud (Request)'
-                              : 'Trama de Respuesta (Response)'}
+                              ? 'Comando de Solicitud (Request)'
+                              : 'Comando de Respuesta (Response)'}
                           </span>
                           {parseResult?.commandCode && (
                             <span className="font-mono bg-[#0284c7]/20 text-[#38bdf8] px-1.5 py-0.5 rounded text-[11px] font-semibold border border-[#0284c7]/40">
@@ -241,13 +306,62 @@ export function Shell() {
                             </span>
                           )}
                         </div>
+
+                        {/* Live Execution Controls (When enabled on request commands) */}
+                        {activeCommand.direction === 'request' && activeCommand.liveExecutionEnabled && (
+                          <div className="flex items-center gap-2">
+                            <select
+                              data-testid="live-connection-select"
+                              value={activeCommand.selectedConnectionId ?? activeConnections[0]?.id ?? ''}
+                              onChange={(e) =>
+                                dispatch({
+                                  type: 'SET_COMMAND_SELECTED_CONNECTION',
+                                  payload: {
+                                    commandId: activeCommand.id,
+                                    connectionId: e.target.value,
+                                    tabId: activeTab.id
+                                  }
+                                })
+                              }
+                              className="h-7 px-2 text-[11px] font-mono bg-[#1a2236] border border-[#2e3b5b] rounded text-[#feffff]"
+                              title="Seleccionar conexión hardware"
+                            >
+                              {activeConnections.length === 0 ? (
+                                <option value="">Sin conexiones (pulsa ⚙️ en catálogo)</option>
+                              ) : (
+                                activeConnections.map((c) => (
+                                  <option key={c.id} value={c.id}>
+                                    {c.host}:{c.port} ({c.connectionType})
+                                  </option>
+                                ))
+                              )}
+                            </select>
+
+                            <Button
+                              type="button"
+                              size="sm"
+                              disabled={isLiveExecuting}
+                              onClick={handleExecuteLiveCommand}
+                              data-testid="live-execute-play-button"
+                              className="h-7 text-xs px-2.5 gap-1.5 bg-[#018934] hover:bg-[#0da845] text-[#feffff] font-semibold"
+                              title="Lanzar comando contra el hardware configurado"
+                            >
+                              {isLiveExecuting ? (
+                                <Loader2 className="size-3 animate-spin" />
+                              ) : (
+                                <Play className="size-3 fill-current" />
+                              )}
+                              <span>Lanzar</span>
+                            </Button>
+                          </div>
+                        )}
                       </div>
 
                       <CodeEditor
                         key={activeCommand.id}
                         raw={activeCommand.raw}
-                        segments={parseResult?.segments ?? []}
-                        controlChars={parseResult?.normalized.controlChars}
+                        segments={!analyzingResponse ? (parseResult?.segments ?? []) : []}
+                        controlChars={!analyzingResponse ? parseResult?.normalized.controlChars : undefined}
                         onChange={(newRaw) =>
                           dispatch({
                             type: 'UPDATE_COMMAND_RAW',
@@ -259,8 +373,54 @@ export function Shell() {
                         }
                         onHoverSegment={setHoveredSegment}
                         onSelectSegment={setSelectedSegment}
-                        highlightedSegmentId={hoveredSegment?.id ?? selectedSegment?.id ?? null}
+                        highlightedSegmentId={!analyzingResponse ? (hoveredSegment?.id ?? selectedSegment?.id ?? null) : null}
                       />
+
+                      {/* Second Editor: Received Hardware Response Area (Only when live execution enabled) */}
+                      {activeCommand.direction === 'request' && activeCommand.liveExecutionEnabled && (
+                        <div
+                          className="flex-none flex flex-col space-y-1.5 pt-2 border-t border-[#2e3b5b]"
+                          data-testid="live-response-section"
+                        >
+                          <div className="flex items-center justify-between text-xs font-medium text-muted-foreground shrink-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-[#feffff]">
+                                Comando de Respuesta Recibido (HSM)
+                              </span>
+                              {activeCommand.liveResponseRaw && (
+                                <button
+                                  type="button"
+                                  onClick={() => setAnalyzingResponse((prev) => !prev)}
+                                  data-testid="toggle-analyzing-response"
+                                  className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase transition-colors ${
+                                    analyzingResponse
+                                      ? 'bg-[#018934]/20 text-[#0da845] border border-[#018934]/40'
+                                      : 'bg-[#1a2236] text-muted-foreground hover:text-foreground border border-[#2e3b5b]'
+                                  }`}
+                                  title="Alternar análisis a la derecha entre solicitud y respuesta recibida"
+                                >
+                                  {analyzingResponse ? 'Analizando Respuesta' : 'Analizar Respuesta'}
+                                </button>
+                              )}
+                            </div>
+                            {isLiveExecuting && (
+                              <span className="text-[11px] text-amber-400 flex items-center gap-1 animate-pulse">
+                                <Loader2 className="size-3 animate-spin" />
+                                Esperando respuesta...
+                              </span>
+                            )}
+                          </div>
+
+                          <CodeEditor
+                            raw={activeCommand.liveResponseRaw ?? ''}
+                            placeholder="Esperando respuesta del Hardware al pulsar Lanzar..."
+                            readOnly={true}
+                            segments={analyzingResponse ? (parseResult?.segments ?? []) : []}
+                            controlChars={analyzingResponse ? parseResult?.normalized.controlChars : undefined}
+                            className="min-h-[70px] max-h-[140px]"
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -330,6 +490,13 @@ export function Shell() {
         onClose={() => setIsDocsModalOpen(false)}
         deviceSpec={activeDeviceSpec}
         locale={locale}
+      />
+
+      {/* Hardware Execution Failure Modal */}
+      <ExecutionErrorModal
+        open={!!executionError}
+        onOpenChange={(open) => !open && setExecutionError(null)}
+        errorMessage={executionError ?? ''}
       />
     </div>
   );

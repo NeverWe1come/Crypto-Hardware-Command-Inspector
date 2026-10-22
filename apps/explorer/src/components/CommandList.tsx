@@ -22,7 +22,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { getDeviceSpec } from '@chci/device-specs';
-import type { CommandDirection } from '@chci/parser-core';
+import type { CommandDirection, DeviceInterfaceSpec } from '@chci/parser-core';
 import { useOptionalWorkspace } from '../state/workspace-context';
 import type { CommandEntry, WorkspaceTab } from '../state/types';
 import { Button } from './ui/button';
@@ -32,7 +32,8 @@ import {
   Trash2,
   GripVertical,
   ArrowUpRight,
-  ArrowDownLeft
+  ArrowDownLeft,
+  Radio
 } from 'lucide-react';
 
 /**
@@ -57,8 +58,14 @@ export interface CommandListProps {
   readonly onUpdateDirection?: (commandId: string, direction: CommandDirection) => void;
   /** Callback fired when a command's firmware version is modified. */
   readonly onUpdateVersion?: (commandId: string, version: string) => void;
+  /** Callback fired when a command's active interface is modified. */
+  readonly onUpdateInterface?: (commandId: string, interfaceId: string) => void;
   /** Callback fired when updating header length for header-positional devices. */
   readonly onUpdateHeaderLength?: (headerLength: number) => void;
+  /** Callback fired when updating individual command header length. */
+  readonly onUpdateCommandHeaderLength?: (commandId: string, headerLength: number) => void;
+  /** Callback fired when toggling live hardware execution for a request command. */
+  readonly onToggleLiveExecution?: (commandId: string, enabled: boolean) => void;
 }
 
 function arrayMove<T>(array: readonly T[], from: number, to: number): T[] {
@@ -75,11 +82,18 @@ interface SortableCommandItemProps {
   readonly index: number;
   readonly isActive: boolean;
   readonly versions: readonly string[];
+  readonly interfaces?: readonly DeviceInterfaceSpec[];
+  readonly defaultInterface?: string;
+  readonly isHeaderPositional: boolean;
+  readonly defaultHeaderLen: number;
   readonly onSelect: (id: string) => void;
   readonly onDuplicate: (id: string) => void;
   readonly onDelete: (id: string) => void;
   readonly onUpdateDirection: (id: string, dir: CommandDirection) => void;
   readonly onUpdateVersion: (id: string, ver: string) => void;
+  readonly onUpdateInterface: (id: string, ifaceId: string) => void;
+  readonly onUpdateCommandHeaderLength: (id: string, len: number) => void;
+  readonly onToggleLiveExecution: (id: string, enabled: boolean) => void;
 }
 
 const SortableCommandItem = React.memo(function SortableCommandItem({
@@ -87,11 +101,18 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
   index,
   isActive,
   versions,
+  interfaces,
+  defaultInterface,
+  isHeaderPositional,
+  defaultHeaderLen,
   onSelect,
   onDuplicate,
   onDelete,
   onUpdateDirection,
-  onUpdateVersion
+  onUpdateVersion,
+  onUpdateInterface,
+  onUpdateCommandHeaderLength,
+  onToggleLiveExecution
 }: SortableCommandItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: cmd.id });
@@ -128,7 +149,7 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
           : 'bg-[#202940] border-[#2e3b5b] hover:border-[#3d4d75] hover:bg-[#25304b] text-[#feffff]/90'
       }`}
     >
-      <div className="flex items-center gap-2 min-w-0 flex-1">
+      <div className="flex items-center gap-2 min-w-0 flex-1 flex-wrap">
         {/* Drag handle */}
         <button
           type="button"
@@ -193,6 +214,94 @@ const SortableCommandItem = React.memo(function SortableCommandItem({
             </option>
           ))}
         </select>
+
+        {/* Device Interface Selector (for devices with multiple interfaces) */}
+        {interfaces && interfaces.length > 1 && (
+          <div
+            className="flex items-center gap-1 shrink-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <select
+              data-testid={`command-interface-${cmd.id}`}
+              value={cmd.interfaceId ?? defaultInterface ?? interfaces[0]?.id}
+              onChange={(e) => onUpdateInterface(cmd.id, e.target.value)}
+              aria-label={`Interfaz del comando #${index + 1}`}
+              className="h-6 px-1.5 text-[11px] font-sans bg-[#1a2236] border border-[#2e3b5b] rounded-sm text-[#feffff] shrink-0"
+            >
+              {interfaces.map((iface) => (
+                <option key={iface.id} value={iface.id}>
+                  {iface.name.es}
+                </option>
+              ))}
+            </select>
+            {(() => {
+              const activeIface = interfaces.find(
+                (i) => i.id === (cmd.interfaceId ?? defaultInterface ?? interfaces[0]?.id)
+              );
+              const isStd = activeIface?.kind === 'standard';
+              return (
+                <span
+                  data-testid={`command-interface-badge-${cmd.id}`}
+                  className={`px-1 py-0.5 rounded-xs text-[9px] font-bold uppercase tracking-wider ${
+                    isStd
+                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                      : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                  }`}
+                  title={isStd ? 'Estándar abierto' : 'Propietario del fabricante'}
+                >
+                  {isStd ? 'STD' : 'PROP'}
+                </span>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Per-Command Header Length for Header-Positional Devices (Thales) */}
+        {isHeaderPositional && (
+          <div
+            className="flex items-center gap-1 shrink-0 text-[11px] font-mono text-muted-foreground"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="text-[10px]">Hdr:</span>
+            <input
+              type="number"
+              min={0}
+              max={128}
+              value={cmd.headerLength ?? defaultHeaderLen}
+              onChange={(e) => {
+                const val = parseInt(e.target.value, 10);
+                if (!isNaN(val) && val >= 0 && val <= 128) {
+                  onUpdateCommandHeaderLength(cmd.id, val);
+                }
+              }}
+              data-testid={`command-header-length-${cmd.id}`}
+              className="w-12 h-6 px-1 text-center text-[11px] font-mono bg-[#1a2236] border border-[#2e3b5b] rounded-sm text-[#feffff]"
+              title="Longitud de cabecera configurable para este comando"
+            />
+          </div>
+        )}
+
+        {/* Live Hardware Execution Toggle for Request Commands */}
+        {isRequest && (
+          <button
+            type="button"
+            data-testid={`command-live-switch-${cmd.id}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleLiveExecution(cmd.id, !cmd.liveExecutionEnabled);
+            }}
+            className={`flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[10px] font-semibold tracking-wide uppercase transition-colors shrink-0 ${
+              cmd.liveExecutionEnabled
+                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                : 'bg-[#1a2236] text-muted-foreground hover:text-foreground border border-[#2e3b5b]'
+            }`}
+            title="Activar/desactivar ejecución directa contra Hardware"
+            aria-label="Ejecución directa contra Hardware"
+          >
+            <Radio className="size-2.5" />
+            <span>{cmd.liveExecutionEnabled ? 'HW: ON' : 'HW: OFF'}</span>
+          </button>
+        )}
       </div>
 
       {/* Duplicate & Delete actions */}
@@ -332,6 +441,17 @@ export function CommandList(props: CommandListProps) {
     }
   };
 
+  const handleUpdateInterface = (id: string, interfaceId: string) => {
+    if (props.onUpdateInterface) {
+      props.onUpdateInterface(id, interfaceId);
+    } else if (workspace?.dispatch) {
+      workspace.dispatch({
+        type: 'UPDATE_COMMAND_INTERFACE',
+        payload: { commandId: id, interfaceId }
+      });
+    }
+  };
+
   const handleReorder = (ids: readonly string[]) => {
     if (props.onReorderCommands) {
       props.onReorderCommands(ids);
@@ -351,6 +471,29 @@ export function CommandList(props: CommandListProps) {
       workspace.dispatch({
         type: 'UPDATE_TAB_HEADER_LENGTH',
         payload: { headerLength: len }
+      });
+    }
+  };
+
+  const handleUpdateCommandHeaderLength = (id: string, len: number) => {
+    if (len < 0 || len > 128) return;
+    if (props.onUpdateCommandHeaderLength) {
+      props.onUpdateCommandHeaderLength(id, len);
+    } else if (workspace?.dispatch) {
+      workspace.dispatch({
+        type: 'UPDATE_COMMAND_HEADER_LENGTH',
+        payload: { commandId: id, headerLength: len }
+      });
+    }
+  };
+
+  const handleToggleLiveExecution = (id: string, enabled: boolean) => {
+    if (props.onToggleLiveExecution) {
+      props.onToggleLiveExecution(id, enabled);
+    } else if (workspace?.dispatch) {
+      workspace.dispatch({
+        type: 'SET_COMMAND_LIVE_EXECUTION',
+        payload: { commandId: id, enabled }
       });
     }
   };
@@ -445,11 +588,18 @@ export function CommandList(props: CommandListProps) {
                     index={index}
                     isActive={cmd.id === activeCommandId}
                     versions={availableVersions}
+                    interfaces={spec?.interfaces}
+                    defaultInterface={spec?.defaultInterface}
+                    isHeaderPositional={spec?.framing.type === 'header-positional'}
+                    defaultHeaderLen={defaultHeaderLen}
                     onSelect={handleSelectCommand}
                     onDuplicate={handleDuplicateCommand}
                     onDelete={handleDeleteCommand}
                     onUpdateDirection={handleUpdateDirection}
                     onUpdateVersion={handleUpdateVersion}
+                    onUpdateInterface={handleUpdateInterface}
+                    onUpdateCommandHeaderLength={handleUpdateCommandHeaderLength}
+                    onToggleLiveExecution={handleToggleLiveExecution}
                   />
                 ))}
               </div>

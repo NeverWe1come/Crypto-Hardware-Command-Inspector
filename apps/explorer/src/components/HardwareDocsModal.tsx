@@ -7,7 +7,7 @@
  */
 
 import React, { useCallback, useMemo, useState } from 'react';
-import type { DeviceSpec, HardwareDocSectionSpec } from '@chci/parser-core';
+import type { DeviceSpec, HardwareDocSectionSpec, LocalizedString } from '@chci/parser-core';
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ export interface HardwareDocsModalProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
   readonly deviceSpec?: DeviceSpec | null;
-  readonly locale: 'es' | 'en';
+  readonly locale: 'es' | 'en' | 'gl';
 }
 
 /**
@@ -40,9 +40,9 @@ export function HardwareDocsModal({
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'chapter' | 'command' | 'appendix'>('all');
 
   const resolve = useCallback(
-    (ls?: { es: string; en: string } | null) => {
+    (ls?: LocalizedString | { es: string; en: string; gl?: string } | null) => {
       if (!ls) return '';
-      return ls[locale] ?? ls.es ?? ls.en ?? '';
+      return (locale === 'gl' ? ls.gl : ls[locale]) ?? ls.es ?? ls.en ?? '';
     },
     [locale]
   );
@@ -61,7 +61,7 @@ export function HardwareDocsModal({
       );
       for (const cmd of requestCommands) {
         cmdSections.push({
-          id: `cmd-${cmd.code.toLowerCase()}`,
+          id: `cmd-${cmd.id.toLowerCase()}`,
           title: {
             es: `Comando ${cmd.code} - ${resolve(cmd.name).replace(/\s*\(Petición\)$/i, '')}`,
             en: `Command ${cmd.code} - ${resolve(cmd.name).replace(/\s*\(Request\)$/i, '')}`
@@ -114,18 +114,27 @@ export function HardwareDocsModal({
   const handleNavigateLink = useCallback(
     (href: string) => {
       const cleanHref = href.trim();
-      // 1. Commands: commands/cmd-10-... or cmd-10
-      const cmdMatch =
-        cleanHref.match(/commands\/cmd-([0-9a-zA-Z]+)/i) ||
-        cleanHref.match(/^cmd-([0-9a-zA-Z]+)/i);
-      if (cmdMatch && cmdMatch[1]) {
-        const code = cmdMatch[1].toLowerCase();
-        const targetSec = allSections.find(
-          (s) => s.id === `cmd-${code}` || s.id.toLowerCase().includes(code)
-        );
+      // 1. Commands: e.g. commands/cmd-15-change-atm-communications-key,-docutel.md or cmd-15
+      const fullCmdMatch = cleanHref.match(/cmd-([a-zA-Z0-9_,-]+)(?:\.md)?/i);
+      if (fullCmdMatch && fullCmdMatch[1]) {
+        const slug = fullCmdMatch[1].toLowerCase().replace(/,/g, '');
+        const targetSec = allSections.find((s) => {
+          const sid = s.id.toLowerCase();
+          return sid.includes(slug) || slug.split('-').every((part) => sid.includes(part) || resolve(s.title).toLowerCase().includes(part));
+        });
         if (targetSec) {
           setSelectedSectionId(targetSec.id);
           return;
+        }
+
+        // Fallback by code
+        const code = slug.split('-')[0];
+        if (code) {
+          const fallbackSec = allSections.find((s) => s.id.toLowerCase().includes(`-${code}-`) || s.id.toLowerCase().endsWith(`-${code}`));
+          if (fallbackSec) {
+            setSelectedSectionId(fallbackSec.id);
+            return;
+          }
         }
       }
       // 2. Chapters: chapters/ch01-... or ch01
@@ -152,7 +161,7 @@ export function HardwareDocsModal({
         }
       }
     },
-    [allSections]
+    [allSections, resolve]
   );
 
   if (!deviceSpec) return null;

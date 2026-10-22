@@ -36,7 +36,8 @@ describe('HistoryModal Component', () => {
       }
     ],
     catalogSearchQuery: '',
-    selectedCategory: 'ALL'
+    selectedCategory: 'ALL',
+    hardwareConnections: []
   };
 
   const sampleEntries: HistoryEntry[] = [

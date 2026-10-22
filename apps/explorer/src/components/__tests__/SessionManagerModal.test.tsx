@@ -36,7 +36,8 @@ describe('SessionManagerModal Component', () => {
       }
     ],
     catalogSearchQuery: '',
-    selectedCategory: 'ALL'
+    selectedCategory: 'ALL',
+    hardwareConnections: []
   };
 
   const sampleSessionMeta: SavedSessionMeta = {

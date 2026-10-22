@@ -21,7 +21,8 @@ describe('workspaceReducer', () => {
         activeTabId: null,
         tabs: [],
         catalogSearchQuery: '',
-        selectedCategory: 'ALL'
+        selectedCategory: 'ALL',
+        hardwareConnections: []
       });
     });
 
@@ -109,11 +110,11 @@ describe('workspaceReducer', () => {
       expect(state3.activeTabId).toBe(firstTabId);
     });
 
-    it('ignores unknown or unsupported coming-soon devices without altering state', () => {
+    it('ignores unknown or unsupported devices without altering state', () => {
       const state = freeze(initialWorkspaceState);
       const nextState = workspaceReducer(state, {
         type: 'OPEN_DEVICE_TAB',
-        payload: { deviceId: 'aws-kms' } // coming-soon
+        payload: { deviceId: 'unsupported-crypto-device' }
       });
       expect(nextState).toBe(state);
       expect(nextState.tabs).toHaveLength(0);
@@ -123,6 +124,25 @@ describe('workspaceReducer', () => {
         payload: { deviceId: 'non-existent-device' }
       });
       expect(invalidState).toBe(state);
+    });
+
+    it('updates command interface via UPDATE_COMMAND_INTERFACE', () => {
+      const state1 = workspaceReducer(initialWorkspaceState, {
+        type: 'OPEN_DEVICE_TAB',
+        payload: { deviceId: 'thales-luna-7' }
+      });
+      const tab = state1.tabs[0];
+      const cmd = tab?.commands[0];
+      expect(cmd?.interfaceId).toBe('pkcs11');
+
+      const state2 = workspaceReducer(state1, {
+        type: 'UPDATE_COMMAND_INTERFACE',
+        payload: {
+          commandId: cmd!.id,
+          interfaceId: 'lunash-cli'
+        }
+      });
+      expect(state2.tabs[0]?.commands[0]?.interfaceId).toBe('lunash-cli');
     });
 
     it('safely handles empty or malformed deviceId', () => {

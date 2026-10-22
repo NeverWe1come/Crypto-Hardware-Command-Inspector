@@ -15,4 +15,5 @@ export * from './schema';
 export * from './delimited-positional';
 export * from './header-positional';
 export * from './tag-value';
+export * from './structured-framing';
 export * from './engine';

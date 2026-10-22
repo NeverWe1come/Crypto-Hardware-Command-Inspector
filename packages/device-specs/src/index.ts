@@ -17,6 +17,13 @@ export { DEVICE_CATALOG } from './catalog';
 export { atallaAt1000Spec } from './devices/utimaco-atalla-at1000';
 export { thalesPayshield10kSpec } from './devices/thales-payshield-10k';
 export { futurexExcryptSpec } from './devices/futurex-excrypt';
+export { thalesLuna7Spec } from './devices/thales-luna-7';
+export { ibmCca4769Spec } from './devices/ibm-cca-4769';
+export { yubicoYubihsm2Spec } from './devices/yubico-yubihsm-2';
+export { awsKmsSpec } from './devices/aws-kms';
+export { hashicorpVaultSpec } from './devices/hashicorp-vault';
+export { marvellLiquidSecuritySpec } from './devices/marvell-liquid-security';
+export { azurePaymentHsmSpec } from './devices/azure-payment-hsm';
 
 /**
  * Type guard verifying if a catalog entry is a fully modeled `DeviceSpec`.

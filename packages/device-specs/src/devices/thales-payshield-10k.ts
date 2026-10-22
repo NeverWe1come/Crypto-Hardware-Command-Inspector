@@ -4,6 +4,11 @@
  */
 
 import type { DeviceSpec } from '@chci/parser-core';
+import {
+  thalesPayshieldCommandsV19,
+  thalesPayshieldCommandsV23
+} from './thales-payshield-commands';
+import { thalesPayshieldDocs } from './thales-payshield-docs';
 
 /**
  * Thales payShield 10K hardware specification.
@@ -19,7 +24,32 @@ export const thalesPayshield10kSpec: DeviceSpec = {
     en: 'Thales payShield 10K Financial Hardware Security Module with positional header framing, LMK key blocks, TR-31, and PIN encryption.'
   },
   defaultVersion: '2.3',
+  defaultInterface: 'payshield-host',
   exampleCommand: 'NC',
+  interfaces: [
+    {
+      id: 'payshield-host',
+      name: { es: 'Protocolo Host payShield', en: 'payShield Host Protocol' },
+      shortLabel: 'payShield',
+      kind: 'proprietary',
+      wireFormat: 'ascii-frame',
+      description: {
+        es: 'Protocolo de tramas posicionales con cabecera [Header]CC...',
+        en: 'Positional frame protocol with header [Header]CC...'
+      },
+      framing: {
+        type: 'header-positional',
+        defaultHeaderLength: 4,
+        commandCodeLength: 2,
+        responseErrorCodeLength: 2,
+        successErrorCode: '00',
+        endMessageDelimiter: '\x19',
+        lmkIdDelimiter: '%'
+      },
+      exampleCommand: 'NC'
+    }
+  ],
+  documentationSections: thalesPayshieldDocs,
   framing: {
     type: 'header-positional',
     defaultHeaderLength: 4,
@@ -305,7 +335,10 @@ export const thalesPayshield10kSpec: DeviceSpec = {
             }
           ],
           source: 'Thales payShield 10K Host Command Reference Manual v1.9, Section 5.3, CB Command'
-        }
+        },
+        ...thalesPayshieldCommandsV19.filter(
+          (c) => !['NC', 'ND', 'A0', 'A1', 'CA', 'CB'].includes(c.code)
+        )
       ],
       errorCodes: {
         '00': {
@@ -405,7 +438,11 @@ export const thalesPayshield10kSpec: DeviceSpec = {
         en: 'Extends v1.9 with mandatory support for TR-31 Key Blocks (prefixes R & S), AES algorithms, and authenticated encryption.'
       },
       extends: '1.9',
-      commands: [],
+      commands: [
+        ...thalesPayshieldCommandsV23.filter(
+          (c) => !['NC', 'ND', 'A0', 'A1', 'CA', 'CB'].includes(c.code)
+        )
+      ],
       errorCodes: {
         '28': {
           code: '28',

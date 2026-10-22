@@ -12,6 +12,25 @@ import type { SavedSession, SessionExport } from './types';
 export const CommandDirectionSchema = z.enum(['request', 'response']);
 
 /**
+ * Zod schema validating a hardware connection protocol.
+ */
+export const HardwareConnectionTypeSchema = z.enum(['TCP', 'TLS', 'mTLS']);
+
+/**
+ * Zod schema validating a hardware connection configuration.
+ */
+export const HardwareConnectionConfigSchema = z.object({
+  id: z.string().min(1, 'El ID de conexión no puede estar vacío'),
+  deviceId: z.string().min(1, 'El ID de dispositivo es obligatorio'),
+  host: z.string().min(1, 'El host/IP es obligatorio'),
+  port: z.number().int().min(1).max(65535, 'El puerto debe estar entre 1 y 65535'),
+  connectionType: HardwareConnectionTypeSchema,
+  caCertPem: z.string().optional(),
+  clientCertPem: z.string().optional(),
+  clientKeyPem: z.string().optional()
+});
+
+/**
  * Zod schema validating an inspected cryptographic command entry.
  */
 export const CommandEntrySchema = z.object({
@@ -19,7 +38,12 @@ export const CommandEntrySchema = z.object({
   raw: z.string(),
   version: z.string().min(1, 'La versión del comando es obligatoria'),
   direction: CommandDirectionSchema,
-  linkedCommandId: z.string().nullable().optional()
+  linkedCommandId: z.string().nullable().optional(),
+  headerLength: z.number().int().nonnegative('La longitud de cabecera debe ser un entero no negativo').optional(),
+  interfaceId: z.string().optional(),
+  liveExecutionEnabled: z.boolean().optional(),
+  selectedConnectionId: z.string().optional(),
+  liveResponseRaw: z.string().optional()
 });
 
 /**
@@ -30,6 +54,7 @@ export const WorkspaceTabSchema = z.object({
   deviceId: z.string().min(1, 'El ID de dispositivo es obligatorio'),
   version: z.string().min(1, 'La versión de firmware es obligatoria'),
   headerLength: z.number().int().nonnegative('La longitud de cabecera debe ser un entero no negativo').optional(),
+  interfaceId: z.string().optional(),
   commands: z.array(CommandEntrySchema),
   activeCommandId: z.string().nullable()
 });
@@ -38,12 +63,13 @@ export const WorkspaceTabSchema = z.object({
  * Zod schema validating the entire immutable workspace state tree.
  */
 export const WorkspaceStateSchema = z.object({
-  locale: z.enum(['es', 'en']),
+  locale: z.enum(['es', 'en', 'gl']),
   theme: z.enum(['dark', 'light', 'system']),
   activeTabId: z.string().nullable(),
   tabs: z.array(WorkspaceTabSchema),
   catalogSearchQuery: z.string(),
-  selectedCategory: z.enum(['ALL', 'KMS', 'HSM_FINANCIAL', 'HSM_GP', 'HSMAAS'])
+  selectedCategory: z.enum(['ALL', 'KMS', 'HSM_FINANCIAL', 'HSM_GP', 'HSMAAS']),
+  hardwareConnections: z.array(HardwareConnectionConfigSchema).default([])
 });
 
 /**

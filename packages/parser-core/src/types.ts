@@ -15,6 +15,7 @@
 export interface LocalizedString {
   readonly es: string;
   readonly en: string;
+  readonly gl?: string;
 }
 
 /**
@@ -36,8 +37,45 @@ export type CatalogStatus = 'supported' | 'coming-soon';
  * - `delimited-positional`: Start/end markers with delimiter-separated positional tokens (e.g., Utimaco Atalla AT1000 `<CMD#f1#f2#>`).
  * - `header-positional`: Fixed-length message header followed by command/response code and positional/delimited fields (e.g., Thales payShield 10K `0000NC`).
  * - `tag-value`: Bracketed semicolon-delimited `TAG` + `VALUE` pairs (e.g., Futurex Excrypt `[AOECHO;AGHello;]`).
+ * - `structured`: Structured protocols such as REST JSON, KMIP XML, Callable C APIs (PKCS#11, IBM CCA), and CLI commands.
  */
-export type FramingType = 'delimited-positional' | 'header-positional' | 'tag-value';
+export type FramingType =
+  | 'delimited-positional'
+  | 'header-positional'
+  | 'tag-value'
+  | 'structured';
+
+/**
+ * High-level categorization of an interface exposed by a cryptographic device.
+ * - `standard`: Industry standard specifications (e.g., OASIS PKCS#11, OASIS KMIP, IBM EP11).
+ * - `proprietary`: Vendor-proprietary protocols (e.g., Thales Host frames, Atalla command language, CCA verbs, REST APIs, CLIs).
+ */
+export type DeviceInterfaceKind = 'standard' | 'proprietary';
+
+/**
+ * Wire/payload serialization format used by a device interface.
+ */
+export type InterfaceWireFormat =
+  | 'ascii-frame'
+  | 'json'
+  | 'xml'
+  | 'callable'
+  | 'cli'
+  | 'binary-hex';
+
+/**
+ * Specification of an interface exposed by a cryptographic hardware device.
+ */
+export interface DeviceInterfaceSpec {
+  readonly id: string;
+  readonly name: LocalizedString;
+  readonly shortLabel: string;
+  readonly kind: DeviceInterfaceKind;
+  readonly wireFormat: InterfaceWireFormat;
+  readonly description: LocalizedString;
+  readonly framing: FramingConfig;
+  readonly exampleCommand?: string;
+}
 
 /**
  * Direction of a cryptographic hardware message frame.
@@ -175,6 +213,8 @@ export interface CommandSpec {
   readonly examples?: readonly CommandExampleSpec[];
   /** Full raw Markdown documentation extracted from official reference manuals */
   readonly markdownDoc?: LocalizedString;
+  /** Optional identifier linking this command to a specific device interface */
+  readonly interfaceId?: string;
 }
 
 /**
@@ -241,12 +281,24 @@ export interface TagValueFramingConfig {
 }
 
 /**
+ * Framing configuration for structured protocols (JSON REST APIs, KMIP XML, Callable C APIs, CLIs).
+ */
+export interface StructuredFramingConfig {
+  readonly type: 'structured';
+  readonly format: 'json' | 'xml' | 'callable' | 'cli';
+  readonly commandKey?: string;
+  readonly errorKey?: string;
+  readonly successCodes?: readonly string[];
+}
+
+/**
  * Discriminated union of all supported framing configurations.
  */
 export type FramingConfig =
   | DelimitedPositionalFramingConfig
   | HeaderPositionalFramingConfig
-  | TagValueFramingConfig;
+  | TagValueFramingConfig
+  | StructuredFramingConfig;
 
 /**
  * Firmware version specification for a device, supporting inheritance via `extends`.
@@ -286,6 +338,10 @@ export interface DeviceSpec {
   readonly exampleCommand?: string;
   readonly framing: FramingConfig;
   readonly versions: Readonly<Record<string, DeviceVersionSpec>>;
+  /** Default interface ID for multi-interface devices (e.g., `'pkcs11'`, `'rest-json'`) */
+  readonly defaultInterface?: string;
+  /** Multiple standard and proprietary interfaces supported by this device */
+  readonly interfaces?: readonly DeviceInterfaceSpec[];
   /** Comprehensive hardware documentation sections extracted from official vendor manuals */
   readonly documentationSections?: readonly HardwareDocSectionSpec[];
 }
@@ -427,6 +483,8 @@ export interface ParseCommandOptions {
   readonly expectedDirection?: CommandDirection;
   /** Override for configurable message header length in `header-positional` protocols (e.g., Thales). */
   readonly headerLength?: number;
+  /** Selected device interface ID (e.g., `'pkcs11'`, `'rest-json'`, `'cca-verb'`). */
+  readonly interfaceId?: string;
 }
 
 /**
@@ -435,6 +493,8 @@ export interface ParseCommandOptions {
 export interface ParseResult {
   readonly deviceId: string;
   readonly version: string;
+  readonly interfaceId?: string;
+  readonly detectedInterfaceId?: string;
   readonly raw: string;
   readonly normalized: NormalizedInput;
   readonly framingType: FramingType;
