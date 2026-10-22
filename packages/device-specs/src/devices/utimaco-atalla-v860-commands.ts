@@ -427,11 +427,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "10"
+    "pairedCode": "20"
   },
   {
     "id": "atalla-10-resp",
-    "code": "10",
+    "code": "20",
     "direction": "response",
     "pairedCode": "10",
     "name": {
@@ -751,11 +751,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "101"
+    "pairedCode": "201"
   },
   {
     "id": "atalla-101-resp",
-    "code": "101",
+    "code": "201",
     "direction": "response",
     "pairedCode": "101",
     "name": {
@@ -1310,11 +1310,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "105"
+    "pairedCode": "205"
   },
   {
     "id": "atalla-105-resp",
-    "code": "105",
+    "code": "205",
     "direction": "response",
     "pairedCode": "105",
     "name": {
@@ -1544,11 +1544,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "106"
+    "pairedCode": "206"
   },
   {
     "id": "atalla-106-resp",
-    "code": "106",
+    "code": "206",
     "direction": "response",
     "pairedCode": "106",
     "name": {
@@ -1862,11 +1862,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "107"
+    "pairedCode": "207"
   },
   {
     "id": "atalla-107-resp",
-    "code": "107",
+    "code": "207",
     "direction": "response",
     "pairedCode": "107",
     "name": {
@@ -2658,11 +2658,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "109"
+    "pairedCode": "209"
   },
   {
     "id": "atalla-109-resp",
-    "code": "109",
+    "code": "209",
     "direction": "response",
     "pairedCode": "109",
     "name": {
@@ -3133,11 +3133,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1100"
+    "pairedCode": "2100"
   },
   {
     "id": "atalla-1100-resp",
-    "code": "1100",
+    "code": "2100",
     "direction": "response",
     "pairedCode": "1100",
     "name": {
@@ -3256,11 +3256,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1101"
+    "pairedCode": "2101"
   },
   {
     "id": "atalla-1101-resp",
-    "code": "1101",
+    "code": "2101",
     "direction": "response",
     "pairedCode": "1101",
     "name": {
@@ -3429,11 +3429,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1102"
+    "pairedCode": "2102"
   },
   {
     "id": "atalla-1102-resp",
-    "code": "1102",
+    "code": "2102",
     "direction": "response",
     "pairedCode": "1102",
     "name": {
@@ -3869,11 +3869,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1105"
+    "pairedCode": "2105"
   },
   {
     "id": "atalla-1105-resp",
-    "code": "1105",
+    "code": "2105",
     "direction": "response",
     "pairedCode": "1105",
     "name": {
@@ -4037,11 +4037,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1110"
+    "pairedCode": "2110"
   },
   {
     "id": "atalla-1110-resp",
-    "code": "1110",
+    "code": "2110",
     "direction": "response",
     "pairedCode": "1110",
     "name": {
@@ -4231,11 +4231,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1111"
+    "pairedCode": "2111"
   },
   {
     "id": "atalla-1111-resp",
-    "code": "1111",
+    "code": "2111",
     "direction": "response",
     "pairedCode": "1111",
     "name": {
@@ -4483,11 +4483,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1113"
+    "pairedCode": "2113"
   },
   {
     "id": "atalla-1113-resp",
-    "code": "1113",
+    "code": "2113",
     "direction": "response",
     "pairedCode": "1113",
     "name": {
@@ -4606,11 +4606,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1120"
+    "pairedCode": "2120"
   },
   {
     "id": "atalla-1120-resp",
-    "code": "1120",
+    "code": "2120",
     "direction": "response",
     "pairedCode": "1120",
     "name": {
@@ -5282,11 +5282,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "117"
+    "pairedCode": "217"
   },
   {
     "id": "atalla-117-resp",
-    "code": "117",
+    "code": "217",
     "direction": "response",
     "pairedCode": "117",
     "name": {
@@ -5707,11 +5707,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "118"
+    "pairedCode": "218"
   },
   {
     "id": "atalla-118-resp",
-    "code": "118",
+    "code": "218",
     "direction": "response",
     "pairedCode": "118",
     "name": {
@@ -7313,11 +7313,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "11D"
+    "pairedCode": "21D"
   },
   {
     "id": "atalla-11d-resp",
-    "code": "11D",
+    "code": "21D",
     "direction": "response",
     "pairedCode": "11D",
     "name": {
@@ -8250,11 +8250,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1200"
+    "pairedCode": "2200"
   },
   {
     "id": "atalla-1200-resp",
-    "code": "1200",
+    "code": "2200",
     "direction": "response",
     "pairedCode": "1200",
     "name": {
@@ -8361,11 +8361,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1204"
+    "pairedCode": "2204"
   },
   {
     "id": "atalla-1204-resp",
-    "code": "1204",
+    "code": "2204",
     "direction": "response",
     "pairedCode": "1204",
     "name": {
@@ -8493,11 +8493,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1205"
+    "pairedCode": "2205"
   },
   {
     "id": "atalla-1205-resp",
-    "code": "1205",
+    "code": "2205",
     "direction": "response",
     "pairedCode": "1205",
     "name": {
@@ -8864,11 +8864,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1216"
+    "pairedCode": "2216"
   },
   {
     "id": "atalla-1216-battery-status-resp",
-    "code": "1216",
+    "code": "2216",
     "direction": "response",
     "pairedCode": "1216",
     "name": {
@@ -9137,11 +9137,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "126"
+    "pairedCode": "222"
   },
   {
-    "id": "atalla-126-resp",
-    "code": "126",
+    "id": "atalla-222-resp",
+    "code": "222",
     "direction": "response",
     "pairedCode": "122",
     "name": {
@@ -9449,11 +9449,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
       "es": "# Command 1222 - HSM Port Numbers\n\n- **Command ID:** `1222`\n- **Title:** HSM Port Numbers\n- **PDF Pages:** 1350 - 1351\n\n---\n\n### Description\n\nCommand 1222 returns the ports defined for a given domain. It can be sent to the ASCII, Management, and status ports. When used over the serial connection, the Domain field must be specified.\n\n### Command Syntax\n\n```\n<1222#[NIC]#[Domain]#>\n```\n\n### Response Syntax\n\n```\n<2222#Ports List#[Ports List for second NIC#]>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 4 | 1222 |\n| 1 | [NIC] | 0, 1 | This field specifies the NIC to obtain the port numbers from. Possible values are: 1 = NIC1 2 = NIC2 B = Return ports for both NIC1 and NIC2 If this field is empty, ports for both NIC1 and NIC2 are returned. Legal Characters: 1,2,B |\n| 2 | [Domain] | 0, 1 | This field specifies the domain to obtain the port numbers from. If this field is empty, list the ports used by the current domain. Otherwise, list the ports used by the indicated domain. Legal Characters: 0-9 |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 4 | 2222 |\n| 1 | Ports List | Variable | The list of ports supported for the indicated NIC in the format of PORT NAME=Port Number, separated by commas. The names of currently supported ports are ASCII, STATUS, MANAGE, PRTCMD, REST, and PEMU. If a port is undefined, it will not be listed. Legal Characters: A-Z, 0-9 |\n| 2 | [Ports List for second NIC#] | Variable | If field 1 of the command is B or empty, the list of ports supported for NIC2 in the same format as response field 1. Legal Characters: A-Z, 0-9 |\n\n### Usage Notes\n\n- Utimaco is likely to add additional ports to the HSM in the future. If this happens, then the HSM may return more than the 6 port names currently defined. Utimaco recommends making the receiving application flexible in the length and content of response fields.\n\n### Examples\n\nExample\n\nThe command looks like this:\n\n```\n<1222###>\n```\n\n```\n<2222#ASCII=7001,MANAGE=7101,STATUS=7201,REST=8001#ASCII=7011,STATUS=7211#>\n```\n\n",
       "en": "# Command 1222 - HSM Port Numbers\n\n- **Command ID:** `1222`\n- **Title:** HSM Port Numbers\n- **PDF Pages:** 1350 - 1351\n\n---\n\n### Description\n\nCommand 1222 returns the ports defined for a given domain. It can be sent to the ASCII, Management, and status ports. When used over the serial connection, the Domain field must be specified.\n\n### Command Syntax\n\n```\n<1222#[NIC]#[Domain]#>\n```\n\n### Response Syntax\n\n```\n<2222#Ports List#[Ports List for second NIC#]>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 4 | 1222 |\n| 1 | [NIC] | 0, 1 | This field specifies the NIC to obtain the port numbers from. Possible values are: 1 = NIC1 2 = NIC2 B = Return ports for both NIC1 and NIC2 If this field is empty, ports for both NIC1 and NIC2 are returned. Legal Characters: 1,2,B |\n| 2 | [Domain] | 0, 1 | This field specifies the domain to obtain the port numbers from. If this field is empty, list the ports used by the current domain. Otherwise, list the ports used by the indicated domain. Legal Characters: 0-9 |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 4 | 2222 |\n| 1 | Ports List | Variable | The list of ports supported for the indicated NIC in the format of PORT NAME=Port Number, separated by commas. The names of currently supported ports are ASCII, STATUS, MANAGE, PRTCMD, REST, and PEMU. If a port is undefined, it will not be listed. Legal Characters: A-Z, 0-9 |\n| 2 | [Ports List for second NIC#] | Variable | If field 1 of the command is B or empty, the list of ports supported for NIC2 in the same format as response field 1. Legal Characters: A-Z, 0-9 |\n\n### Usage Notes\n\n- Utimaco is likely to add additional ports to the HSM in the future. If this happens, then the HSM may return more than the 6 port names currently defined. Utimaco recommends making the receiving application flexible in the length and content of response fields.\n\n### Examples\n\nExample\n\nThe command looks like this:\n\n```\n<1222###>\n```\n\n```\n<2222#ASCII=7001,MANAGE=7101,STATUS=7201,REST=8001#ASCII=7011,STATUS=7211#>\n```\n\n"
     },
-    "pairedCode": "1222"
+    "pairedCode": "2222"
   },
   {
     "id": "atalla-1222-resp",
-    "code": "1222",
+    "code": "2222",
     "direction": "response",
     "pairedCode": "1222",
     "name": {
@@ -9650,11 +9650,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1223"
+    "pairedCode": "2223"
   },
   {
     "id": "atalla-1223-resp",
-    "code": "1223",
+    "code": "2223",
     "direction": "response",
     "pairedCode": "1223",
     "name": {
@@ -9918,11 +9918,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
       "es": "# Command 1224 - HSM Remote Connections\n\n- **Command ID:** `1224`\n- **Title:** HSM Remote Connections\n- **PDF Pages:** 1354 - 1355\n\n---\n\n### Description\n\nCommand 1224 returns return the IP address of all remote computers connecting to the indicated NIC and port.\n\n### Command Syntax\n\n```\n<1224#[NIC]#[Port]#[Domain]#>\n```\n\n### Response Syntax\n\n```\n<2224#IP Address List#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 4 | 1224 |\n| 1 | [NIC] | 0, 1 | Indicates which NIC to query. Possible values are: 1 = NIC1 2 = NIC2 If this field is empty, the current NIC is assumed. Legal Characters: 1,2 |\n| 2 | [Port] | 0, 4-5 | Indicates which Port to query. If this field is empty, the current Port is assumed. Legal Characters: 1024 - 65534 |\n| 3 | [Domain] | 0, 1 | Indicates which Domain to query. If this field is empty, the current Domain is assumed. Legal Characters: 0-9 |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 4 | 2224 |\n| 1 | IP Address List | Variable | Comma-separated list of IP addresses connected to the indicated port in the format of IP Address = number of connections. Legal Characters: 0-9, ',', '.', '=' |\n\n### Usage Notes\n\n- This command returns a variable number of fields depending on the number of addresses attached to the given port.\n- This command does not support the PEMU and REST ports.\n\n### Examples\n\nExample\n\nThe command looks like this:\n\n```\n<1224####>\n```\n\n```\n<2224#192.168.1.112=6,192.168.1.120=5#>\n```\n\n",
       "en": "# Command 1224 - HSM Remote Connections\n\n- **Command ID:** `1224`\n- **Title:** HSM Remote Connections\n- **PDF Pages:** 1354 - 1355\n\n---\n\n### Description\n\nCommand 1224 returns return the IP address of all remote computers connecting to the indicated NIC and port.\n\n### Command Syntax\n\n```\n<1224#[NIC]#[Port]#[Domain]#>\n```\n\n### Response Syntax\n\n```\n<2224#IP Address List#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 4 | 1224 |\n| 1 | [NIC] | 0, 1 | Indicates which NIC to query. Possible values are: 1 = NIC1 2 = NIC2 If this field is empty, the current NIC is assumed. Legal Characters: 1,2 |\n| 2 | [Port] | 0, 4-5 | Indicates which Port to query. If this field is empty, the current Port is assumed. Legal Characters: 1024 - 65534 |\n| 3 | [Domain] | 0, 1 | Indicates which Domain to query. If this field is empty, the current Domain is assumed. Legal Characters: 0-9 |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 4 | 2224 |\n| 1 | IP Address List | Variable | Comma-separated list of IP addresses connected to the indicated port in the format of IP Address = number of connections. Legal Characters: 0-9, ',', '.', '=' |\n\n### Usage Notes\n\n- This command returns a variable number of fields depending on the number of addresses attached to the given port.\n- This command does not support the PEMU and REST ports.\n\n### Examples\n\nExample\n\nThe command looks like this:\n\n```\n<1224####>\n```\n\n```\n<2224#192.168.1.112=6,192.168.1.120=5#>\n```\n\n"
     },
-    "pairedCode": "1224"
+    "pairedCode": "2224"
   },
   {
     "id": "atalla-1224-resp",
-    "code": "1224",
+    "code": "2224",
     "direction": "response",
     "pairedCode": "1224",
     "name": {
@@ -10077,11 +10077,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1225"
+    "pairedCode": "2225"
   },
   {
     "id": "atalla-1225-resp",
-    "code": "1225",
+    "code": "2225",
     "direction": "response",
     "pairedCode": "1225",
     "name": {
@@ -10340,11 +10340,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
       "es": "# Command 1226 - HSM Key Check Digits\n\n- **Command ID:** `1226`\n- **Title:** HSM Key Check Digits\n- **PDF Pages:** 1358 - 1359\n\n---\n\n### Description\n\nCommand 1226 returns the check digits of the 3DES and AES Master File Key and Pending Master File Key stored in the HSM’s non-volatile key table.\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Enabled | 3DES, AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<1226#>\n```\n\n### Response Syntax\n\n```\n<2226#[MFK1=xxxx]#[PMFK1=xxxx]#[AMK1=xxxxxxxxxx]#[PAMK1=xxxxxxxxxx]###>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 4 | 1226 |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 4 | 2226 |\n| 1 | [MFK1=xxxx] | 0,9 | When present, this field contains the name of the 3DES MFK and its check digits. This field contains printable ASCII characters. |\n| 2 | [PMFK1=xxxx] | 0, 10 | When present, this field contains the name of the 3DES Pending MFK and its check digits. This field contains printable ASCII characters. |\n| 3 | 🌸 [AMK1=xxxxxxxxxx] (AKB) | 0, 15 | When present, this field contains the name of the AES MFK and its check digits. This field contains printable ASCII characters. |\n| 3 | 🟪 [AMK1=xxxxxxxxxx] (Variant) | 0 | This field is empty. |\n| 4 | 🌸 [PAMK1=xxxxxxxxxx] (AKB) | 0, 16 | When present, this field contains the name of the AES Pending MFK and its check digits. This field contains printable ASCII characters. |\n| 4 | 🟪 [PAMK1=xxxxxxxxxx] (Variant) | 0 | This field is empty. |\n| 5 | Field 5 | 0 | This field is empty. |\n| 6 | Field 6 | 0 | This field is empty. |\n\n### Examples\n\nExample\n\n3DES MFK check digits: B196\n\n3DES Pending MFK check digits: 2149\n\nAES MFK check digits: 923F8851E4\n\nAES PMFK check digits: E620BA8524\n\nThe command looks like this:\n\n```\n<1226#>\n```\n\nThe HSM returns this response:\n\n```\n<2226#MFK1=B196#PMFK1=2149#AMK1=923F8851E4#PAMK1=E620BA8524###>\n```\n\n",
       "en": "# Command 1226 - HSM Key Check Digits\n\n- **Command ID:** `1226`\n- **Title:** HSM Key Check Digits\n- **PDF Pages:** 1358 - 1359\n\n---\n\n### Description\n\nCommand 1226 returns the check digits of the 3DES and AES Master File Key and Pending Master File Key stored in the HSM’s non-volatile key table.\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Enabled | 3DES, AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<1226#>\n```\n\n### Response Syntax\n\n```\n<2226#[MFK1=xxxx]#[PMFK1=xxxx]#[AMK1=xxxxxxxxxx]#[PAMK1=xxxxxxxxxx]###>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 4 | 1226 |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 4 | 2226 |\n| 1 | [MFK1=xxxx] | 0,9 | When present, this field contains the name of the 3DES MFK and its check digits. This field contains printable ASCII characters. |\n| 2 | [PMFK1=xxxx] | 0, 10 | When present, this field contains the name of the 3DES Pending MFK and its check digits. This field contains printable ASCII characters. |\n| 3 | 🌸 [AMK1=xxxxxxxxxx] (AKB) | 0, 15 | When present, this field contains the name of the AES MFK and its check digits. This field contains printable ASCII characters. |\n| 3 | 🟪 [AMK1=xxxxxxxxxx] (Variant) | 0 | This field is empty. |\n| 4 | 🌸 [PAMK1=xxxxxxxxxx] (AKB) | 0, 16 | When present, this field contains the name of the AES Pending MFK and its check digits. This field contains printable ASCII characters. |\n| 4 | 🟪 [PAMK1=xxxxxxxxxx] (Variant) | 0 | This field is empty. |\n| 5 | Field 5 | 0 | This field is empty. |\n| 6 | Field 6 | 0 | This field is empty. |\n\n### Examples\n\nExample\n\n3DES MFK check digits: B196\n\n3DES Pending MFK check digits: 2149\n\nAES MFK check digits: 923F8851E4\n\nAES PMFK check digits: E620BA8524\n\nThe command looks like this:\n\n```\n<1226#>\n```\n\nThe HSM returns this response:\n\n```\n<2226#MFK1=B196#PMFK1=2149#AMK1=923F8851E4#PAMK1=E620BA8524###>\n```\n\n"
     },
-    "pairedCode": "1226"
+    "pairedCode": "2226"
   },
   {
     "id": "atalla-1226-resp",
-    "code": "1226",
+    "code": "2226",
     "direction": "response",
     "pairedCode": "1226",
     "name": {
@@ -10746,11 +10746,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1227"
+    "pairedCode": "2227"
   },
   {
     "id": "atalla-1227-resp",
-    "code": "1227",
+    "code": "2227",
     "direction": "response",
     "pairedCode": "1227",
     "name": {
@@ -10912,11 +10912,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1228"
+    "pairedCode": "2228"
   },
   {
     "id": "atalla-1228-resp",
-    "code": "1228",
+    "code": "2228",
     "direction": "response",
     "pairedCode": "1228",
     "name": {
@@ -11374,11 +11374,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1230"
+    "pairedCode": "2230"
   },
   {
     "id": "atalla-1230-server-key-resp",
-    "code": "1230",
+    "code": "2230",
     "direction": "response",
     "pairedCode": "1230",
     "name": {
@@ -12488,11 +12488,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "126"
+    "pairedCode": "226"
   },
   {
     "id": "atalla-126-message-digest-resp",
-    "code": "126",
+    "code": "226",
     "direction": "response",
     "pairedCode": "126",
     "name": {
@@ -12722,11 +12722,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "128"
+    "pairedCode": "228"
   },
   {
     "id": "atalla-128-akb-header-resp",
-    "code": "128",
+    "code": "228",
     "direction": "response",
     "pairedCode": "128",
     "name": {
@@ -13810,11 +13810,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "12C"
+    "pairedCode": "22C"
   },
   {
     "id": "atalla-12c-resp",
-    "code": "12C",
+    "code": "22C",
     "direction": "response",
     "pairedCode": "12C",
     "name": {
@@ -14545,11 +14545,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "13"
+    "pairedCode": "23"
   },
   {
     "id": "atalla-13-resp",
-    "code": "13",
+    "code": "23",
     "direction": "response",
     "pairedCode": "13",
     "name": {
@@ -15786,11 +15786,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "1350"
+    "pairedCode": "2350"
   },
   {
     "id": "atalla-1350-resp",
-    "code": "1350",
+    "code": "2350",
     "direction": "response",
     "pairedCode": "1350",
     "name": {
@@ -15898,11 +15898,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         "en": "[NOTE] This command is only allowed on the serial port. It should only be sent to an HSM that is configured for multiple Domains."
       }
     ],
-    "pairedCode": "1351"
+    "pairedCode": "2351"
   },
   {
     "id": "atalla-1351-resp",
-    "code": "1351",
+    "code": "2351",
     "direction": "response",
     "pairedCode": "1351",
     "name": {
@@ -18468,11 +18468,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "14"
+    "pairedCode": "24"
   },
   {
     "id": "atalla-14-key-diebold-resp",
-    "code": "14",
+    "code": "24",
     "direction": "response",
     "pairedCode": "14",
     "name": {
@@ -27894,11 +27894,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
       "es": "# Command 154 - Generate ISO/IEC 14888-3 Digital Signature using EC-SDSA\n\n- **Command ID:** `154`\n- **Title:** Generate ISO/IEC 14888-3 Digital Signature using EC-SDSA\n- **PDF Pages:** 929 - 931\n\n---\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Disabled | AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<154#Signature Algorithm#MSG#Private Key#>\n```\n\n### Response Syntax\n\n```\n<154#Digital Signature#Check Digits#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier 3 |  | 154 |\n| 1 | Signature Algorithm 2 |  | The algorithm used to generate the message digest. 10 = EC-SDSA with SHA-256 using curve P-256 11 = EC-SDSA with SHA-512 using curve P-521 Legal Characters: 10, 11 |\n| 2 | MSG 2 - 4096 |  | Input data to be signed. Legal Characters: 0-9, A-F |\n| 3 | Private Key Variable |  | The Private Key to sign the message. Headers Supported: AES MFK 3peG*000, where * = E, N, or S. Legal Characters: Printable ASCII |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier 3 |  | 254 |\n| 1 | Digital Signature 128, 260 |  | The digital signature. The length of this field is 128 hexadecimal characters when command field 1 is 10; it is 260 hexadecimal characters when command field 1 is 11. Legal Characters: 0-9, A-F |\n| 2 | Check Digits 8 |  | The Private Key check digits are the leftmost eight hexadecimal characters of the SHA-256 hash result of the Private Key. Legal Characters: 0-9, A-F |\n\n",
       "en": "# Command 154 - Generate ISO/IEC 14888-3 Digital Signature using EC-SDSA\n\n- **Command ID:** `154`\n- **Title:** Generate ISO/IEC 14888-3 Digital Signature using EC-SDSA\n- **PDF Pages:** 929 - 931\n\n---\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Disabled | AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<154#Signature Algorithm#MSG#Private Key#>\n```\n\n### Response Syntax\n\n```\n<154#Digital Signature#Check Digits#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier 3 |  | 154 |\n| 1 | Signature Algorithm 2 |  | The algorithm used to generate the message digest. 10 = EC-SDSA with SHA-256 using curve P-256 11 = EC-SDSA with SHA-512 using curve P-521 Legal Characters: 10, 11 |\n| 2 | MSG 2 - 4096 |  | Input data to be signed. Legal Characters: 0-9, A-F |\n| 3 | Private Key Variable |  | The Private Key to sign the message. Headers Supported: AES MFK 3peG*000, where * = E, N, or S. Legal Characters: Printable ASCII |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier 3 |  | 254 |\n| 1 | Digital Signature 128, 260 |  | The digital signature. The length of this field is 128 hexadecimal characters when command field 1 is 10; it is 260 hexadecimal characters when command field 1 is 11. Legal Characters: 0-9, A-F |\n| 2 | Check Digits 8 |  | The Private Key check digits are the leftmost eight hexadecimal characters of the SHA-256 hash result of the Private Key. Legal Characters: 0-9, A-F |\n\n"
     },
-    "pairedCode": "254"
+    "pairedCode": "154"
   },
   {
     "id": "atalla-254-resp",
-    "code": "254",
+    "code": "154",
     "direction": "response",
     "pairedCode": "154",
     "name": {
@@ -28138,11 +28138,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
       "es": "# Command 155 - Verify ISO/IEC 14888-3 Digital Signature using EC-SDSA\n\n- **Command ID:** `155`\n- **Title:** Verify ISO/IEC 14888-3 Digital Signature using EC-SDSA\n- **PDF Pages:** 932 - 933\n\n---\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Disabled | AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<155#Signature Algorithm#MSG#Digital Signature#Public Key#>\n```\n\n### Response Syntax\n\n```\n<155#Verification Flag#Check Digits#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier 3 |  | 155 |\n| 1 | Signature Algorithm 2 |  | The algorithm used to generate the message digest. 10 = EC-SDSA with SHA-256 using curve P-256 11 = EC-SDSA with SHA-512 using curve P-521 Legal Characters: 10, 11 |\n| 2 | MSG 2 - 4096 |  | Input data to verify the signature. Legal Characters: 0-9, A-F |\n| 3 | Digital Signature 128, 260 |  | The digital signature to be verified. Legal Characters: 0-9, A-F |\n| 4 | Public Key Variable |  | The Public Key to verify the digital signature. Headers Supported: AES MFK 3peV*000, where * = E, N, or S. Legal Characters: Printable ASCII |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier 3 |  | 255 |\n| 1 | Verification Flag 1 |  | The indicator of whether the digital signature was verified. Y = yes, signature verified N = no, signature did not verify Legal Characters: Y, N |\n| 2 | Check Digits 8 |  | The Public Key check digits are the leftmost eight hexadecimal characters of the SHA-256 hash result of the Public Key. Legal Characters: 0-9, A-F |\n\n",
       "en": "# Command 155 - Verify ISO/IEC 14888-3 Digital Signature using EC-SDSA\n\n- **Command ID:** `155`\n- **Title:** Verify ISO/IEC 14888-3 Digital Signature using EC-SDSA\n- **PDF Pages:** 932 - 933\n\n---\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Disabled | AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<155#Signature Algorithm#MSG#Digital Signature#Public Key#>\n```\n\n### Response Syntax\n\n```\n<155#Verification Flag#Check Digits#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier 3 |  | 155 |\n| 1 | Signature Algorithm 2 |  | The algorithm used to generate the message digest. 10 = EC-SDSA with SHA-256 using curve P-256 11 = EC-SDSA with SHA-512 using curve P-521 Legal Characters: 10, 11 |\n| 2 | MSG 2 - 4096 |  | Input data to verify the signature. Legal Characters: 0-9, A-F |\n| 3 | Digital Signature 128, 260 |  | The digital signature to be verified. Legal Characters: 0-9, A-F |\n| 4 | Public Key Variable |  | The Public Key to verify the digital signature. Headers Supported: AES MFK 3peV*000, where * = E, N, or S. Legal Characters: Printable ASCII |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier 3 |  | 255 |\n| 1 | Verification Flag 1 |  | The indicator of whether the digital signature was verified. Y = yes, signature verified N = no, signature did not verify Legal Characters: Y, N |\n| 2 | Check Digits 8 |  | The Public Key check digits are the leftmost eight hexadecimal characters of the SHA-256 hash result of the Public Key. Legal Characters: 0-9, A-F |\n\n"
     },
-    "pairedCode": "255"
+    "pairedCode": "155"
   },
   {
     "id": "atalla-255-resp",
-    "code": "255",
+    "code": "155",
     "direction": "response",
     "pairedCode": "155",
     "name": {
@@ -32565,11 +32565,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "161"
+    "pairedCode": "261"
   },
   {
     "id": "atalla-161-resp",
-    "code": "161",
+    "code": "261",
     "direction": "response",
     "pairedCode": "161",
     "name": {
@@ -35418,11 +35418,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
     },
     "subCode": "Mode",
     "subCodeFieldIndex": 0,
-    "pairedCode": "178"
+    "pairedCode": "278"
   },
   {
     "id": "atalla-178-aes-arqc-resp",
-    "code": "178",
+    "code": "278",
     "direction": "response",
     "pairedCode": "178",
     "name": {
@@ -36574,11 +36574,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "18"
+    "pairedCode": "28"
   },
   {
     "id": "atalla-18-resp",
-    "code": "18",
+    "code": "28",
     "direction": "response",
     "pairedCode": "18",
     "name": {
@@ -38273,11 +38273,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
       "es": "# Command 187 - Verify R-MAC and Decrypt Response Secure Message from Chip Card\n\n- **Command ID:** `187`\n- **Title:** Verify R-MAC and Decrypt Response Secure Message from Chip Card\n- **PDF Pages:** 1030 - 1035\n\n---\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Off | AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<187#Secure Channel Protocol#Security Level#SK-RMAC#C-MAC Chaining Value# [SK-ENC]#[Encryption Counter]#Response Data#R-MAC#Status Words# [MAC Verify Flag#]>\n```\n\n### Response Syntax\n\n```\n<287#[Response Data]#>\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier 3 |  | 187 |\n| 1 | Secure Channel 1 Protocol |  | A constant indicating the secure channel protocol 3 = SCP03 Legal Characters: 3 |\n| 2 | Security Level 2 |  | The SCP03 Security Level to use: 11 = C-MAC and R-MAC 13 = Command encryption, C-MAC, and R-MAC 33 = Command encryption, C-MAC, R-MAC, and response decryption Legal Characters: 11, 13, 33 |\n| 3 | SK-RMAC 74, 90, 106, 110 |  | The Session Key for authentication of the response R-MAC encrypted under the MFK. Headers Supported: 3MDV*003 and 3BJV*000 where * is E, N, or S Legal Characters: Printable ASCII |\n| 4 | C-MAC Chaining 32 Value |  | The C-MAC Chaining Value from the previous APDU command or the EXTERNAL AUTHENTICATE for the first C- MAC. Legal Characters: 0-9, A-F |\n| 5 | [SK-ENC] 0, 74, 90, 106, 110 |  | The Session Key for encrypting response messages encrypted under the MFK. Headers Supported: 3DDN*000 and 3DJN*000 where * is E, N, or S This field must contain a value when field 2 is '33', otherwise it must be empty. Legal Characters: Printable ASCII |\n| 6 | [Encryption 0, 5 Counter] |  | The first value of the encryption counter will be set to 1 for the first command after EXTERNAL AUTHENTICATE. The host entity increments the counter for each subsequent APDU command sent in the secure session. This field must contain a value when field 2 is '33', otherwise this field must be empty. Legal Characters: 00000-99999 |\n| 7 | Response Data 32-512 |  | The APDU response data that is either plain text or encrypted based on security level. If this field is encrypted (field 2 is ‘33’), then this data must be a multiple of 32 characters in length. Legal Characters: 0-9, A-F |\n| 8 | R-MAC 16 |  | The R-MAC generated from the ADPU Response Data. This field contains 16 characters. If the HSM fails to verify this value, it will return an error message instead of a 287 response. Legal Characters: 0-9, A-F |\n| 9 | Status Words 4 |  | Status bytes returned in ADPU response message. Legal Characters: 0-9, A-F |\n| 10 | [MAC Verify Flag#] [1] |  | When this field is present, the response will include an additional field that will indicate if the MAC verifies or not. When this field is not included, the command will return an error response if the MAC fails. Legal Characters: 1 |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier 3 |  | 287 |\n| 1 | [Response Data] 0, 32-512 |  | The decrypted plaintext Response Data. This field will not be empty if command field 2 is ‘33’. Note that if field 2 is present and contains N, this field will be empty. Legal Characters: 0-9, A-F |\n| 2 | [MAC Flag#] [1] |  | If field 10 is present and contains 1, this field contains Y if the MAC verifies and N if it fails. Legal Characters: Y, N |\n\n### Usage Notes\n\n- When option EE is enabled, the AKB length of the AES Key supplied in SK-RMAC and [SK-ENC] (fields 3 and 5) can be 110 characters.\n- If the R-MAC fails to verify the HSM will return an error response <00#0708..#0607##>. AKB AES MFK Examples The AES Master File Key is: 2ABC3DEF45670189 98107645FED3CBA2 0123456789ABCDEF FEDCBA9876543210 check digits = B9BCAB7B62. See “AES Key (256-bit)” on page 1374 for component values. SCP03, R-MAC, Security level 11\n- Secure Channel Protocol: 3\n- Security Level: 11\n- Clear SK-RMAC: 18DED998026CDD3733DA7FA88F6FB6CE SK-RMAC AKB: 3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578FBD1737\n- C-MAC Chaining Value: A18B52A2348117C32EE54DE7596EAF51\n- Response Data: E012C00401288810C00402288810C00403288810\n- R-MAC: C59128642821CB88\n- Status Words: 90000 The command looks like this: <187#3#11#3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578F BD1737#A18B52A2348117C32EE54DE7596EAF51###E012C00401288810C00402288810C0040328 8810#C59128642821CB88#9000#> The HSM returns this response: <287##> SCP03, R-MAC, Security level 11 with MAC Flag\n- Secure Channel Protocol: 3\n- Security Level: 11\n- Clear SK-RMAC: 18DED998026CDD3733DA7FA88F6FB6CE SK-RMAC AKB: 3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578FBD1737\n- C-MAC Chaining Value: A18B52A2348117C32EE54DE7596EAF51\n- Response Data: E012C00401288810C00402288810C00403288810\n- R-MAC: C59128642821CB88\n- Status Words: 90000 The command looks like this: <187#3#11#3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578F BD1737#A18B52A2348117C32EE54DE7596EAF51###E012C00401288810C00402288810C0040328 8810#C59128642821CB88#9000#1#> The HSM returns this response: <287##Y#> SCP03, R-MAC, Security level 11, MAC Failure\n- Secure Channel Protocol: 3\n- Security Level: 11\n- Clear SK-RMAC: 18DED998026CDD3733DA7FA88F6FB6CE SK-RMAC AKB: 3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578FBD1737\n- C-MAC Chaining Value: A18B52A2348117C32EE54DE7596EAF51\n- Response Data: E012C00401288810C00402288810C00403288810\n- R-MAC: C59128642821CB88\n- Status Words: 90000 The command looks like this: <187#3#11#3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578F BD1737#A18B52A2348117C32EE54DE7596EAF51###E012C00401288810C00402288810C0040328 8810#C59128642821CB80#9000#> The HSM returns this response: <00#070885#0607##> SCP03, R-MAC/R-ENC, Security level 33\n- Secure Channel Protocol: 3\n- Security Level: 33\n- Clear SK-RMAC: 571F5317F89F79CD688C588F0775003B SK-RMAC AKB: 3BJVE000,5F533D6522CE73FB925354F0D9D72184,9CA6F2F2C8266E7A4D408C2D69B8C850\n- Clear SK-ENC: A74A36B69F984919CF5BC7F01F4F0F94 SK-ENC AKB: 3DJNE000,6CBDAACEC33B8B43F52738DD2830B28B,15C7094FAA0425616FB1B42966C73DF8\n- Encryption Counter: 00000\n- Response Data: 79977EB2ED798128D8E447EC79E2B66E96DB55364C0F305882EF058E3C484746\n- R-MAC: B5DA669EBDB77170\n- Status Words: 90000 The command looks like this: <187#3#33#3BJVE000,5F533D6522CE73FB925354F0D9D72184,9CA6F2F2C8266E7A4D408C2D69 B8C850#E2CC908CB21068F867C2A1265D861E77#3DJNE000,6CBDAACEC33B8B43F52738DD2830B 28B,15C7094FAA0425616FB1B42966C73DF8#00000#79977EB2ED798128D8E447EC79E2B66E96D B55364C0F305882EF058E3C484746#B5DA669EBDB77170#9000#> The HSM returns this response: <287#E012C00401288810C00402288810C00403288810800000000000000000000000#> SCP03, R-MAC/R-ENC, Security level 33, non-zero counter\n- Secure Channel Protocol: 3\n- Security Level: 33\n- Clear SK-RMAC: 0123456789ABCDEFFEDCBA9876543210 SK-RMAC AKB: 3BJVE000,278D257FAEF3A3FC5283F46D84BD5D5C2B2605019EDBC067C1334071794994E351C3,A C240FC3995DFDDE7320D7685FB73066\n- Clear SK-ENC: 00112233445566778899AABBCCDDEEFF SK-ENC AKB: 3DJNE000,FC81418FEB60D57E6CA839C1E5BD314537DE6CD15D99CB32E4D8DE278545409FD6D3, 2C580EEB1969D87FA04DD1BAF5F7BE4C\n- Encryption Counter: 00016\n- Response Data: 26244CC7FF7D2D7FAD4311F34146D2E6AD4BEE9468600925EF2710F3FD2E27F7\n- R-MAC: CE03244488B6E28A\n- Status Words: 90000\n- MAC Flag: 1 The command looks like this: <187#3#33#3BJVE000,278D257FAEF3A3FC5283F46D84BD5D5C2B2605019EDBC067C1334071794 994E351C3,AC240FC3995DFDDE7320D7685FB73066#0123456789ABCDEF0123456789ABCDEF#3D JNE000,FC81418FEB60D57E6CA839C1E5BD314537DE6CD15D99CB32E4D8DE278545409FD6D3,2C 580EEB1969D87FA04DD1BAF5F7BE4C#00016#26244CC7FF7D2D7FAD4311F34146D2E6AD4BEE946 8600925EF2710F3FD2E27F7#CE03244488B6E28A#9000#1#> The HSM returns this response: <287#AE776697251252BEB055CBB9423714FC03288810800000000000000000000000#Y#>\n\n",
       "en": "# Command 187 - Verify R-MAC and Decrypt Response Secure Message from Chip Card\n\n- **Command ID:** `187`\n- **Title:** Verify R-MAC and Decrypt Response Secure Message from Chip Card\n- **PDF Pages:** 1030 - 1035\n\n---\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Off | AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<187#Secure Channel Protocol#Security Level#SK-RMAC#C-MAC Chaining Value# [SK-ENC]#[Encryption Counter]#Response Data#R-MAC#Status Words# [MAC Verify Flag#]>\n```\n\n### Response Syntax\n\n```\n<287#[Response Data]#>\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier 3 |  | 187 |\n| 1 | Secure Channel 1 Protocol |  | A constant indicating the secure channel protocol 3 = SCP03 Legal Characters: 3 |\n| 2 | Security Level 2 |  | The SCP03 Security Level to use: 11 = C-MAC and R-MAC 13 = Command encryption, C-MAC, and R-MAC 33 = Command encryption, C-MAC, R-MAC, and response decryption Legal Characters: 11, 13, 33 |\n| 3 | SK-RMAC 74, 90, 106, 110 |  | The Session Key for authentication of the response R-MAC encrypted under the MFK. Headers Supported: 3MDV*003 and 3BJV*000 where * is E, N, or S Legal Characters: Printable ASCII |\n| 4 | C-MAC Chaining 32 Value |  | The C-MAC Chaining Value from the previous APDU command or the EXTERNAL AUTHENTICATE for the first C- MAC. Legal Characters: 0-9, A-F |\n| 5 | [SK-ENC] 0, 74, 90, 106, 110 |  | The Session Key for encrypting response messages encrypted under the MFK. Headers Supported: 3DDN*000 and 3DJN*000 where * is E, N, or S This field must contain a value when field 2 is '33', otherwise it must be empty. Legal Characters: Printable ASCII |\n| 6 | [Encryption 0, 5 Counter] |  | The first value of the encryption counter will be set to 1 for the first command after EXTERNAL AUTHENTICATE. The host entity increments the counter for each subsequent APDU command sent in the secure session. This field must contain a value when field 2 is '33', otherwise this field must be empty. Legal Characters: 00000-99999 |\n| 7 | Response Data 32-512 |  | The APDU response data that is either plain text or encrypted based on security level. If this field is encrypted (field 2 is ‘33’), then this data must be a multiple of 32 characters in length. Legal Characters: 0-9, A-F |\n| 8 | R-MAC 16 |  | The R-MAC generated from the ADPU Response Data. This field contains 16 characters. If the HSM fails to verify this value, it will return an error message instead of a 287 response. Legal Characters: 0-9, A-F |\n| 9 | Status Words 4 |  | Status bytes returned in ADPU response message. Legal Characters: 0-9, A-F |\n| 10 | [MAC Verify Flag#] [1] |  | When this field is present, the response will include an additional field that will indicate if the MAC verifies or not. When this field is not included, the command will return an error response if the MAC fails. Legal Characters: 1 |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier 3 |  | 287 |\n| 1 | [Response Data] 0, 32-512 |  | The decrypted plaintext Response Data. This field will not be empty if command field 2 is ‘33’. Note that if field 2 is present and contains N, this field will be empty. Legal Characters: 0-9, A-F |\n| 2 | [MAC Flag#] [1] |  | If field 10 is present and contains 1, this field contains Y if the MAC verifies and N if it fails. Legal Characters: Y, N |\n\n### Usage Notes\n\n- When option EE is enabled, the AKB length of the AES Key supplied in SK-RMAC and [SK-ENC] (fields 3 and 5) can be 110 characters.\n- If the R-MAC fails to verify the HSM will return an error response <00#0708..#0607##>. AKB AES MFK Examples The AES Master File Key is: 2ABC3DEF45670189 98107645FED3CBA2 0123456789ABCDEF FEDCBA9876543210 check digits = B9BCAB7B62. See “AES Key (256-bit)” on page 1374 for component values. SCP03, R-MAC, Security level 11\n- Secure Channel Protocol: 3\n- Security Level: 11\n- Clear SK-RMAC: 18DED998026CDD3733DA7FA88F6FB6CE SK-RMAC AKB: 3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578FBD1737\n- C-MAC Chaining Value: A18B52A2348117C32EE54DE7596EAF51\n- Response Data: E012C00401288810C00402288810C00403288810\n- R-MAC: C59128642821CB88\n- Status Words: 90000 The command looks like this: <187#3#11#3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578F BD1737#A18B52A2348117C32EE54DE7596EAF51###E012C00401288810C00402288810C0040328 8810#C59128642821CB88#9000#> The HSM returns this response: <287##> SCP03, R-MAC, Security level 11 with MAC Flag\n- Secure Channel Protocol: 3\n- Security Level: 11\n- Clear SK-RMAC: 18DED998026CDD3733DA7FA88F6FB6CE SK-RMAC AKB: 3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578FBD1737\n- C-MAC Chaining Value: A18B52A2348117C32EE54DE7596EAF51\n- Response Data: E012C00401288810C00402288810C00403288810\n- R-MAC: C59128642821CB88\n- Status Words: 90000 The command looks like this: <187#3#11#3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578F BD1737#A18B52A2348117C32EE54DE7596EAF51###E012C00401288810C00402288810C0040328 8810#C59128642821CB88#9000#1#> The HSM returns this response: <287##Y#> SCP03, R-MAC, Security level 11, MAC Failure\n- Secure Channel Protocol: 3\n- Security Level: 11\n- Clear SK-RMAC: 18DED998026CDD3733DA7FA88F6FB6CE SK-RMAC AKB: 3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578FBD1737\n- C-MAC Chaining Value: A18B52A2348117C32EE54DE7596EAF51\n- Response Data: E012C00401288810C00402288810C00403288810\n- R-MAC: C59128642821CB88\n- Status Words: 90000 The command looks like this: <187#3#11#3BJVE000,73452168B715046DA9E52BED369749CC,355E85408EB44C505CDE03578F BD1737#A18B52A2348117C32EE54DE7596EAF51###E012C00401288810C00402288810C0040328 8810#C59128642821CB80#9000#> The HSM returns this response: <00#070885#0607##> SCP03, R-MAC/R-ENC, Security level 33\n- Secure Channel Protocol: 3\n- Security Level: 33\n- Clear SK-RMAC: 571F5317F89F79CD688C588F0775003B SK-RMAC AKB: 3BJVE000,5F533D6522CE73FB925354F0D9D72184,9CA6F2F2C8266E7A4D408C2D69B8C850\n- Clear SK-ENC: A74A36B69F984919CF5BC7F01F4F0F94 SK-ENC AKB: 3DJNE000,6CBDAACEC33B8B43F52738DD2830B28B,15C7094FAA0425616FB1B42966C73DF8\n- Encryption Counter: 00000\n- Response Data: 79977EB2ED798128D8E447EC79E2B66E96DB55364C0F305882EF058E3C484746\n- R-MAC: B5DA669EBDB77170\n- Status Words: 90000 The command looks like this: <187#3#33#3BJVE000,5F533D6522CE73FB925354F0D9D72184,9CA6F2F2C8266E7A4D408C2D69 B8C850#E2CC908CB21068F867C2A1265D861E77#3DJNE000,6CBDAACEC33B8B43F52738DD2830B 28B,15C7094FAA0425616FB1B42966C73DF8#00000#79977EB2ED798128D8E447EC79E2B66E96D B55364C0F305882EF058E3C484746#B5DA669EBDB77170#9000#> The HSM returns this response: <287#E012C00401288810C00402288810C00403288810800000000000000000000000#> SCP03, R-MAC/R-ENC, Security level 33, non-zero counter\n- Secure Channel Protocol: 3\n- Security Level: 33\n- Clear SK-RMAC: 0123456789ABCDEFFEDCBA9876543210 SK-RMAC AKB: 3BJVE000,278D257FAEF3A3FC5283F46D84BD5D5C2B2605019EDBC067C1334071794994E351C3,A C240FC3995DFDDE7320D7685FB73066\n- Clear SK-ENC: 00112233445566778899AABBCCDDEEFF SK-ENC AKB: 3DJNE000,FC81418FEB60D57E6CA839C1E5BD314537DE6CD15D99CB32E4D8DE278545409FD6D3, 2C580EEB1969D87FA04DD1BAF5F7BE4C\n- Encryption Counter: 00016\n- Response Data: 26244CC7FF7D2D7FAD4311F34146D2E6AD4BEE9468600925EF2710F3FD2E27F7\n- R-MAC: CE03244488B6E28A\n- Status Words: 90000\n- MAC Flag: 1 The command looks like this: <187#3#33#3BJVE000,278D257FAEF3A3FC5283F46D84BD5D5C2B2605019EDBC067C1334071794 994E351C3,AC240FC3995DFDDE7320D7685FB73066#0123456789ABCDEF0123456789ABCDEF#3D JNE000,FC81418FEB60D57E6CA839C1E5BD314537DE6CD15D99CB32E4D8DE278545409FD6D3,2C 580EEB1969D87FA04DD1BAF5F7BE4C#00016#26244CC7FF7D2D7FAD4311F34146D2E6AD4BEE946 8600925EF2710F3FD2E27F7#CE03244488B6E28A#9000#1#> The HSM returns this response: <287#AE776697251252BEB055CBB9423714FC03288810800000000000000000000000#Y#>\n\n"
     },
-    "pairedCode": "187"
+    "pairedCode": "287"
   },
   {
     "id": "atalla-187-resp",
-    "code": "187",
+    "code": "287",
     "direction": "response",
     "pairedCode": "187",
     "name": {
@@ -46703,11 +46703,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
       "es": "# Command 325 - Generate APACS 40 Response Message\n\n- **Command ID:** `325`\n- **Title:** Generate APACS 40 Response Message\n- **PDF Pages:** 1123 - 1128\n\n---\n\n### Description\n\nCommand 325 generates the APACS 40 response message. The HSM returns the encrypted residue for generating future messages, and also the Terminal Key Register that will be used in the next transaction. This command supports a cleartext as well as an encrypted authorization parameter.\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Disabled | 3DES, AES |\n| 🟪 Variant | Disabled | 3DES |\n\n### Command Syntax\n\n```\n<325#Message Type#Terminal Key Register#AB#[Authorisation Parameter Key]#Authorisation Parameter Data#Request MAC Residue#Message#>\n```\n\n### Response Syntax\n\n```\n<425#MAC#Response MAC Residue#Terminal Key Register Next#Check Digits#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 3 | 325 |\n| 1 | Message Type | 1 | The type of APAC 40 message. This field contains 1 decimal digit, where: 1 = Response message with a cleartext authorisation parameter 2 = Response message with an issuer encrypted authorisation parameter |\n| 2 | 🌸 Terminal Register Key (AKB) | 74 | The current Terminal Key Register value encrypted under the Master File Key. This field contains 74 printable ASCII characters. Headers Supported: 3DES MFK 1dKN*000, where * = E or N. Headers Supported: AES MFK 3dKN*000, where * = E, N, or S. |\n| 2 | 🟪 Terminal Register Key (Variant) | 16, 32 | The current Terminal Key Register value encrypted under variant 11 of the Master File Key. This field contains 16 or 32 hexadecimal characters. |\n| 3 | AB | 16 | The A and B values as defined in section 10.5, Derivation Of cryptographic keys in the APACS STANDARD 70 - BOOK 5 . This field contains 16 hexadecimal characters. |\n| 4 | 🌸 [Authorisation Parameter Key] (AKB) | 0, 74 | The Authorisation Parameter Key value encrypted under the Master File Key. This field contains 74 printable ASCII characters when the message type is 2. Headers Supported: 1DKNE000. When an AES MFK is loaded, header 3DKNE000. When the message type is 1, this field must be empty. |\n| 4 | 🟪 [Authorisation Parameter Key] (Variant) | 0, 16, 32 | The Authorisation Parameter Key value encrypted under variant 1 of the Master File Key. This field contains 16 or 32 hexadecimal characters when the message type is 2. When the message type is 1, this field must be empty. |\n| 5 | Authorisation Parameter Data | 16 | The authorisation parameter data, which generates the response message. If the message type (field 1) contains the number 1, this field contains cleartext data. If the message type (field 1) contains the number 2, this field contains data that was encrypted by the issuer using their Authorisation Parameter Key. This field must contain 16 hexadecimal characters. |\n| 6 | 🌸 Request MAC Residue (AKB) | 74 | The residue from the request MAC encrypted under the Master File Key. This field contains 74 printable ASCII characters. Headers Supported: 3DES MFK 1IKNE000 Headers Supported: AES MFK 3IKNE000 |\n| 6 | 🟪 Request MAC Residue (Variant) | 16 | The residue from the request MAC encrypted under variant 6 of the Master File Key. This field contains 16 hexadecimal characters. |\n| 7 | Message | 16 - 4096 | The message to verify. The message contains 16 - 4096 hexadecimal characters. This field contains an even number of hexadecimal characters. |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 3 | 425 |\n| 1 | MAC | 8 | The MAC of the response message. This field contains 8 hexadecimal characters. |\n| 2 | 🌸 Response Residue (AKB) | 74 | The residue from the response MAC, it is right padded with 64-bits of random data and then encrypted under the Master File Key. This field contains 74 printable ASCII characters. Headers Supported: 3DES MFK 1IKNE000 Headers Supported: AES MFK 3IKNE000 |\n| 2 | 🟪 Response Residue (Variant) | 16 | The residue from the response MAC, encrypted under variant 6 of the Master File Key. This field contains 16 hexadecimal characters. |\n| 3 | 🌸 Terminal Key Register Next (AKB) | 74 | The Terminal Key Register that will be used in the terminals next transaction encrypted under the Master File Key. This field contains 74 printable ASCII characters. Headers Supported: 3DES MFK 1dKNE000 Headers Supported: AES MFK 3dKNE000 |\n| 3 | 🟪 Terminal Key Register Next (Variant) | 16, 32 | The Terminal Key Register that will be used in the terminals next transaction encrypted under variant 11 of the Master File Key. This field contains 16 or 32 hexadecimal characters. |\n| 4 | Check Digits | 4, 6 | The Terminal Key Register check digits are the leftmost four hexadecimal characters that result from encrypting zeros under the Terminal Key Register Key. If option 88 is enabled, the leftmost six check digits are returned. |\n\n### Usage Notes\n\n- The key lengths of the Authorisation Parameter Key and the Terminal Key Register must be equal.\n- Use the same current Terminal Key Register value to process all three message types (request - command 324, response - command 325, and optional confirmation - command 326) for a specific transaction from a specific terminal. This command does not support a 3key-3DES (triple-length) Terminal Key Register value.\n- The length of the Terminal Key Register determines the MAC algorithm. Terminal Key Register Length MAC algorithm 16 (single-length) ISO - 9797-1 Algorithm 1 32 (double-length) ISO - 9797-1 Algorithm 3\n- Use the encrypted request MAC residue returned in field 2 of the response to command 324 as field 6 of this command.\n- For AKB and Variant key types, the following personality distinctions apply:\n\n#### 🌸 AKB Usage Notes\n\n- This command supports 1key-3DES (single-length) keys only if 6C is enabled. The Terminal Key Register cannot be a 3key-3DES key. AKB 3DES MFK Examples The 3key-3DES Master File Key is: 2ABC 3DEF 4567 0189 9810 7645 FED3 CBA2 0123 4567 89AB CDEF, check digits = B196. See “3key-3DES Key (Triple-Length)” on page 1374 for component values. This command generates data which is returned in the response, your responses will not exactly match the responses shown below. Message Type = 1 (Response message with a cleartext authorisation parameter)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 in AKB format = 1dKNE000,1ED75F0B0B1CFCC96F9A16828D43FE08A1D2DE47F6F999B2,63EF7649B15A090B\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n- Request MAC Residue in AKB format = 1IKNE000,BDB4D9DF9DD7133DD19C7768737D809A1448CC79CB98402C,8906FCB565DBE318\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#1#1dKNE000,1ED75F0B0B1CFCC96F9A16828D43FE08A1D2DE47F6F999B2,63EF7649B15A0 90B#0123456789ABCDEF##1234123456785678#1IKNE000,BDB4D9DF9DD7133DD19C7768737D80 9A1448CC79CB98402C,8906FCB565DBE318#FEDCBA98765432100123456789ABCDEF#> The HSM returns a response similar to this: <425#BAB25A08#1IKNE000,E201C693EF0CAD4E371FBA6B3F3E68A0783EF45E24C96034,2E49E9 6797972EE1#1dKNE000,E4971092AB6DEABEEEF2CBB8F4D085AAB8BF21376B71D34F,C73BFE1CC A7C08D5#08D7#> Message Type = 2 (Response message with issuer encrypted auth param)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 in AKB format = 1dKNE000,1ED75F0B0B1CFCC96F9A16828D43FE08A1D2DE47F6F999B2,63EF7649B15A090B\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n\n#### 🟪 Variant Usage Notes\n\n- This command supports 1key-3DES (single-length) keys only if 6C is enabled. If option 6A is enabled, the leftmost 16 and rightmost 16 characters of the Terminal Key Register may be the same.\n- Encrypted Authorisation Parameter = CB585D1530F2479B\n- Request MAC Residue in AKB format = 1IKNE000,BDB4D9DF9DD7133DD19C7768737D809A1448CC79CB98402C,8906FCB565DBE318\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#2#1dKNE000,1ED75F0B0B1CFCC96F9A16828D43FE08A1D2DE47F6F999B2,63EF7649B15A0 90B#0123456789ABCDEF#1DKNE000,A7872E5AA0CD526980A81268B6F0B5E9817EF5328D1690A3,E0D8B9DC4F6FE8D6#CB585D1530F2479B#1IKNE000,BDB4D9DF9DD7133DD19C7768737D809A14 48CC79CB98402C,8906FCB565DBE318#FEDCBA98765432100123456789ABCDEF#> The HSM returns a response similar to this: <425#A96C6135#1IKNE000,CB45510C8AB286BC13DE2F40A0B844B9663A6099CA80B643,75B929 4F3A77D445#1dKNE000,447DBF9751EA9911379A489178B582DCB238DD7DB40C1F7C,2C69187B6 5685BD6#08D7#> AKB AES MFK Example The AES Master File Key is: 2ABC3DEF45670189 98107645FED3CBA2 0123456789ABCDEF FEDCBA9876543210 check digits = B9BCAB7B62. See “AES Key (256-bit)” on page 1374 for component values. This command generates data which is returned in the response, your responses will not exactly match the responses shown below. Message Type = 2 (Response message with issuer encrypted auth param)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 in AKB format = 3dKNE000,7B43821E3C7849FA8954BE6F97DA6DF78AF3C67C49AE6A05,084EB5388CDD4E60\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n- Encrypted Authorisation Parameter = CB585D1530F2479B\n- Request MAC Residue in AKB format = 3IKNE000,519265534F0498311E448A43553009A0A0DB6085A9B5110A,0E3F24506EAB1DD5\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#1#3dKNE000,7B43821E3C7849FA8954BE6F97DA6DF78AF3C67C49AE6A05,084EB5388CDD4 E60#0123456789ABCDEF##1234123456785678#3IKNE000,519265534F0498311E448A43553009 A0A0DB6085A9B5110A,0E3F24506EAB1DD5#FEDCBA98765432100123456789ABCDEF#> The HSM returns a response similar to this: <425#BAB25A08#3IKNE000,EDADCDAAC473DBEB1977F4541B939C474CA20FDB58BF83F6,22B1FB F6D3EFF163#3dKNE000,CF74FE2F9497A50D4EE6BB4A8E4295D0472AD817E3E708DD,65C5B146A 780F01C#08D7#> Variant Examples The 2key-3DES MFK is: 2ABC 3DEF 4567 0189 9810 7645 FED3 CBA2, check digits = 057A. See “2key-3DES Key (Double-Length)” on page 1374 for component values. This command generates data which is returned in the response, your responses will not exactly match the responses shown below. Message Type = 1 (Response message with a cleartext authorisation parameter)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 encrypted under variant 11 of the Master File Key = 3FF4F1A16A0B587A369E860C46490A88\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n- Encrypted Request MAC Residue = A894F78E3F15344F\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#1#3FF4F1A16A0B587A369E860C46490A88#0123456789ABCDEF##1234123456785678#A89 4F78E3F15344F#FEDCBA98765432100123456789ABCDEF#> The HSM returns a response similar to this: <425#BAB25A08#131BCACB6EDCDCFE#E749A86C879F887844001207DDEEC0E1#08D7#> Message Type = 2 (Response message with issuer encrypted authorisation parameter)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 encrypted under variant 11 of the Master File Key = 3FF4F1A16A0B587A369E860C46490A88\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n- Encrypted Authorisation Parameter = CB585D1530F2479B\n- Encrypted Request MAC Residue = A894F78E3F15344F\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#2#3FF4F1A16A0B587A369E860C46490A88#0123456789ABCDEF#AE86D417E64E07E0BC62A 2AD72516EA1#CB585D1530F2479B#A894F78E3F15344F#FEDCBA98765432100123456789ABCDEF #> The HSM returns a response similar to this: <425#A96C6135#2D573FCE32B9EBE0#E61C3BA9FC764EDCB148A510E0D4625B#08D7#>\n\n",
       "en": "# Command 325 - Generate APACS 40 Response Message\n\n- **Command ID:** `325`\n- **Title:** Generate APACS 40 Response Message\n- **PDF Pages:** 1123 - 1128\n\n---\n\n### Description\n\nCommand 325 generates the APACS 40 response message. The HSM returns the encrypted residue for generating future messages, and also the Terminal Key Register that will be used in the next transaction. This command supports a cleartext as well as an encrypted authorization parameter.\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Disabled | 3DES, AES |\n| 🟪 Variant | Disabled | 3DES |\n\n### Command Syntax\n\n```\n<325#Message Type#Terminal Key Register#AB#[Authorisation Parameter Key]#Authorisation Parameter Data#Request MAC Residue#Message#>\n```\n\n### Response Syntax\n\n```\n<425#MAC#Response MAC Residue#Terminal Key Register Next#Check Digits#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 3 | 325 |\n| 1 | Message Type | 1 | The type of APAC 40 message. This field contains 1 decimal digit, where: 1 = Response message with a cleartext authorisation parameter 2 = Response message with an issuer encrypted authorisation parameter |\n| 2 | 🌸 Terminal Register Key (AKB) | 74 | The current Terminal Key Register value encrypted under the Master File Key. This field contains 74 printable ASCII characters. Headers Supported: 3DES MFK 1dKN*000, where * = E or N. Headers Supported: AES MFK 3dKN*000, where * = E, N, or S. |\n| 2 | 🟪 Terminal Register Key (Variant) | 16, 32 | The current Terminal Key Register value encrypted under variant 11 of the Master File Key. This field contains 16 or 32 hexadecimal characters. |\n| 3 | AB | 16 | The A and B values as defined in section 10.5, Derivation Of cryptographic keys in the APACS STANDARD 70 - BOOK 5 . This field contains 16 hexadecimal characters. |\n| 4 | 🌸 [Authorisation Parameter Key] (AKB) | 0, 74 | The Authorisation Parameter Key value encrypted under the Master File Key. This field contains 74 printable ASCII characters when the message type is 2. Headers Supported: 1DKNE000. When an AES MFK is loaded, header 3DKNE000. When the message type is 1, this field must be empty. |\n| 4 | 🟪 [Authorisation Parameter Key] (Variant) | 0, 16, 32 | The Authorisation Parameter Key value encrypted under variant 1 of the Master File Key. This field contains 16 or 32 hexadecimal characters when the message type is 2. When the message type is 1, this field must be empty. |\n| 5 | Authorisation Parameter Data | 16 | The authorisation parameter data, which generates the response message. If the message type (field 1) contains the number 1, this field contains cleartext data. If the message type (field 1) contains the number 2, this field contains data that was encrypted by the issuer using their Authorisation Parameter Key. This field must contain 16 hexadecimal characters. |\n| 6 | 🌸 Request MAC Residue (AKB) | 74 | The residue from the request MAC encrypted under the Master File Key. This field contains 74 printable ASCII characters. Headers Supported: 3DES MFK 1IKNE000 Headers Supported: AES MFK 3IKNE000 |\n| 6 | 🟪 Request MAC Residue (Variant) | 16 | The residue from the request MAC encrypted under variant 6 of the Master File Key. This field contains 16 hexadecimal characters. |\n| 7 | Message | 16 - 4096 | The message to verify. The message contains 16 - 4096 hexadecimal characters. This field contains an even number of hexadecimal characters. |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 3 | 425 |\n| 1 | MAC | 8 | The MAC of the response message. This field contains 8 hexadecimal characters. |\n| 2 | 🌸 Response Residue (AKB) | 74 | The residue from the response MAC, it is right padded with 64-bits of random data and then encrypted under the Master File Key. This field contains 74 printable ASCII characters. Headers Supported: 3DES MFK 1IKNE000 Headers Supported: AES MFK 3IKNE000 |\n| 2 | 🟪 Response Residue (Variant) | 16 | The residue from the response MAC, encrypted under variant 6 of the Master File Key. This field contains 16 hexadecimal characters. |\n| 3 | 🌸 Terminal Key Register Next (AKB) | 74 | The Terminal Key Register that will be used in the terminals next transaction encrypted under the Master File Key. This field contains 74 printable ASCII characters. Headers Supported: 3DES MFK 1dKNE000 Headers Supported: AES MFK 3dKNE000 |\n| 3 | 🟪 Terminal Key Register Next (Variant) | 16, 32 | The Terminal Key Register that will be used in the terminals next transaction encrypted under variant 11 of the Master File Key. This field contains 16 or 32 hexadecimal characters. |\n| 4 | Check Digits | 4, 6 | The Terminal Key Register check digits are the leftmost four hexadecimal characters that result from encrypting zeros under the Terminal Key Register Key. If option 88 is enabled, the leftmost six check digits are returned. |\n\n### Usage Notes\n\n- The key lengths of the Authorisation Parameter Key and the Terminal Key Register must be equal.\n- Use the same current Terminal Key Register value to process all three message types (request - command 324, response - command 325, and optional confirmation - command 326) for a specific transaction from a specific terminal. This command does not support a 3key-3DES (triple-length) Terminal Key Register value.\n- The length of the Terminal Key Register determines the MAC algorithm. Terminal Key Register Length MAC algorithm 16 (single-length) ISO - 9797-1 Algorithm 1 32 (double-length) ISO - 9797-1 Algorithm 3\n- Use the encrypted request MAC residue returned in field 2 of the response to command 324 as field 6 of this command.\n- For AKB and Variant key types, the following personality distinctions apply:\n\n#### 🌸 AKB Usage Notes\n\n- This command supports 1key-3DES (single-length) keys only if 6C is enabled. The Terminal Key Register cannot be a 3key-3DES key. AKB 3DES MFK Examples The 3key-3DES Master File Key is: 2ABC 3DEF 4567 0189 9810 7645 FED3 CBA2 0123 4567 89AB CDEF, check digits = B196. See “3key-3DES Key (Triple-Length)” on page 1374 for component values. This command generates data which is returned in the response, your responses will not exactly match the responses shown below. Message Type = 1 (Response message with a cleartext authorisation parameter)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 in AKB format = 1dKNE000,1ED75F0B0B1CFCC96F9A16828D43FE08A1D2DE47F6F999B2,63EF7649B15A090B\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n- Request MAC Residue in AKB format = 1IKNE000,BDB4D9DF9DD7133DD19C7768737D809A1448CC79CB98402C,8906FCB565DBE318\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#1#1dKNE000,1ED75F0B0B1CFCC96F9A16828D43FE08A1D2DE47F6F999B2,63EF7649B15A0 90B#0123456789ABCDEF##1234123456785678#1IKNE000,BDB4D9DF9DD7133DD19C7768737D80 9A1448CC79CB98402C,8906FCB565DBE318#FEDCBA98765432100123456789ABCDEF#> The HSM returns a response similar to this: <425#BAB25A08#1IKNE000,E201C693EF0CAD4E371FBA6B3F3E68A0783EF45E24C96034,2E49E9 6797972EE1#1dKNE000,E4971092AB6DEABEEEF2CBB8F4D085AAB8BF21376B71D34F,C73BFE1CC A7C08D5#08D7#> Message Type = 2 (Response message with issuer encrypted auth param)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 in AKB format = 1dKNE000,1ED75F0B0B1CFCC96F9A16828D43FE08A1D2DE47F6F999B2,63EF7649B15A090B\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n\n#### 🟪 Variant Usage Notes\n\n- This command supports 1key-3DES (single-length) keys only if 6C is enabled. If option 6A is enabled, the leftmost 16 and rightmost 16 characters of the Terminal Key Register may be the same.\n- Encrypted Authorisation Parameter = CB585D1530F2479B\n- Request MAC Residue in AKB format = 1IKNE000,BDB4D9DF9DD7133DD19C7768737D809A1448CC79CB98402C,8906FCB565DBE318\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#2#1dKNE000,1ED75F0B0B1CFCC96F9A16828D43FE08A1D2DE47F6F999B2,63EF7649B15A0 90B#0123456789ABCDEF#1DKNE000,A7872E5AA0CD526980A81268B6F0B5E9817EF5328D1690A3,E0D8B9DC4F6FE8D6#CB585D1530F2479B#1IKNE000,BDB4D9DF9DD7133DD19C7768737D809A14 48CC79CB98402C,8906FCB565DBE318#FEDCBA98765432100123456789ABCDEF#> The HSM returns a response similar to this: <425#A96C6135#1IKNE000,CB45510C8AB286BC13DE2F40A0B844B9663A6099CA80B643,75B929 4F3A77D445#1dKNE000,447DBF9751EA9911379A489178B582DCB238DD7DB40C1F7C,2C69187B6 5685BD6#08D7#> AKB AES MFK Example The AES Master File Key is: 2ABC3DEF45670189 98107645FED3CBA2 0123456789ABCDEF FEDCBA9876543210 check digits = B9BCAB7B62. See “AES Key (256-bit)” on page 1374 for component values. This command generates data which is returned in the response, your responses will not exactly match the responses shown below. Message Type = 2 (Response message with issuer encrypted auth param)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 in AKB format = 3dKNE000,7B43821E3C7849FA8954BE6F97DA6DF78AF3C67C49AE6A05,084EB5388CDD4E60\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n- Encrypted Authorisation Parameter = CB585D1530F2479B\n- Request MAC Residue in AKB format = 3IKNE000,519265534F0498311E448A43553009A0A0DB6085A9B5110A,0E3F24506EAB1DD5\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#1#3dKNE000,7B43821E3C7849FA8954BE6F97DA6DF78AF3C67C49AE6A05,084EB5388CDD4 E60#0123456789ABCDEF##1234123456785678#3IKNE000,519265534F0498311E448A43553009 A0A0DB6085A9B5110A,0E3F24506EAB1DD5#FEDCBA98765432100123456789ABCDEF#> The HSM returns a response similar to this: <425#BAB25A08#3IKNE000,EDADCDAAC473DBEB1977F4541B939C474CA20FDB58BF83F6,22B1FB F6D3EFF163#3dKNE000,CF74FE2F9497A50D4EE6BB4A8E4295D0472AD817E3E708DD,65C5B146A 780F01C#08D7#> Variant Examples The 2key-3DES MFK is: 2ABC 3DEF 4567 0189 9810 7645 FED3 CBA2, check digits = 057A. See “2key-3DES Key (Double-Length)” on page 1374 for component values. This command generates data which is returned in the response, your responses will not exactly match the responses shown below. Message Type = 1 (Response message with a cleartext authorisation parameter)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 encrypted under variant 11 of the Master File Key = 3FF4F1A16A0B587A369E860C46490A88\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n- Encrypted Request MAC Residue = A894F78E3F15344F\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#1#3FF4F1A16A0B587A369E860C46490A88#0123456789ABCDEF##1234123456785678#A89 4F78E3F15344F#FEDCBA98765432100123456789ABCDEF#> The HSM returns a response similar to this: <425#BAB25A08#131BCACB6EDCDCFE#E749A86C879F887844001207DDEEC0E1#08D7#> Message Type = 2 (Response message with issuer encrypted authorisation parameter)\n- Terminal Key Register = 0123456789ABCDEF FEDCBA9876543210 encrypted under variant 11 of the Master File Key = 3FF4F1A16A0B587A369E860C46490A88\n- AB = 0123456789ABCDEF\n- Authorisation Parameter = 1234123456785678\n- Encrypted Authorisation Parameter = CB585D1530F2479B\n- Encrypted Request MAC Residue = A894F78E3F15344F\n- Message = FEDCBA98765432100123456789ABCDEF The command looks like this: <325#2#3FF4F1A16A0B587A369E860C46490A88#0123456789ABCDEF#AE86D417E64E07E0BC62A 2AD72516EA1#CB585D1530F2479B#A894F78E3F15344F#FEDCBA98765432100123456789ABCDEF #> The HSM returns a response similar to this: <425#A96C6135#2D573FCE32B9EBE0#E61C3BA9FC764EDCB148A510E0D4625B#08D7#>\n\n"
     },
-    "pairedCode": "325"
+    "pairedCode": "425"
   },
   {
     "id": "atalla-325-resp",
-    "code": "325",
+    "code": "425",
     "direction": "response",
     "pairedCode": "325",
     "name": {
@@ -52212,11 +52212,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "350"
+    "pairedCode": "450"
   },
   {
     "id": "atalla-350-resp",
-    "code": "350",
+    "code": "450",
     "direction": "response",
     "pairedCode": "350",
     "name": {
@@ -52875,11 +52875,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "351"
+    "pairedCode": "451"
   },
   {
     "id": "atalla-351-resp",
-    "code": "351",
+    "code": "451",
     "direction": "response",
     "pairedCode": "351",
     "name": {
@@ -54212,11 +54212,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "356"
+    "pairedCode": "456"
   },
   {
     "id": "atalla-356-resp",
-    "code": "356",
+    "code": "456",
     "direction": "response",
     "pairedCode": "356",
     "name": {
@@ -55615,11 +55615,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "359"
+    "pairedCode": "459"
   },
   {
     "id": "atalla-359-resp",
-    "code": "359",
+    "code": "459",
     "direction": "response",
     "pairedCode": "359",
     "name": {
@@ -63220,11 +63220,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "39B"
+    "pairedCode": "49B"
   },
   {
     "id": "atalla-39b-resp",
-    "code": "39B",
+    "code": "49B",
     "direction": "response",
     "pairedCode": "39B",
     "name": {
@@ -63600,11 +63600,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "39C"
+    "pairedCode": "49C"
   },
   {
     "id": "atalla-39c-resp",
-    "code": "39C",
+    "code": "49C",
     "direction": "response",
     "pairedCode": "39C",
     "name": {
@@ -73147,11 +73147,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "71"
+    "pairedCode": "81"
   },
   {
     "id": "atalla-71-resp",
-    "code": "71",
+    "code": "81",
     "direction": "response",
     "pairedCode": "71",
     "name": {
@@ -77722,11 +77722,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "9A"
+    "pairedCode": "AA"
   },
   {
     "id": "atalla-9a-resp",
-    "code": "9A",
+    "code": "AA",
     "direction": "response",
     "pairedCode": "9A",
     "name": {
@@ -79209,11 +79209,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
         }
       }
     ],
-    "pairedCode": "9A"
+    "pairedCode": "AA"
   },
   {
     "id": "atalla-9a-status-id-resp",
-    "code": "9A",
+    "code": "AA",
     "direction": "response",
     "pairedCode": "9A",
     "name": {
@@ -81612,11 +81612,11 @@ export const atallaV860Commands: readonly CommandSpec[] = [
       "es": "# Command 9B - Verify ACR Response MAC\n\n- **Command ID:** `9B`\n- **Title:** Verify ACR Response MAC\n- **PDF Pages:** 607 - 611\n\n---\n\n### Description\n\nCommand 9B verifies the response of the challenge number in both normal and auto mode for the Atalla Challenge Response (ACR) token.\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Enabled | 3DES, AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<9B#Message Authentication Key#Challenge Number#MAC#Response Format#[Mode#]>\n```\n\n### Response Syntax\n\n```\n<AB#Verification Flag#Residual MAC#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 2 | 9B |\n| 1 | 🌸 Message Authentication Key (AKB) | 74 | The Message Authentication Key encrypted under the MFK. This field contains 74 printable ASCII characters, or a volatile table location. Headers Supported: 3DES MFK 1MDN*00C, 1MDV*00C, where * = E or N. Headers Supported: AES MFK 3MDN*00C, 3MDV*00C, where * = E, N, or S. |\n| 1 | 🟪 Message Authentication Key (Variant) | 16 | The Message Authentication Key encrypted under variant 7 of the MFK. This field contains 16 hexadecimal characters, or a volatile table location. |\n| 2 | Challenge Number | 4, 128 | The challenge number which computes the MAC. This field contains 4 - 128 decimal digits. |\n| 3 | MAC | 4 - 8 | The MAC to be verified. This field contains 4 - 8 hexadecimal characters. |\n| 4 | Response Format | 1, 17 | The response format. This field contains 1 uppercase letter, where: H = hexadecimal response D = decimal response, using default decimalization table 0123456789222333 This field can also contain the letter D followed by the 16 decimal digits of the decimalization table. |\n| 5 | [Mode#] | [1] | This field is optional. If present it contains 1 decimal digit, where: 0 = normal 1 = auto When this field is empty, the normal mode will be used. |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 2 | A9 |\n| 1 | Verification Flag | 1 | The MAC verification flag, where: Y = the MAC is verified N = the MAC did not verify |\n| 2 | MAC Residue | 8, 16 | The MAC residue is the rightmost 32 bits of the MAC result. This field contains 8 hexadecimal characters. When response field 1 contains the letter N, this field contains XXXXXXXX. When the command field 5 contains the number 1, this field contains the complete MAC, which is 16 hexadecimal characters. |\n\n### Usage Notes\n\n\n#### 🌸 AKB Usage Notes\n\n- This command supports 1key-3DES (single-length) keys only if 6C is enabled. The Message Authentication Key can be a 3key-3DES key only when the HSM is configured with a 3key-3DES key MFK. ACR Token Auto Mode (types 2, 3, 6 and 7) The ACR Token has six system fields. The field lengths are 8 characters. These fields are utilized in auto mode. Up to six users can be assigned an ACR token. ACR Token Auto Mode steps: User enters the PIN followed by predefined single digit user system number (0-5). Then the user enters a predefined or single digit challenge number selected by the host, which generates the Response. The Response is generated from MAC processed data, 8 characters from system field 1, the single digit challenge number and 7 zeros. The left 8 digits of this result are used as a Response or stored in the selected system field for the next operation.\n\n#### 🟪 Variant Usage Notes\n\n- Overview of Initialization of System Fields When the Host Application needs to initialize or re-synchronize the auto mode operation, the host generates 8 digits for the challenge number and requires the user to enter the 8 digit challenge number instead of single digit. The result of this 8 digit challenge (the response) is in turn stored in the system field. The host saves the left 8 digits of result (from field 2 of response “AB”) in the database, and then this value is used as part of the challenge for the next operation. ACR Sample Flow Normal Mode. This is a sample flow for normal mode operation for the ACR: 4. The user enters their PIN into the ACR. 5. The system prompts with a challenge number, typically 4 to 8 digits (created from Command 93). 6. The user enters the challenge number into the ACR. 7. The ACR responds with a Response MAC. 8. The user enters this Response into the system. 9. The system verifies that this Response MAC is correct and allows the user to continue logging on (Command 9B). To calculate the Response, generate a MAC on the ASCII representation of the challenge number. Auto (Single Digit) Mode This is a sample flow for INITIALIZING or RESYNCHRONIZATION of the ACR in single digit mode: 1. The user enters their PIN into the ACR (and optionally a system field number, the default system field number is 0) 2. The system prompts with an 8-digit challenge number (from Command 93). The user enters the challenge number into the ACR. 3. The ACR responds with a Response MAC. This response MAC is also stored in the selected system field for future use. 4. The user enters this Response into the system. 5. The system verifies that this Response MAC is correct and allows the user to continue logging on. To calculate the Response, generate a MAC on the ASCII representation of the challenge number. This is a sample flow for standard operation of the ACR in single digit mode: 1. The user enters their PIN into the ACR (and optionally a system field number, the default system field number is 0) 2. The user enters a predefined single digit challenge number into the ACR. 3. The ACR responds with a Response MAC which is calculated from the stored system field value and the entered single digit challenge. This response MAC is also stored in the selected system field for future use. 4. The user enters this Response into the system. 5. The system verifies that this Response MAC is correct and allows the user to continue logging on. To calculate the Response, generate a MAC on the packed representation of the first 8 characters of the saved response (the response from the previous challenge/response session). Concatenate this with the single digit challenge and zero filled to 64 bits. AKB 3DES MFK Example These detailed types show an example of Verifying with Hexadecimal MAC or Decimal MAC using either the Default Table or Custom Table. The 3key-3DES Master File Key is: 2ABC 3DEF 4567 0189 9810 7645 FED3 CBA2 0123 4567 89AB CDEF, check digits = B196. See “3key-3DES Key (Triple-Length)” on page 1374 for component values. Verify a Hexadecimal MAC This example illustrates verifying a hexadecimal MAC, based on the following input:\n- Clear-text KMAC key: 69EA 0A4E 73CF F9F0 The KMAC key in AKB format: 1MDNE00C,0E75B459229A68B735D1C1BB222038DA98E89DE7EF11DBC2,9BDFAFA0DA31C91E\n- Challenge number: 1487\n- MAC response to be verified: 2B4F AB1A\n- Response format: H The command looks like this: <9B#1MDNE00C,0E75B459229A68B735D1C1BB222038DA98E89DE7EF11DBC2,9BDFAFA0DA31C91E #1487#2B4FAB1A#H#> The HSM returns this response: <AB#Y#3EAE165F#> AKB AES MFK Example The AES Master File Key is: 2ABC3DEF45670189 98107645FED3CBA2 0123456789ABCDEF FEDCBA9876543210, check digits = B9BCAB7B62. See “AES Key (256-bit)” on page 1374 for component values. Verify a Decimal MAC Using a Customized Table\n- Clear-text KMAC key: 69EA0A4E73CFF9F0 The KMAC key in AKB format: 3MDNE00C,F65DCD49122F03E9F4E44FDD70044A3B29311E4BE0D10340,859BDE20E89A52DD\n- Challenge number: 1618 5\n- MAC response to be verified: 1111 1111\n- Response format: D1111111111111111 The command looks like this: <9B#33MDNE00C,F65DCD49122F03E9F4E44FDD70044A3B29311E4BE0D10340,859BDE20E89A52D D#16185#11111111#D1111111111111111#> The HSM returns this response: <AB#Y#4DC6D4DE#> Variant Examples The 2key-3DES MFK is: 2ABC 3DEF 4567 0189 9810 7645 FED3 CBA2, check digits = 057A. See “2key-3DES Key (Double-Length)” on page 1374 for component values. Verify a hexadecimal MAC\n- Clear-text MAC Key: 69EA 0A4E 73CF F9F0 The MAC Key encrypted under variant 7 of the MFK: 50CC BF0A A4DD 3A0A\n- Challenge number: 1487\n- MAC response to be verified: 2B4F AB1A\n- Response format: Hexadecimal (H) The command looks like this: <9B#50CCBF0AA4DD3A0A#1487#2B4FAB1A#H#> The HSM returns this response: <AB#Y#3EAE165F#> Verify a decimal MAC using a customized table\n- Clear-text MAC Key: 69EA 0A4E 73CF F9F0 The MAC Key encrypted under variant 7 of the MFK: 50CC BF0A A4DD 3A0A\n- Challenge number: 1618 5\n- MAC response to be verified: 1111 1111\n- Response format: Decimal (D) using the decimalization table: 1111 1111 1111 1111 The command looks like this: <9B#50CCBF0AA4DD3A0A#16185#11111111#D1111111111111111#> The HSM returns this response: <AB#Y#4DC6D4DE#>\n\n",
       "en": "# Command 9B - Verify ACR Response MAC\n\n- **Command ID:** `9B`\n- **Title:** Verify ACR Response MAC\n- **PDF Pages:** 607 - 611\n\n---\n\n### Description\n\nCommand 9B verifies the response of the challenge number in both normal and auto mode for the Atalla Challenge Response (ACR) token.\n\n### Key Management Compatibility\n\n| Key Type | Default Setting | MFK Type |\n| :--- | :--- | :--- |\n| 🌸 AKB | Enabled | 3DES, AES |\n| 🟪 Variant | Enabled | 3DES |\n\n### Command Syntax\n\n```\n<9B#Message Authentication Key#Challenge Number#MAC#Response Format#[Mode#]>\n```\n\n### Response Syntax\n\n```\n<AB#Verification Flag#Residual MAC#>[CRLF]\n```\n\n### Command Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Command identifier | 2 | 9B |\n| 1 | 🌸 Message Authentication Key (AKB) | 74 | The Message Authentication Key encrypted under the MFK. This field contains 74 printable ASCII characters, or a volatile table location. Headers Supported: 3DES MFK 1MDN*00C, 1MDV*00C, where * = E or N. Headers Supported: AES MFK 3MDN*00C, 3MDV*00C, where * = E, N, or S. |\n| 1 | 🟪 Message Authentication Key (Variant) | 16 | The Message Authentication Key encrypted under variant 7 of the MFK. This field contains 16 hexadecimal characters, or a volatile table location. |\n| 2 | Challenge Number | 4, 128 | The challenge number which computes the MAC. This field contains 4 - 128 decimal digits. |\n| 3 | MAC | 4 - 8 | The MAC to be verified. This field contains 4 - 8 hexadecimal characters. |\n| 4 | Response Format | 1, 17 | The response format. This field contains 1 uppercase letter, where: H = hexadecimal response D = decimal response, using default decimalization table 0123456789222333 This field can also contain the letter D followed by the 16 decimal digits of the decimalization table. |\n| 5 | [Mode#] | [1] | This field is optional. If present it contains 1 decimal digit, where: 0 = normal 1 = auto When this field is empty, the normal mode will be used. |\n\n### Response Parameters\n\n| Field | Name | Length | Description |\n| :--- | :--- | :---: | :--- |\n| 0 | Response identifier | 2 | A9 |\n| 1 | Verification Flag | 1 | The MAC verification flag, where: Y = the MAC is verified N = the MAC did not verify |\n| 2 | MAC Residue | 8, 16 | The MAC residue is the rightmost 32 bits of the MAC result. This field contains 8 hexadecimal characters. When response field 1 contains the letter N, this field contains XXXXXXXX. When the command field 5 contains the number 1, this field contains the complete MAC, which is 16 hexadecimal characters. |\n\n### Usage Notes\n\n\n#### 🌸 AKB Usage Notes\n\n- This command supports 1key-3DES (single-length) keys only if 6C is enabled. The Message Authentication Key can be a 3key-3DES key only when the HSM is configured with a 3key-3DES key MFK. ACR Token Auto Mode (types 2, 3, 6 and 7) The ACR Token has six system fields. The field lengths are 8 characters. These fields are utilized in auto mode. Up to six users can be assigned an ACR token. ACR Token Auto Mode steps: User enters the PIN followed by predefined single digit user system number (0-5). Then the user enters a predefined or single digit challenge number selected by the host, which generates the Response. The Response is generated from MAC processed data, 8 characters from system field 1, the single digit challenge number and 7 zeros. The left 8 digits of this result are used as a Response or stored in the selected system field for the next operation.\n\n#### 🟪 Variant Usage Notes\n\n- Overview of Initialization of System Fields When the Host Application needs to initialize or re-synchronize the auto mode operation, the host generates 8 digits for the challenge number and requires the user to enter the 8 digit challenge number instead of single digit. The result of this 8 digit challenge (the response) is in turn stored in the system field. The host saves the left 8 digits of result (from field 2 of response “AB”) in the database, and then this value is used as part of the challenge for the next operation. ACR Sample Flow Normal Mode. This is a sample flow for normal mode operation for the ACR: 4. The user enters their PIN into the ACR. 5. The system prompts with a challenge number, typically 4 to 8 digits (created from Command 93). 6. The user enters the challenge number into the ACR. 7. The ACR responds with a Response MAC. 8. The user enters this Response into the system. 9. The system verifies that this Response MAC is correct and allows the user to continue logging on (Command 9B). To calculate the Response, generate a MAC on the ASCII representation of the challenge number. Auto (Single Digit) Mode This is a sample flow for INITIALIZING or RESYNCHRONIZATION of the ACR in single digit mode: 1. The user enters their PIN into the ACR (and optionally a system field number, the default system field number is 0) 2. The system prompts with an 8-digit challenge number (from Command 93). The user enters the challenge number into the ACR. 3. The ACR responds with a Response MAC. This response MAC is also stored in the selected system field for future use. 4. The user enters this Response into the system. 5. The system verifies that this Response MAC is correct and allows the user to continue logging on. To calculate the Response, generate a MAC on the ASCII representation of the challenge number. This is a sample flow for standard operation of the ACR in single digit mode: 1. The user enters their PIN into the ACR (and optionally a system field number, the default system field number is 0) 2. The user enters a predefined single digit challenge number into the ACR. 3. The ACR responds with a Response MAC which is calculated from the stored system field value and the entered single digit challenge. This response MAC is also stored in the selected system field for future use. 4. The user enters this Response into the system. 5. The system verifies that this Response MAC is correct and allows the user to continue logging on. To calculate the Response, generate a MAC on the packed representation of the first 8 characters of the saved response (the response from the previous challenge/response session). Concatenate this with the single digit challenge and zero filled to 64 bits. AKB 3DES MFK Example These detailed types show an example of Verifying with Hexadecimal MAC or Decimal MAC using either the Default Table or Custom Table. The 3key-3DES Master File Key is: 2ABC 3DEF 4567 0189 9810 7645 FED3 CBA2 0123 4567 89AB CDEF, check digits = B196. See “3key-3DES Key (Triple-Length)” on page 1374 for component values. Verify a Hexadecimal MAC This example illustrates verifying a hexadecimal MAC, based on the following input:\n- Clear-text KMAC key: 69EA 0A4E 73CF F9F0 The KMAC key in AKB format: 1MDNE00C,0E75B459229A68B735D1C1BB222038DA98E89DE7EF11DBC2,9BDFAFA0DA31C91E\n- Challenge number: 1487\n- MAC response to be verified: 2B4F AB1A\n- Response format: H The command looks like this: <9B#1MDNE00C,0E75B459229A68B735D1C1BB222038DA98E89DE7EF11DBC2,9BDFAFA0DA31C91E #1487#2B4FAB1A#H#> The HSM returns this response: <AB#Y#3EAE165F#> AKB AES MFK Example The AES Master File Key is: 2ABC3DEF45670189 98107645FED3CBA2 0123456789ABCDEF FEDCBA9876543210, check digits = B9BCAB7B62. See “AES Key (256-bit)” on page 1374 for component values. Verify a Decimal MAC Using a Customized Table\n- Clear-text KMAC key: 69EA0A4E73CFF9F0 The KMAC key in AKB format: 3MDNE00C,F65DCD49122F03E9F4E44FDD70044A3B29311E4BE0D10340,859BDE20E89A52DD\n- Challenge number: 1618 5\n- MAC response to be verified: 1111 1111\n- Response format: D1111111111111111 The command looks like this: <9B#33MDNE00C,F65DCD49122F03E9F4E44FDD70044A3B29311E4BE0D10340,859BDE20E89A52D D#16185#11111111#D1111111111111111#> The HSM returns this response: <AB#Y#4DC6D4DE#> Variant Examples The 2key-3DES MFK is: 2ABC 3DEF 4567 0189 9810 7645 FED3 CBA2, check digits = 057A. See “2key-3DES Key (Double-Length)” on page 1374 for component values. Verify a hexadecimal MAC\n- Clear-text MAC Key: 69EA 0A4E 73CF F9F0 The MAC Key encrypted under variant 7 of the MFK: 50CC BF0A A4DD 3A0A\n- Challenge number: 1487\n- MAC response to be verified: 2B4F AB1A\n- Response format: Hexadecimal (H) The command looks like this: <9B#50CCBF0AA4DD3A0A#1487#2B4FAB1A#H#> The HSM returns this response: <AB#Y#3EAE165F#> Verify a decimal MAC using a customized table\n- Clear-text MAC Key: 69EA 0A4E 73CF F9F0 The MAC Key encrypted under variant 7 of the MFK: 50CC BF0A A4DD 3A0A\n- Challenge number: 1618 5\n- MAC response to be verified: 1111 1111\n- Response format: Decimal (D) using the decimalization table: 1111 1111 1111 1111 The command looks like this: <9B#50CCBF0AA4DD3A0A#16185#11111111#D1111111111111111#> The HSM returns this response: <AB#Y#4DC6D4DE#>\n\n"
     },
-    "pairedCode": "9B"
+    "pairedCode": "AB"
   },
   {
     "id": "atalla-9b-resp",
-    "code": "9B",
+    "code": "AB",
     "direction": "response",
     "pairedCode": "9B",
     "name": {

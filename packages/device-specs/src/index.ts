@@ -15,6 +15,7 @@ export const DEVICE_SPECS_VERSION = '0.1.0';
 export * from './types';
 export { DEVICE_CATALOG } from './catalog';
 export { atallaAt1000Spec } from './devices/utimaco-atalla-at1000';
+export { atallaV860Commands } from './devices/utimaco-atalla-v860-commands';
 export { thalesPayshield10kSpec } from './devices/thales-payshield-10k';
 export { futurexExcryptSpec } from './devices/futurex-excrypt';
 export { thalesLuna7Spec } from './devices/thales-luna-7';

@@ -570,7 +570,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                 className="flex flex-wrap gap-1 p-2 rounded-md bg-muted/20 border border-border"
               >
                 {parseResult && parseResult.segments.length > 0 ? (
-                  parseResult.segments.map((seg) => {
+                  parseResult.segments.map((seg, sIdx) => {
                     const isHighlighted =
                       (props.highlightedSegmentId !== undefined &&
                         props.highlightedSegmentId !== null &&
@@ -611,7 +611,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                     return (
                       <button
                         type="button"
-                        key={seg.id}
+                        key={`${seg.id}-${sIdx}`}
                         data-testid={`frame-segment-${seg.id}`}
                         data-role={seg.role}
                         data-highlighted={isHighlighted ? 'true' : 'false'}
@@ -723,7 +723,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border/40">
-                        {parseResult.fields.map((field) => {
+                        {parseResult.fields.map((field, fIdx) => {
                           const matchingSeg = parseResult.segments.find(
                             (s) => s.fieldId === field.id
                           );
@@ -741,7 +741,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                           const displayValue = isVisible ? field.rawValue : '••••••••';
 
                           return (
-                            <React.Fragment key={field.id}>
+                            <React.Fragment key={`${field.id}-${fIdx}`}>
                               <tr
                                 data-testid={`field-row-${field.id}`}
                                 data-highlighted={isHighlighted ? 'true' : 'false'}

@@ -348,6 +348,16 @@ export function parseDelimitedPositional(
       filtered = matchingCommands.filter(
         (c) => c.direction === detectedDirection
       );
+    } else if (options?.expectedDirection) {
+      const byDirection = matchingCommands.filter(
+        (c) => c.direction === options.expectedDirection
+      );
+      if (byDirection.length > 0) {
+        filtered = byDirection;
+        detectedDirection = options.expectedDirection;
+      } else {
+        detectedDirection = matchingCommands[0]!.direction;
+      }
     } else {
       detectedDirection = matchingCommands[0]!.direction;
     }
