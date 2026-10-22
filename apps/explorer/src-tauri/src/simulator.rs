@@ -181,10 +181,10 @@ pub fn check_tcp_port(port: u16) -> bool {
 /// Verifies if the Atalla simulator is fully initialized and responding to cryptographic commands.
 pub fn check_simulator_ready(port: u16) -> bool {
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
-    if let Ok(mut stream) = TcpStream::connect_timeout(&addr, Duration::from_millis(500)) {
+    if let Ok(mut stream) = TcpStream::connect_timeout(&addr, Duration::from_millis(600)) {
         let _ = stream.set_read_timeout(Some(Duration::from_millis(1000)));
-        let _ = stream.set_write_timeout(Some(Duration::from_millis(500)));
-        if stream.write_all(b"<00#PING#>").is_ok() {
+        let _ = stream.set_write_timeout(Some(Duration::from_millis(600)));
+        if stream.write_all(b"<00#TEST#>").is_ok() {
             let mut buf = [0u8; 128];
             if let Ok(n) = stream.read(&mut buf) {
                 return n > 0 && String::from_utf8_lossy(&buf[..n]).contains("<00#");
@@ -250,7 +250,11 @@ pub async fn get_atalla_simulator_status() -> Result<SimulatorStatusInfo, String
 
     let image_loaded = check_image_loaded();
     let (container_running, container_id) = check_container_state();
-    let tcp_reachable = check_tcp_port(DEFAULT_PORT);
+    let tcp_reachable = if container_running {
+        check_simulator_ready(DEFAULT_PORT)
+    } else {
+        false
+    };
 
     Ok(SimulatorStatusInfo {
         docker_available: true,
@@ -301,23 +305,22 @@ pub async fn start_atalla_simulator(
     // 3. Check container status
     let (is_running, existing_id) = check_container_state();
     if is_running {
-        // Check if TCP is ready
-        let tcp = check_tcp_port(target_port);
-        return Ok(SimulatorStatusInfo {
-            docker_available: true,
-            docker_version: Some(docker_ver),
-            image_loaded: true,
-            container_running: true,
-            container_id: existing_id,
-            port: target_port,
-            tcp_reachable: tcp,
-            error_message: None,
-        });
-    }
-
-    // If container exists but is stopped, remove or start it
-    if existing_id.is_some() {
-        // Try starting it first
+        // If container is already running AND responding to commands, return immediately!
+        if check_simulator_ready(target_port) {
+            return Ok(SimulatorStatusInfo {
+                docker_available: true,
+                docker_version: Some(docker_ver),
+                image_loaded: true,
+                container_running: true,
+                container_id: existing_id,
+                port: target_port,
+                tcp_reachable: true,
+                error_message: None,
+            });
+        }
+        // If running but not yet ready, proceed to wait loop
+    } else if existing_id.is_some() {
+        // If container exists but is stopped, try starting it
         if let Err(_) = run_docker_cli(&["start", CONTAINER_NAME]) {
             // If starting fails, remove and recreate
             let _ = run_docker_cli(&["rm", "-f", CONTAINER_NAME]);
@@ -332,9 +335,11 @@ pub async fn start_atalla_simulator(
             .map_err(|e| format!("Error ejecutando contenedor: {}", e))?;
     }
 
-    // 4. Wait for Atalla simulator to fully boot and respond to commands (timeout 20 seconds)
+    // 4. Wait for Atalla simulator and listener (at_hsm_listenerd) to fully boot
+    // Vendor entrypoint set_up_config_prm.sh contains sleep intervals (10s + 20s),
+    // taking ~32 seconds to reach the listener ready state.
     let start_wait = Instant::now();
-    let max_wait = Duration::from_secs(20);
+    let max_wait = Duration::from_secs(50);
     let mut tcp_ready = false;
 
     while start_wait.elapsed() < max_wait {
@@ -342,7 +347,7 @@ pub async fn start_atalla_simulator(
             tcp_ready = true;
             break;
         }
-        tokio::time::sleep(Duration::from_millis(500)).await;
+        tokio::time::sleep(Duration::from_millis(800)).await;
     }
 
     let (_, updated_id) = check_container_state();
@@ -358,7 +363,7 @@ pub async fn start_atalla_simulator(
         error_message: if tcp_ready {
             None
         } else {
-            Some("El contenedor inició pero el socket TCP en el puerto aún no responde.".to_string())
+            Some("El contenedor inició pero el listener de comandos Atalla aún está inicializándose.".to_string())
         },
     })
 }
@@ -375,7 +380,11 @@ pub async fn stop_atalla_simulator() -> Result<SimulatorStatusInfo, String> {
 
     let image_loaded = check_image_loaded();
     let (is_running, id) = check_container_state();
-    let tcp_reachable = check_tcp_port(DEFAULT_PORT);
+    let tcp_reachable = if is_running {
+        check_simulator_ready(DEFAULT_PORT)
+    } else {
+        false
+    };
 
     Ok(SimulatorStatusInfo {
         docker_available: docker_ver.is_some(),

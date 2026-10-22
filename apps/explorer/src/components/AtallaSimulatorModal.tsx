@@ -80,6 +80,7 @@ export function AtallaSimulatorModal({
   // Startup progress tracking
   const [startupPercent, setStartupPercent] = useState<number>(0);
   const [startupStage, setStartupStage] = useState<StartupStage | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
 
   // Continuous health monitor ref
   const previousRunningRef = useRef<boolean | null>(null);
@@ -105,6 +106,9 @@ export function AtallaSimulatorModal({
     setActionError(null);
     try {
       const s = await getAtallaSimulatorStatus();
+      if (s.containerRunning && s.tcpReachable) {
+        previousRunningRef.current = true;
+      }
       setStatus(s);
     } catch (e) {
       setActionError(e instanceof Error ? e.message : String(e));
@@ -192,27 +196,30 @@ export function AtallaSimulatorModal({
       clearInterval(progressTimerRef.current);
     }
 
-    setStartupPercent(10);
+    setStartupPercent(5);
     setStartupStage('docker');
+    setElapsedSeconds(0);
 
     const startTime = Date.now();
     progressTimerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
+      const secs = Math.floor(elapsed / 1000);
+      setElapsedSeconds(secs);
 
-      if (elapsed < 1400) {
+      if (elapsed < 9000) {
         setStartupStage('docker');
-        setStartupPercent((prev) => Math.min(28, prev + 4));
-      } else if (elapsed < 2800) {
+        setStartupPercent((prev) => Math.min(25, prev + 1));
+      } else if (elapsed < 20000) {
         setStartupStage('kernel');
-        setStartupPercent((prev) => Math.min(55, prev + 3));
-      } else if (elapsed < 4800) {
+        setStartupPercent((prev) => Math.min(50, prev + 1));
+      } else if (elapsed < 30000) {
         setStartupStage('flash');
-        setStartupPercent((prev) => Math.min(82, prev + 2));
+        setStartupPercent((prev) => Math.min(78, prev + 1));
       } else {
         setStartupStage('socket');
         setStartupPercent((prev) => Math.min(94, prev + 1));
       }
-    }, 250);
+    }, 400);
   };
 
   const stopProgressAnimation = (success: boolean) => {
@@ -528,7 +535,12 @@ export function AtallaSimulatorModal({
                     />
                   </span>
                 </div>
-                <span className="font-mono font-bold text-primary text-sm">{startupPercent}%</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-muted-foreground text-[11px]">
+                    ({elapsedSeconds}s / ~32s)
+                  </span>
+                  <span className="font-mono font-bold text-primary text-sm">{startupPercent}%</span>
+                </div>
               </div>
 
               {/* Progress bar container */}
@@ -538,6 +550,10 @@ export function AtallaSimulatorModal({
                   style={{ width: `${startupPercent}%` }}
                 />
               </div>
+
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                El script oficial del fabricante Utimaco realiza verificaciones internas y carga módulos de memoria flash (~30-32 segundos) antes de iniciar el listener de comandos Atalla en el puerto 7000.
+              </p>
 
               {/* Progress Milestones */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
