@@ -240,7 +240,13 @@ export function parseHeaderPositional(
 
   // Find matching command in versionSpec
   const matchedCommand =
-    versionSpec.commands.find((c) => c.code === commandCode) ?? null;
+    (options?.expectedDirection
+      ? versionSpec.commands.find(
+          (c) => c.code === commandCode && c.direction === options.expectedDirection
+        )
+      : null) ??
+    versionSpec.commands.find((c) => c.code === commandCode) ??
+    null;
 
   if (!matchedCommand && !isErrorResponse) {
     valid = false;
@@ -256,7 +262,8 @@ export function parseHeaderPositional(
     });
   }
 
-  const detectedDirection: CommandDirection = matchedCommand?.direction ?? 'request';
+  const detectedDirection: CommandDirection =
+    matchedCommand?.direction ?? options?.expectedDirection ?? 'request';
 
   // Find paired command
   let pairedCommand: CommandSpec | null = null;

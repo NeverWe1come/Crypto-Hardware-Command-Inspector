@@ -17,7 +17,12 @@ export { DEVICE_CATALOG } from './catalog';
 export { atallaAt1000Spec } from './devices/utimaco-atalla-at1000';
 export { atallaV860Commands } from './devices/utimaco-atalla-v860-commands';
 export { thalesPayshield10kSpec } from './devices/thales-payshield-10k';
+export {
+  thalesPayshieldCommandsV23,
+  thalesPayshieldCommandsV19
+} from './devices/thales-payshield-commands';
 export { futurexExcryptSpec } from './devices/futurex-excrypt';
+export { futurexExcryptCommands } from './devices/futurex-excrypt-commands';
 export { thalesLuna7Spec } from './devices/thales-luna-7';
 export { ibmCca4769Spec } from './devices/ibm-cca-4769';
 export { yubicoYubihsm2Spec } from './devices/yubico-yubihsm-2';

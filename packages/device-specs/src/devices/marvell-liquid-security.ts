@@ -67,7 +67,8 @@ export const marvellLiquidSecuritySpec: DeviceSpec = {
           code: 'KRN_STATUS',
           interfaceId: 'liquidsecurity-cli',
           direction: 'request',
-          name: { es: 'Consultar Estado del Kernel HSM', en: 'Get Kernel Status' },
+          pairedCode: 'KRN_STATUS',
+          name: { es: 'Consultar Estado del Kernel HSM (Petición)', en: 'Get Kernel Status (Request)' },
           summary: { es: 'Verifica la integridad de memoria, sensores de temperatura y firmware', en: 'Verifies memory integrity, temperature sensors, and firmware health' },
           description: { es: 'Comando de diagnóstico central del kernel del HSM.', en: 'Core kernel diagnostic command for physical status.' },
           category: { es: 'Kernel y Diagnóstico', en: 'Kernel and Diagnostics' },
@@ -75,11 +76,34 @@ export const marvellLiquidSecuritySpec: DeviceSpec = {
           fields: []
         },
         {
+          id: 'cvm-krn-status-resp',
+          code: 'KRN_STATUS',
+          interfaceId: 'liquidsecurity-cli',
+          direction: 'response',
+          pairedCode: 'KRN_STATUS',
+          name: { es: 'Estado del Kernel HSM (Respuesta)', en: 'Kernel Status Output (Response)' },
+          summary: { es: 'Respuesta con telemetría física y versión de firmware', en: 'Response with physical telemetry and firmware version' },
+          description: { es: 'Devuelve métricas operativas del hardware NitroX.', en: 'Returns operational telemetry of the NitroX hardware.' },
+          category: { es: 'Kernel y Diagnóstico', en: 'Kernel and Diagnostics' },
+          source: 'Marvell LiquidSecurity Management Guide Section 2',
+          fields: [
+            {
+              id: 'status',
+              name: { es: 'Código de Estado', en: 'Status Code' },
+              description: { es: 'Código de ejecución del kernel', en: 'Kernel execution code' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true
+            }
+          ]
+        },
+        {
           id: 'cvm-part-create',
           code: 'PART_CREATE',
           interfaceId: 'liquidsecurity-cli',
           direction: 'request',
-          name: { es: 'Crear Partición Virtual', en: 'Create Virtual Partition' },
+          pairedCode: 'PART_CREATE',
+          name: { es: 'Crear Partición Virtual (Petición)', en: 'Create Virtual Partition (Request)' },
           summary: { es: 'Asigna recursos criptográficos dedicados a un nuevo tenant', en: 'Allocates dedicated cryptographic resources to a new tenant' },
           description: { es: 'Crea una partición aislada con su propia memoria no volátil y cuota de claves.', en: 'Creates an isolated partition with dedicated NVRAM and key quota.' },
           category: { es: 'Particionado y Tenants', en: 'Partitioning and Tenants' },
@@ -100,6 +124,170 @@ export const marvellLiquidSecuritySpec: DeviceSpec = {
               length: { kind: 'variable' },
               encoding: 'decimal',
               required: true
+            }
+          ]
+        },
+        {
+          id: 'cvm-part-create-resp',
+          code: 'PART_CREATE',
+          interfaceId: 'liquidsecurity-cli',
+          direction: 'response',
+          pairedCode: 'PART_CREATE',
+          name: { es: 'Crear Partición Virtual (Respuesta)', en: 'Create Virtual Partition (Response)' },
+          summary: { es: 'Confirmación de partición virtual creada', en: 'Virtual partition allocation confirmation' },
+          description: { es: 'Devuelve el estado de aprovisionamiento de la partición.', en: 'Returns virtual partition provisioning status.' },
+          category: { es: 'Particionado y Tenants', en: 'Partitioning and Tenants' },
+          source: 'Marvell LiquidSecurity Management Guide Section 4',
+          fields: [
+            {
+              id: 'status',
+              name: { es: 'Estado', en: 'Status' },
+              description: { es: 'Resultado de la creación', en: 'Creation result' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true
+            }
+          ]
+        },
+        {
+          id: 'p11-initialize',
+          code: 'C_Initialize',
+          interfaceId: 'pkcs11',
+          direction: 'request',
+          pairedCode: 'C_Initialize',
+          name: { es: 'Inicializar Proveedor PKCS#11 (Petición)', en: 'Initialize PKCS#11 Provider (Request)' },
+          summary: { es: 'Inicializa la biblioteca criptográfica OASIS PKCS#11', en: 'Initializes the OASIS PKCS#11 cryptographic library' },
+          description: { es: 'Prepara el subsistema criptográfico para operar con las particiones virtuales.', en: 'Prepares cryptographic subsystem for partition operations.' },
+          category: { es: 'Gestión de Sesión PKCS#11', en: 'PKCS#11 Session Management' },
+          source: 'OASIS PKCS#11 v2.40 Section 5.4',
+          fields: []
+        },
+        {
+          id: 'p11-initialize-resp',
+          code: 'C_Initialize',
+          interfaceId: 'pkcs11',
+          direction: 'response',
+          pairedCode: 'C_Initialize',
+          name: { es: 'Inicializar Proveedor PKCS#11 (Respuesta)', en: 'Initialize PKCS#11 Provider (Response)' },
+          summary: { es: 'Código de retorno de inicialización CKR_OK', en: 'Return code for initialization CKR_OK' },
+          description: { es: 'Retorno de estado de la función C_Initialize.', en: 'Return value of C_Initialize function.' },
+          category: { es: 'Gestión de Sesión PKCS#11', en: 'PKCS#11 Session Management' },
+          source: 'OASIS PKCS#11 v2.40 Section 5.4',
+          fields: [
+            {
+              id: 'rv',
+              name: { es: 'Valor de Retorno', en: 'Return Value' },
+              description: { es: 'Código de retorno CKR', en: 'CKR return code' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true
+            }
+          ]
+        },
+        {
+          id: 'p11-generate-key',
+          code: 'C_GenerateKey',
+          interfaceId: 'pkcs11',
+          direction: 'request',
+          pairedCode: 'C_GenerateKey',
+          name: { es: 'Generar Clave Simétrica (Petición)', en: 'Generate Secret Key (Request)' },
+          summary: { es: 'Genera una clave simétrica dentro de la partición del HSM', en: 'Generates a secret key inside the HSM partition' },
+          description: { es: 'Crea una clave criptográfica (AES/DES) protegida por hardware.', en: 'Generates hardware-protected cryptographic key (AES/DES).' },
+          category: { es: 'Gestión de Claves PKCS#11', en: 'PKCS#11 Key Management' },
+          source: 'OASIS PKCS#11 v2.40 Section 5.13',
+          fields: [
+            {
+              id: 'hSession',
+              name: { es: 'Manejador de Sesión', en: 'Session Handle' },
+              description: { es: 'Identificador de la sesión abierta', en: 'Open session handle' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true
+            },
+            {
+              id: 'mechanism',
+              name: { es: 'Mecanismo Criptográfico', en: 'Mechanism' },
+              description: { es: 'Algoritmo de generación (e.g. CKM_AES_KEY_GEN)', en: 'Generation algorithm (e.g. CKM_AES_KEY_GEN)' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true
+            }
+          ]
+        },
+        {
+          id: 'p11-generate-key-resp',
+          code: 'C_GenerateKey',
+          interfaceId: 'pkcs11',
+          direction: 'response',
+          pairedCode: 'C_GenerateKey',
+          name: { es: 'Generar Clave Simétrica (Respuesta)', en: 'Generate Secret Key (Response)' },
+          summary: { es: 'Manejador de la clave generada y código CKR_OK', en: 'Handle of generated key and CKR_OK return' },
+          description: { es: 'Retorna el identificador de la nueva clave en la partición.', en: 'Returns handle of created key in partition.' },
+          category: { es: 'Gestión de Claves PKCS#11', en: 'PKCS#11 Key Management' },
+          source: 'OASIS PKCS#11 v2.40 Section 5.13',
+          fields: [
+            {
+              id: 'phKey',
+              name: { es: 'Manejador de Clave', en: 'Key Handle' },
+              description: { es: 'Identificador de la clave en el HSM', en: 'Key identifier inside HSM' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true,
+              sensitive: true
+            }
+          ]
+        },
+        {
+          id: 'p11-encrypt',
+          code: 'C_Encrypt',
+          interfaceId: 'pkcs11',
+          direction: 'request',
+          pairedCode: 'C_Encrypt',
+          name: { es: 'Cifrar Datos C_Encrypt (Petición)', en: 'Encrypt Data C_Encrypt (Request)' },
+          summary: { es: 'Cifra un bloque de datos usando la clave activa', en: 'Encrypts single-part data with active key' },
+          description: { es: 'Operación criptográfica de cifrado dentro del coprocesador NitroX.', en: 'Single-part encryption operation inside NitroX accelerator.' },
+          category: { es: 'Criptografía PKCS#11', en: 'PKCS#11 Cryptography' },
+          source: 'OASIS PKCS#11 v2.40 Section 5.11',
+          fields: [
+            {
+              id: 'hSession',
+              name: { es: 'Manejador de Sesión', en: 'Session Handle' },
+              description: { es: 'Identificador de la sesión abierta', en: 'Open session handle' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true
+            },
+            {
+              id: 'pData',
+              name: { es: 'Datos en Claro', en: 'Plaintext Data' },
+              description: { es: 'Material confidencial a cifrar', en: 'Sensitive data to encrypt' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true,
+              sensitive: true
+            }
+          ]
+        },
+        {
+          id: 'p11-encrypt-resp',
+          code: 'C_Encrypt',
+          interfaceId: 'pkcs11',
+          direction: 'response',
+          pairedCode: 'C_Encrypt',
+          name: { es: 'Cifrar Datos C_Encrypt (Respuesta)', en: 'Encrypt Data C_Encrypt (Response)' },
+          summary: { es: 'Criptograma cifrado resultante', en: 'Resulting encrypted ciphertext' },
+          description: { es: 'Devuelve los datos cifrados protegidos por el HSM.', en: 'Returns ciphertext produced by HSM.' },
+          category: { es: 'Criptografía PKCS#11', en: 'PKCS#11 Cryptography' },
+          source: 'OASIS PKCS#11 v2.40 Section 5.11',
+          fields: [
+            {
+              id: 'pEncryptedData',
+              name: { es: 'Criptograma', en: 'Ciphertext' },
+              description: { es: 'Datos cifrados', en: 'Encrypted ciphertext data' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true,
+              sensitive: true
             }
           ]
         }
@@ -136,12 +324,35 @@ export const marvellLiquidSecuritySpec: DeviceSpec = {
           code: 'CLUSTER_SYNC',
           interfaceId: 'liquidsecurity-cli',
           direction: 'request',
-          name: { es: 'Sincronizar Cluster HSM', en: 'Synchronize HSM Cluster' },
-          summary: { es: 'Replication de particiones y claves entre nodos del cluster', en: 'Partition and key replication across cluster nodes' },
+          pairedCode: 'CLUSTER_SYNC',
+          name: { es: 'Sincronizar Cluster HSM (Petición)', en: 'Synchronize HSM Cluster (Request)' },
+          summary: { es: 'Replicación de particiones y claves entre nodos del cluster', en: 'Partition and key replication across cluster nodes' },
           description: { es: 'Sincroniza el estado de las particiones cifradas en tiempo real.', en: 'Synchronizes encrypted partition states in real time.' },
           category: { es: 'Alta Disponibilidad', en: 'High Availability' },
           source: 'Marvell LiquidSecurity Management Guide Section 8',
           fields: []
+        },
+        {
+          id: 'cvm-cluster-sync-resp',
+          code: 'CLUSTER_SYNC',
+          interfaceId: 'liquidsecurity-cli',
+          direction: 'response',
+          pairedCode: 'CLUSTER_SYNC',
+          name: { es: 'Sincronizar Cluster HSM (Respuesta)', en: 'Synchronize HSM Cluster (Response)' },
+          summary: { es: 'Confirmación de sincronización del cluster', en: 'Cluster sync confirmation' },
+          description: { es: 'Devuelve el estado de sincronización entre peers.', en: 'Returns sync status across cluster peers.' },
+          category: { es: 'Alta Disponibilidad', en: 'High Availability' },
+          source: 'Marvell LiquidSecurity Management Guide Section 8',
+          fields: [
+            {
+              id: 'status',
+              name: { es: 'Estado', en: 'Status' },
+              description: { es: 'Resultado de la sincronización', en: 'Sync result' },
+              length: { kind: 'variable' },
+              encoding: 'ascii',
+              required: true
+            }
+          ]
         }
       ],
       errorCodes: {}

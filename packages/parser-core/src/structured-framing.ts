@@ -458,7 +458,13 @@ function parseCallableStructured(
   // Match command
   const funcUpper = funcName.toUpperCase();
   const matchedCommand =
-    candidateCommands.find((c) => c.code.toUpperCase() === funcUpper) ?? null;
+    (options?.expectedDirection
+      ? candidateCommands.find(
+          (c) => c.code.toUpperCase() === funcUpper && c.direction === options.expectedDirection
+        )
+      : null) ??
+    candidateCommands.find((c) => c.code.toUpperCase() === funcUpper) ??
+    null;
 
   const detectedDirection = matchedCommand?.direction ?? options?.expectedDirection ?? 'request';
 
@@ -584,7 +590,13 @@ function parseCliStructured(
   });
 
   const matchedCommand =
-    candidateCommands.find((c) => c.code.toLowerCase() === detectedCode?.toLowerCase()) ?? null;
+    (options?.expectedDirection
+      ? candidateCommands.find(
+          (c) => c.code.toLowerCase() === detectedCode?.toLowerCase() && c.direction === options.expectedDirection
+        )
+      : null) ??
+    candidateCommands.find((c) => c.code.toLowerCase() === detectedCode?.toLowerCase()) ??
+    null;
 
   const detectedDirection = matchedCommand?.direction ?? options?.expectedDirection ?? 'request';
 
