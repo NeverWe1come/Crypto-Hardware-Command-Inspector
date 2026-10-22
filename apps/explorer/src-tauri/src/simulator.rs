@@ -1,3 +1,4 @@
+use std::io::{Read, Write};
 use std::net::{SocketAddr, TcpStream};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -177,6 +178,22 @@ pub fn check_tcp_port(port: u16) -> bool {
     TcpStream::connect_timeout(&addr, Duration::from_millis(500)).is_ok()
 }
 
+/// Verifies if the Atalla simulator is fully initialized and responding to cryptographic commands.
+pub fn check_simulator_ready(port: u16) -> bool {
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    if let Ok(mut stream) = TcpStream::connect_timeout(&addr, Duration::from_millis(500)) {
+        let _ = stream.set_read_timeout(Some(Duration::from_millis(1000)));
+        let _ = stream.set_write_timeout(Some(Duration::from_millis(500)));
+        if stream.write_all(b"<00#PING#>").is_ok() {
+            let mut buf = [0u8; 128];
+            if let Ok(n) = stream.read(&mut buf) {
+                return n > 0 && String::from_utf8_lossy(&buf[..n]).contains("<00#");
+            }
+        }
+    }
+    false
+}
+
 /// Automatically locate the Utimaco Atalla simulator .tar file in standard locations.
 pub fn find_default_tar_path() -> Option<PathBuf> {
     let candidates = [
@@ -315,13 +332,13 @@ pub async fn start_atalla_simulator(
             .map_err(|e| format!("Error ejecutando contenedor: {}", e))?;
     }
 
-    // 4. Wait for TCP port to open (timeout 15 seconds)
+    // 4. Wait for Atalla simulator to fully boot and respond to commands (timeout 20 seconds)
     let start_wait = Instant::now();
-    let max_wait = Duration::from_secs(15);
+    let max_wait = Duration::from_secs(20);
     let mut tcp_ready = false;
 
     while start_wait.elapsed() < max_wait {
-        if check_tcp_port(target_port) {
+        if check_simulator_ready(target_port) {
             tcp_ready = true;
             break;
         }

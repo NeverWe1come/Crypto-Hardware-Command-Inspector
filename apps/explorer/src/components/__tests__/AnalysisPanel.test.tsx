@@ -546,6 +546,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
 
       const table = screen.getByTestId('fields-breakdown-table');
       expect(table).toBeInTheDocument();
+      expect(table).toHaveClass('table-fixed');
 
       // Check column headers
       expect(within(table).getByText(/Nombre/i)).toBeInTheDocument();
@@ -553,6 +554,10 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(within(table).queryByText(/Offset/i)).not.toBeInTheDocument();
       expect(within(table).getAllByText(/Formato/i).length).toBeGreaterThanOrEqual(1);
       expect(within(table).getByText(/Valor/i)).toBeInTheDocument();
+
+      // Check that field values have break-all class for multiline wrapping without horizontal scroll
+      const pinFormatVal = screen.getByTestId('field-value-pin-format');
+      expect(pinFormatVal).toHaveClass('break-all');
 
       // Check rows rendered for fields
       expect(screen.getByTestId('field-row-pin-format')).toBeInTheDocument();

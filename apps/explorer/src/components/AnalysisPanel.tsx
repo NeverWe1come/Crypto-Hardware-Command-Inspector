@@ -703,23 +703,23 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                     </Button>
                   </div>
 
-                  <div className="overflow-x-auto rounded border border-border/60">
+                  <div className="w-full rounded border border-border/60 overflow-hidden">
                     <table
                       data-testid="fields-breakdown-table"
-                      className="w-full text-left text-xs border-collapse"
+                      className="w-full table-fixed text-left text-xs border-collapse"
                     >
                       <thead>
                         <tr className="border-b border-border bg-muted/40 text-[11px] text-muted-foreground font-semibold">
-                          <th className="py-1.5 px-2">Nombre</th>
-                          <th className="py-1.5 px-2">
+                          <th className="py-1.5 px-2 w-[28%]">Nombre</th>
+                          <th className="py-1.5 px-2 w-[12%]">
                             <FormattedMessage
                               id="analysis.fields.length"
                               defaultMessage="Longitud"
                             />
                           </th>
-                          <th className="py-1.5 px-2">Formato</th>
-                          <th className="py-1.5 px-2 text-right">Valor</th>
-                          <th className="py-1.5 px-2 w-8 text-center" aria-label="Información"></th>
+                          <th className="py-1.5 px-2 w-[14%]">Formato</th>
+                          <th className="py-1.5 px-2 w-[40%] text-right">Valor</th>
+                          <th className="py-1.5 px-2 w-[6%] text-center" aria-label="Información"></th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border/40">
@@ -757,12 +757,12 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                                     props.onSelectSegment?.(matchingSeg);
                                   }
                                 }}
-                                className={`hover:bg-muted/40 cursor-pointer transition-colors focus:outline-hidden focus:ring-1 focus:ring-primary ${
+                                className={`align-top hover:bg-muted/40 cursor-pointer transition-colors focus:outline-hidden focus:ring-1 focus:ring-primary ${
                                   isHighlighted ? 'bg-primary/15 font-medium' : ''
                                 }`}
                               >
-                                <td className="py-1.5 px-2 font-medium">
-                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                <td className="py-1.5 px-2 font-medium align-top">
+                                  <div className="flex items-center gap-1.5 flex-wrap break-words">
                                     <span>{resolveText(field.name) || field.id}</span>
                                     {field.detectedMode === 'akb' && (
                                       <span
@@ -782,17 +782,17 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                                     )}
                                   </div>
                                 </td>
-                                <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground">
+                                <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground align-top">
                                   {field.rawValue.length}
                                 </td>
-                                <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground">
+                                <td className="py-1.5 px-2 font-mono text-[11px] text-muted-foreground align-top">
                                   {field.encoding ?? 'ascii'}
                                 </td>
-                                <td className="py-1.5 px-2 text-right">
-                                  <div className="flex items-center justify-end gap-1.5">
+                                <td className="py-1.5 px-2 text-right align-top">
+                                  <div className="flex items-start justify-end gap-1.5 w-full">
                                     <span
                                       data-testid={`field-value-${field.id}`}
-                                      className="font-mono text-xs"
+                                      className="font-mono text-xs break-all leading-relaxed text-right select-all"
                                     >
                                       {displayValue}
                                     </span>
@@ -804,7 +804,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                                           e.stopPropagation();
                                           toggleSensitiveField(field.id);
                                         }}
-                                        className="p-1 text-muted-foreground hover:text-foreground rounded-xs"
+                                        className="p-1 text-muted-foreground hover:text-foreground rounded-xs shrink-0"
                                         aria-label={
                                           isVisible
                                             ? intl.formatMessage({
@@ -826,7 +826,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                                     )}
                                   </div>
                                 </td>
-                                <td className="py-1.5 px-2 text-center" onClick={(e) => e.stopPropagation()}>
+                                <td className="py-1.5 px-2 text-center align-top" onClick={(e) => e.stopPropagation()}>
                                   <button
                                     type="button"
                                     data-testid={`btn-field-info-${field.id}`}

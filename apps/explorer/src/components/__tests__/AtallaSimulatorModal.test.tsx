@@ -7,6 +7,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { toast } from 'sonner';
 import { AtallaSimulatorModal } from '../AtallaSimulatorModal';
 import { WorkspaceProvider } from '../../state/workspace-context';
 import type { WorkspaceState } from '../../state/types';
@@ -201,5 +202,116 @@ describe('AtallaSimulatorModal Component', () => {
     await user.click(loadBtn);
 
     expect(onLoadCommandMock).toHaveBeenCalledWith('<00#TEST#1234#>');
+  });
+
+  it('renders developer telemetry card and restart button when simulator is running', async () => {
+    vi.spyOn(simulatorClient, 'getAtallaSimulatorStatus').mockResolvedValueOnce({
+      dockerAvailable: true,
+      dockerVersion: '29.6.2',
+      imageLoaded: true,
+      containerRunning: true,
+      containerId: 'cnt_123',
+      port: 7000,
+      tcpReachable: true
+    });
+    vi.spyOn(simulatorClient, 'getAtallaSimulatorLogs').mockResolvedValue('');
+
+    renderModal({ open: true });
+
+    const telemetryCard = await screen.findByTestId('simulator-telemetry-card');
+    expect(telemetryCard).toBeInTheDocument();
+    expect(screen.getByText('SMOS SDK 5.6.4.1')).toBeInTheDocument();
+    expect(screen.getByText('SIM123')).toBeInTheDocument();
+    expect(screen.getByText('MFK1: B196 / AMK1: B9BC')).toBeInTheDocument();
+    expect(screen.getByText('127.0.0.1:7000 (Loopback)')).toBeInTheDocument();
+
+    const restartBtn = screen.getByRole('button', { name: /Reiniciar/i });
+    expect(restartBtn).toBeInTheDocument();
+  });
+
+  it('shows startup progress card and triggers toast notification on start', async () => {
+    const toastSuccessSpy = vi.spyOn(toast, 'success');
+
+    vi.spyOn(simulatorClient, 'getAtallaSimulatorStatus').mockResolvedValueOnce({
+      dockerAvailable: true,
+      imageLoaded: true,
+      containerRunning: false,
+      port: 7000,
+      tcpReachable: false
+    });
+    vi.spyOn(simulatorClient, 'getAtallaSimulatorLogs').mockResolvedValue('');
+
+    let resolveStart: (value: simulatorClient.SimulatorStatus) => void;
+    const startPromise = new Promise<simulatorClient.SimulatorStatus>((resolve) => {
+      resolveStart = resolve;
+    });
+    vi.spyOn(simulatorClient, 'startAtallaSimulator').mockImplementationOnce(() => startPromise);
+
+    const { user } = renderModal({ open: true });
+
+    const startBtn = await screen.findByRole('button', { name: /Iniciar Simulador/i });
+    await user.click(startBtn);
+
+    // Progress card should be visible during startup
+    const progressCard = await screen.findByTestId('simulator-startup-progress-card');
+    expect(progressCard).toBeInTheDocument();
+    expect(screen.getByText(/Inicializando entorno del simulador Atalla AT1000/i)).toBeInTheDocument();
+    expect(screen.getByText('Contenedor Docker')).toBeInTheDocument();
+    expect(screen.getByText('SMOS Kernel SDK')).toBeInTheDocument();
+    expect(screen.getByText('Módulos Flash')).toBeInTheDocument();
+    expect(screen.getByText('Socket TCP :7000')).toBeInTheDocument();
+
+    // Resolve startup
+    resolveStart!({
+      dockerAvailable: true,
+      imageLoaded: true,
+      containerRunning: true,
+      containerId: 'cnt_ready',
+      port: 7000,
+      tcpReachable: true
+    });
+
+    await waitFor(() => {
+      expect(toastSuccessSpy).toHaveBeenCalledWith(
+        expect.stringMatching(/Simulador Atalla AT1000 listo/i)
+      );
+    });
+  });
+
+  it('alerts via toast when running simulator drops unexpectedly during health heartbeat', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const toastErrorSpy = vi.spyOn(toast, 'error');
+
+    // Initial state: running
+    const statusSpy = vi.spyOn(simulatorClient, 'getAtallaSimulatorStatus').mockResolvedValue({
+      dockerAvailable: true,
+      imageLoaded: true,
+      containerRunning: true,
+      containerId: 'cnt_drop_test',
+      port: 7000,
+      tcpReachable: true
+    });
+    vi.spyOn(simulatorClient, 'getAtallaSimulatorLogs').mockResolvedValue('');
+
+    renderModal({ open: true });
+    await vi.advanceTimersByTimeAsync(100);
+
+    // After next heartbeat tick: unexpectedly stopped
+    statusSpy.mockResolvedValueOnce({
+      dockerAvailable: true,
+      imageLoaded: true,
+      containerRunning: false,
+      port: 7000,
+      tcpReachable: false
+    });
+
+    await vi.advanceTimersByTimeAsync(4600);
+
+    expect(toastErrorSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/El simulador Atalla se ha detenido inesperadamente/i),
+      expect.any(Object)
+    );
+
+    vi.useRealTimers();
   });
 });

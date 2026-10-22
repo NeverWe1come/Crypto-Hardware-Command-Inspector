@@ -121,5 +121,17 @@
   "simulator.logs.title": "Rexistros do Contedor (Docker Logs)",
   "simulator.logs.refresh": "Actualizar Logs",
   "simulator.logs.copy": "Copiar Logs",
-  "simulator.logs.empty": "Non hai rexistros dispoñibles aínda."
+  "simulator.logs.empty": "Non hai rexistros dispoñibles aínda.",
+  "simulator.progress.title": "Inicializando contorno do simulador Atalla AT1000...",
+  "simulator.progress.stage.docker": "Despregando contedor Docker e configurando rede loopback...",
+  "simulator.progress.stage.kernel": "Iniciando microkernel SMOS SDK 5.6.4.1 de Utimaco...",
+  "simulator.progress.stage.flash": "Cargando módulos de memoria flash apm.flash e criptografía...",
+  "simulator.progress.stage.socket": "Verificando resposta do socket criptográfico TCP :7000...",
+  "simulator.toast.ready": "Simulador Atalla AT1000 listo para recibir peticións en 127.0.0.1:7000.",
+  "simulator.toast.crashed": "O simulador Atalla detívose inesperadamente.",
+  "simulator.toast.crashed.desc": "O contedor Docker ou o proceso do socket TCP xa non responde.",
+  "simulator.toast.stopped": "Simulador Atalla detido correctamente.",
+  "simulator.action.restart": "Reiniciar Simulador",
+  "simulator.action.restarting": "Reiniciando...",
+  "simulator.telemetry.title": "Telemetría e Estado da Instancia"
 }
