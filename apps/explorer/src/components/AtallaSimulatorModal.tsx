@@ -462,7 +462,10 @@ export function AtallaSimulatorModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-6 overflow-hidden">
+      <DialogContent
+        data-testid="atalla-simulator-modal"
+        className="max-w-3xl max-h-[90vh] flex flex-col p-6 overflow-hidden"
+      >
         <DialogHeader className="pb-3 border-b border-border/60">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">

@@ -4,9 +4,16 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag de la versión a compilar y publicar (ej: v1.0.0)'
+        required: false
+        default: 'v1.0.0'
 
 jobs:
   release:
+    name: Build Multiplatform Installers (${{ matrix.target_os }})
     permissions:
       contents: write
     strategy:
@@ -14,11 +21,14 @@ jobs:
       matrix:
         include:
           - platform: 'windows-latest'
-            args: ''
-          - platform: 'ubuntu-22.04'
-            args: ''
+            target_os: 'Windows'
+            args: '--bundles nsis'
           - platform: 'macos-latest'
-            args: ''
+            target_os: 'macOS'
+            args: '--bundles dmg'
+          - platform: 'ubuntu-22.04'
+            target_os: 'Linux'
+            args: '--bundles deb,appimage'
 
     runs-on: ${{ matrix.platform }}
 
@@ -46,7 +56,8 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev librsvg2-dev patchelf libssl-dev libayatana-appindicator3-dev || \
+          sudo apt-get install -y libwebkit2gtk-4.1-dev librsvg2-dev patchelf libssl-dev libappindicator3-dev
 
       - name: Install Node Dependencies
         run: pnpm install --frozen-lockfile
@@ -56,10 +67,48 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'CHCI ${{ github.ref_name }}'
-          releaseBody: 'See full release notes and changelog.'
+          tagName: ${{ github.event.inputs.release_tag || github.ref_name }}
+          releaseName: 'Crypto Hardware Command Inspector ${{ github.event.inputs.release_tag || github.ref_name }}'
+          releaseBody: |
+            ## Crypto Hardware Command Inspector (${{ github.event.inputs.release_tag || github.ref_name }})
+            
+            ### Paquetes e Instaladores Oficiales Distribuidos
+            - **Windows**: `Crypto-Hardware-Command-Inspector_*_x64-setup.exe` (Instalador NSIS modular con selector de componentes y accesos directos opcionales).
+            - **macOS**: `Crypto-Hardware-Command-Inspector_*.dmg` (Imagen de disco arrastrable para Intel y Apple Silicon).
+            - **Linux**:
+              - `crypto-hardware-command-inspector_*_amd64.deb` (Paquete nativo Debian/Ubuntu).
+              - `crypto-hardware-command-inspector_*_amd64.AppImage` (Binario universal portable).
+            
+            ### Integridad Criptográfica
+            Consulte `SHA256SUMS.txt` para verificar las sumas criptográficas de los instaladores.
           releaseDraft: false
           prerelease: false
           projectPath: './apps/explorer'
           args: ${{ matrix.args }}
+
+  checksums:
+    name: Generate & Publish Cryptographic Checksums (SHA-256)
+    needs: release
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Release Assets and Generate SHA256SUMS.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.inputs.release_tag || github.ref_name }}
+        run: |
+          mkdir -p release_assets
+          cd release_assets
+          gh release download "$TAG" --repo "${{ github.repository }}" || true
+          if [ -n "$(ls -A . 2>/dev/null)" ]; then
+            sha256sum * > SHA256SUMS.txt
+            gh release upload "$TAG" SHA256SUMS.txt --repo "${{ github.repository }}" --clobber
+            echo "Uploaded SHA256SUMS.txt successfully:"
+            cat SHA256SUMS.txt
+          else
+            echo "No assets found to hash."
+          fi

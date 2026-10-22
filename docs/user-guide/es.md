@@ -1,24 +1,29 @@
-# Guía de Usuario — Crypto Hardware Command Inspector (`chci`)
+# Guía de Usuario Oficial — Crypto Hardware Command Inspector (`chci`)
 
-Bienvenido a la **Guía de Usuario Oficial** de **Crypto Hardware Command Inspector (`chci`)**.
+Bienvenido a la **Guía de Usuario Oficial y Completa** de **Crypto Hardware Command Inspector (`chci`)** para la versión **v1.0.0**.
 
-`chci` es una herramienta de inspección, depuración y auditoría criptográfica fuera de línea (*air-gapped*) diseñada para ingenieros de seguridad, desarrolladores de pasarelas de pago y operadores de infraestructura bancaria que interactúan diariamente con módulos de seguridad de hardware (**HSM**) y sistemas de gestión de claves (**KMS**).
+`chci` es una estación de trabajo criptográfica de escritorio fuera de línea (*air-gapped*) diseñada para ingenieros de ciberseguridad, desarrolladores de pasarelas de pago, auditores PCI-DSS y operadores de banca que interactúan diariamente con Módulos de Seguridad de Hardware (**HSM**) y Sistemas de Gestión de Claves (**KMS**).
 
 ---
 
-## 1. Modelo de Seguridad y Filosofía Cero Red (Zero-Network)
+## 1. Modelo de Seguridad y Filosofía Cero-Red (Zero-Network)
 
-Los comandos y tramas procesados por un HSM contienen con frecuencia material altamente sensible: bloques de PIN bancarios (ISO 9564), criptogramas de claves protegidas bajo LMK (Local Master Key), variantes de doble y triple longitud (3DES/AES) o bloques de clave ANSI X9.143 / TR-31.
+El software bancario y de seguridad opera con material criptográfico altamente sensible:
+- Bloques de PIN (ISO 9564 Formatos 0, 1, 3, 4).
+- Criptogramas de claves protegidos bajo Claves Maestras Locales (LMK / MFK).
+- Variantes de doble y triple longitud 3DES/AES y bloques ANSI X9.143 / TR-31.
+- Claves privadas asimétricas (RSA, ECC Curve25519, NIST P-256).
 
-Por este motivo, `chci` ha sido construido bajo una arquitectura estricta **Security-First**:
+Por ello, `chci` implementa una política estricta **Security-First**:
 
-1. **Aislamiento 100% Fuera de Línea (*Air-Gapped*)**:
-   - En la aplicación nativa de escritorio (**Tauri v2**), la política de seguridad (*Content Security Policy*) impone `connect-src 'none'`. No existe acceso a red, sockets TCP, WebSockets ni telemetría.
-   - Todo el motor de parseo (`@chci/parser-core`), las especificaciones de hardware (`@chci/device-specs`) y la persistencia residen exclusivamente en memoria local y almacenamiento IndexedDB del dispositivo del usuario.
-2. **Modo Web Sandbox**:
-   - Si la aplicación se ejecuta en navegador web público de demostración (`VITE_TARGET=web`), se despliega de forma permanente un banner de advertencia alertando al operador para que no introduzca material criptográfico real en dicho entorno y recomendando la descarga del binario de escritorio.
-3. **Enmascaramiento Sensible por Defecto**:
-   - Todos los campos catalogados con `sensitive: true` (criptogramas de clave, bloques de PIN, componentes en claro) se enmascaran automáticamente con la máscara `••••••••`. El usuario puede revelarlos de forma puntual o global mediante un control explícito. Al cambiar de comando, todos los campos vuelven a enmascararse automáticamente.
+1. **Aislamiento Fuera de Línea (*Air-Gapped*)**:
+   - En la aplicación nativa (**Tauri v2**), la directiva CSP (*Content Security Policy*) impone `connect-src 'none'`. No existe acceso a Internet, servidores remotos ni telemetría.
+   - El motor de parseo (`@chci/parser-core`), las especificaciones técnicas (`@chci/device-specs`), el almacenamiento y la documentación residen 100% en la máquina local.
+2. **Enmascaramiento Sensible por Defecto**:
+   - Todo campo marcado como `sensitive: true` (criptogramas de clave, bloques de PIN, componentes claros) se enmascara automáticamente como `••••••••`.
+   - El operador puede revelar u ocultar valores sensibles de forma puntual o global mediante el conmutador de la interfaz. Al cambiar de comando, todos los campos vuelven a protegerse inmediatamente.
+3. **Persistencia Segura y Local**:
+   - Las sesiones de trabajo se guardan en el IndexedDB del navegador o en archivos locales validados con **Zod** (`chci-session-v1.json` y bitácora plana `.chci_history`).
 
 ```mermaid
 flowchart TD
@@ -27,180 +32,263 @@ flowchart TD
     Engine --> Atalla["Delimited Positional (Atalla AT1000)"]
     Engine --> Thales["Header Positional (Thales payShield)"]
     Engine --> Futurex["Tag-Value (Futurex Excrypt)"]
-    Atalla --> ParseResult["ParseResult Inmutable"]
-    Thales --> ParseResult
-    Futurex --> ParseResult
-    ParseResult --> Masking{"¿Campo Sensible (PIN / Clave)?"}
+    Engine --> Structured["Structured Framing (CLI / JSON / PKCS#11)"]
+    Atalla --> Result["ParseResult Inmutable"]
+    Thales --> Result
+    Futurex --> Result
+    Structured --> Result
+    Result --> Masking{"¿Campo Sensible?"}
     Masking -- Sí --> Mask["Enmascarado: ••••••••"]
     Masking -- No --> Clear["Valor en Claro"]
-    Mask --> UI["Panel de Inspección (8 Bloques)"]
+    Mask --> UI["Panel de Inspección y Análisis"]
     Clear --> UI
 ```
 
 ---
 
-## 2. Catálogo de Dispositivos y Navegación
+## 2. Instalación y Despliegue Multiplataforma
 
-El catálogo lateral permite explorar dispositivos clasificados en cuatro grandes familias:
-- **HSM Financiero**: Utimaco / Atalla AT1000, Thales payShield 10K, Futurex Excrypt.
-- **HSM Propósito General**: Utimaco CryptoServer, Thales Luna 7, Securosys Primus.
-- **KMS**: HashiCorp Vault Transit, AWS KMS, Google Cloud KMS, Fortanix DSM.
-- **HSM as a Service**: AWS CloudHSM, Azure Dedicated HSM, Marvell LiquidSecurity.
+`chci` se distribuye oficialmente como instaladores nativos para los tres sistemas operativos:
 
-El usuario puede filtrar por categoría, realizar búsquedas de texto completo en tiempo real y abrir pestañas independientes para cada dispositivo soportado.
+```mermaid
+flowchart LR
+    Release["GitHub Release (v1.0.0)"] --> Win["Windows Setup (.exe / NSIS)"]
+    Release --> Mac["macOS Disk Image (.dmg)"]
+    Release --> Lin1["Linux Portable (.AppImage)"]
+    Release --> Lin2["Debian / Ubuntu (.deb)"]
+    Release --> Sums["SHA256SUMS.txt (Integridad)"]
+```
 
-### Tema Claro
+### 2.1 En Windows (Instalador Modular NSIS)
+El instalador `Crypto-Hardware-Command-Inspector_x64-setup.exe` ofrece un asistente interactivo:
+- **Selector de Carpeta de Destino (`Custom Destination Folder`)**: El usuario puede pulsar *"Examinar..."* y elegir cualquier ruta o unidad (ej: `D:\Herramientas\CHCI`).
+- **Selector de Componentes Modular**:
+  - ☑️ **CHCI Core Application**: Programa principal y visor de especificaciones (~45 MB, Obligatorio).
+  - 🔲/☑️ **Simulador Utimaco Atalla AT1000 v8.56**: Imagen Docker offline `.tar` (~848 MB, Opcional). Si se marca, se despliega en `$INSTDIR\simulators\atalla-at1000\`. **Nunca ensucia el Escritorio**.
+- **Accesos Directos Opcionales (NO automáticos)**:
+  - Casilla: *Crear acceso directo en el Escritorio* (desmarcada por defecto).
+  - Casilla: *Crear acceso directo en el Menú Inicio* (desmarcada por defecto).
+  - Solo se crean aquellos que el operador marque expresamente.
+
+### 2.2 En macOS (Imagen de Disco `.dmg`)
+- Al abrir el archivo `Crypto-Hardware-Command-Inspector_universal.dmg`, el usuario arrastra la aplicación `Crypto Hardware Command Inspector.app` a `/Applications` o a la carpeta que desee.
+- No se crean accesos directos al Escritorio. El usuario puede anclar la aplicación al Dock según su preferencia.
+
+### 2.3 En Linux (AppImage y DEB)
+- **AppImage Universal**: Binario portable ejecutable sin instalación en cualquier distribución Linux (Ubuntu, Debian, Fedora, Arch, SUSE). El usuario lo almacena en la carpeta de su elección (ej: `~/bin/` o `/opt/`).
+- **Paquete Debian (`.deb`)**: Instalación nativa mediante `sudo dpkg -i chci.deb` con integración limpia en el menú del sistema.
+
+![Arquitectura de Instalación y Distribución](../assets/screenshots/15-installer-and-distribution.png)
+
+---
+
+## 3. Catálogo de Dispositivos Criptográficos Soportados
+
+La barra lateral izquierda categoriza los 10 dispositivos soportados en 4 familias arquitectónicas:
+
+1. **HSM Financiero / Payment HSM**:
+   - **Utimaco Atalla AT1000** (Firmware v8.60 / v8.56).
+   - **Thales payShield 10K** (Firmware v2.3 / v1.9).
+   - **Futurex Excrypt** (Firmware v7.6.1).
+2. **HSM de Propósito General**:
+   - **Thales Luna 7** (PKCS#11 y CLI Lunash).
+   - **IBM CCA 4769** (Callable C Verbs y CLI).
+   - **Yubico YubiHSM 2** (YubiHSM-Shell CLI y PKCS#11).
+3. **KMS (Key Management Systems)**:
+   - **AWS KMS** (REST JSON y AWS CLI).
+   - **HashiCorp Vault Transit** (REST API v1 y CLI).
+4. **HSM as a Service / Cloud HSM**:
+   - **Marvell LiquidSecurity HSM** (Liquid CLI v3.4.0 y PKCS#11).
+   - **Azure Dedicated Payment HSM** (TCP RAW y CLI).
+
+### Vista General en Tema Claro
 ![Catálogo en Tema Claro](../assets/screenshots/01-catalog-overview-light.png)
 
-### Tema Oscuro
+### Vista General en Tema Oscuro
 ![Catálogo en Tema Oscuro](../assets/screenshots/02-catalog-overview-dark.png)
 
 ---
 
-## 3. Flujo 1: Inspección de Comandos Futurex Excrypt
+## 4. Editor de Comandos y Selector de Interfaces
 
-Los módulos **Futurex Excrypt** (como las series EXP9000 y Securus) emplean una estructura de encuadre basada en **Tag-Value**:
-- La trama se delimita mediante corchetes angulares `[` y `]`.
-- Cada parámetro se define mediante una etiqueta mnemotécnica de 2 caracteres (por ejemplo, `AO` para el código de comando, `AG` para el contexto o datos, `BB` para la cuenta, etc.), seguida del valor y concluida con un punto y coma `;`.
+El panel central de la aplicación proporciona un entorno de edición enriquecido basado en **CodeMirror 6**:
 
-### Procedimiento:
-1. Abra la pestaña **Futurex Excrypt** desde el catálogo lateral.
-2. En el editor central, escriba o pegue la trama:
-   ```text
-   [AOECHO;AGhola;]
-   ```
-3. El editor CodeMirror resaltará visualmente los delimitadores `[` y `]`, los códigos de etiqueta y los valores.
-4. En el **Panel de Análisis Detallado** (derecha), observe:
-   - **Información General**: Código detectado `ECHO`, dirección `Petición`.
-   - **Desglose de Parámetros**: Tabla interactiva con etiquetas `AO` y `AG`. Al pasar el cursor sobre cualquier fila, el editor resalta de forma sincronizada el rango exacto de la trama.
+- **Resaltado de Sintaxis en Tiempo Real**: Delimitadores, etiquetas, campos posicionales y datos hexadecimales se identifican visualmente con colores específicos.
+- **Selector de Interfaz Estándar vs Propietaria**:
+  - Para dispositivos que admiten múltiples interfaces (como Thales Luna 7 o Marvell LiquidSecurity), cada comando dispone de un selector desplegable con indicador visual:
+    - `[STD]` Interfaz Estándar de la Industria (ej: PKCS#11, REST JSON, KMIP).
+    - `[PROP]` Interfaz Propietaria del Fabricante (ej: CLI nativa, RAW ASCII).
 
-![Inspección Futurex Excrypt](../assets/screenshots/03-futurex-command-inspection.png)
+![Selector de Interfaces](../assets/screenshots/14-multi-interface-selector.png)
 
 ---
 
-## 4. Flujo 2: Inspección y Enmascaramiento en Thales payShield 10K
+## 5. Panel de Análisis Criptográfico y Vista de Trama
 
-Los módulos **Thales payShield 10K** (y 9000) utilizan un encuadre **Header-Positional**:
-- Las tramas pueden comenzar con una cabecera de transporte de longitud configurable (generalmente 4 o 12 caracteres, e.g. `0000`).
-- A continuación se encuentra el código de comando de 2 caracteres (`A0` para generación de claves, `NC` para diagnósticos, `CW` para importación).
-- Los campos subsiguientes son estrictamente posicionales. Thales define campos de longitud dinámica mediante prefijos de clave (`U` para doble longitud 3DES, `T` para triple longitud, `S` para Thales Key Blocks, `R` para TR-31).
+El panel lateral derecho desglosa en tiempo real cada elemento de la trama introducida:
 
-### Procedimiento de Inspección con Claves Sensibles:
-1. Abra la pestaña **Thales payShield 10K**.
-2. Configure la longitud de cabecera a `4` caracteres.
-3. Introduzca la trama de generación de clave:
-   ```text
-   A00000U0123456789ABCDEF0123456789ABCDEF
-   ```
-4. Observe que el campo de clave bajo LMK se muestra automáticamente enmascarado como `••••••••`.
-5. Para auditar el valor exacto, pulse el icono de revelado individual en la fila del parámetro o el conmutador global *"Mostrar sensibles"*.
+1. **Vista de Trama Segmentada**: Representación visual tipo bloque donde cada parámetro se muestra con su nombre oficial y color de categoría.
+2. **Desglose de Parámetros Multilínea**: Tabla estructurada con ajuste forzado `break-all` y `table-fixed` que previene cualquier desbordamiento o scroll horizontal en claves de 74 o 128 caracteres.
+3. **Soporte Dual-Mode AKB vs Variant**:
+   - Detección automática del modo de clave:
+     - 🌸 **AKB (Atalla Key Block)**: Clave formateada en bloque de 74 caracteres. Badge distintivo en rosa.
+     - 🟪 **Variant**: Clave encriptada bajo variante tradicional (32 o 48 caracteres). Badge distintivo en morado.
+4. **Descripciones Técnicas Expandibles `(i)`**: Al pulsar el botón de información en cualquier fila, se expande la explicación detallada del manual oficial con formatos válidos y ejemplos de uso.
+5. **Avisos Oficiales del Fabricante**: Tarjetas estilizadas destacando `CAUTION`, `IMPORTANT`, `TIP` y `NOTE`.
 
-![Enmascaramiento Sensible Thales](../assets/screenshots/04-thales-command-masking.png)
+![Modo Dual AKB vs Variant](../assets/screenshots/13-akb-variant-dual-mode.png)
 
 ---
 
-## 5. Flujo 3: Correlación Petición ↔ Respuesta
+## 6. Inspección de Comandos Utimaco Atalla AT1000
 
-En operaciones bancarias en vivo, es fundamental auditar si una respuesta recibida de un HSM corresponde fidedignamente a la petición cursada.
+El encuadre **Delimited Positional** de Atalla utiliza los delimitadores `<` y `>` con separadores `#`:
+- Formato general: `<CmdCode#SubCode#Param1#Param2#...#>`
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Host as Sistema Host
-    participant HSM as HSM (Hardware)
-    participant CHCI as Inspector CHCI
-
-    Host->>HSM: Petición A0 (Generate Key) [Header: 0000]
-    HSM-->>Host: Respuesta A1 (Key Generated) [Header: 0000, Error: 00]
-    Host->>CHCI: Carga de comandos #1 y #2 vinculados
-    Note over CHCI: Verificación de Cabecera (0000 == 0000)<br/>Emparejamiento de Código (A0 -> A1)<br/>Consistencia de Token de Echo
-    CHCI-->>Host: Veredicto: CORRELACIÓN EXITOSA ✅
-```
-
-### Procedimiento:
-1. En la pestaña activa, pulse **"Nuevo comando"** (`+`).
-2. Defina el Comando #1 como `Petición` (`A0...`) y el Comando #2 como `Respuesta` (`A100`).
-3. En el selector de vinculación del Comando #2, elija *"Vinculado al comando #1"*.
-4. Despliegue el bloque **"Vínculo Petición ↔ Respuesta"** en el panel derecho para visualizar:
-   - Comprobación de cabecera de transporte (*Header Match*).
-   - Comprobación de código emparejado (*Command Pair Match*).
-   - Comprobación de contexto/echo.
-
-![Correlación Petición Respuesta](../assets/screenshots/05-correlation-request-response.png)
-
----
-
-## 6. Flujo 4: Diagnóstico de Errores Utimaco Atalla AT1000
-
-Los módulos **Utimaco / Atalla AT1000** utilizan tramas delimitadas por caracteres `#` dentro de `<` y `>`:
-- Formato general: `<CMD#field1#field2#...#>`
-- En caso de anomalía, el HSM retorna un código de error de 2 caracteres en la posición reservada.
-
-### Procedimiento:
-1. Abra la pestaña **Utimaco Atalla AT1000**.
-2. Introduzca la trama de error:
-   ```text
-   <31#Y#01#>
-   ```
-3. El panel de análisis detecta inmediatamente la condición de error y despliega automáticamente los bloques:
-   - **Código de Respuesta / Error**: Código `01`, nombre oficial *"Invalid command format"*, con lista detallada de causas técnicas documentadas por el fabricante (longitud incorrecta de campos, separador `#` ausente o carácter no hexadecimal).
-   - **Diagnósticos**: Alertas graduadas por severidad (`error`, `warning`, `info`).
+### Ejemplo: Comando Atalla `31` con Error
+Al inspeccionar una respuesta de error `<31#Y#01#>`:
+- El inspector identifica el código de error `01` (*"Invalid command format"*).
+- Muestra el desglose de causas documentadas (longitud errónea, campo numérico inválido, delimitador `#` faltante).
 
 ![Diagnóstico de Errores Atalla](../assets/screenshots/06-atalla-error-diagnostics.png)
 
 ---
 
-## 7. Flujo 5: Biblioteca de Sesiones y Exportación JSON
+## 7. Inspección de Comandos Thales payShield 10K
 
-`chci` permite guardar el estado completo de la sesión de trabajo (múltiples pestañas, comandos, vínculos y configuraciones) en el almacenamiento IndexedDB local, así como exportar/importar archivos JSON validados:
+El encuadre **Header-Positional** de Thales payShield utiliza una cabecera de transporte configurable seguida del código de comando de 2 caracteres:
+- Formato general: `[Header 4B][Code 2B][Data...]`
+- Identificación de tipo de clave por prefijos oficiales:
+  - `U`: Clave 3DES doble longitud (32 hex).
+  - `T`: Clave 3DES triple longitud (48 hex).
+  - `S`: Thales Key Block propietario.
+  - `R`: ANSI X9.143 / TR-31 Key Block.
 
-- Formato de esquema: `chci-session-v1.json`.
-- Validación estricta con **Zod** al importar, con protección contra inyecciones de esquemas ajenos y límite de seguridad de 10 MB.
-- Funciones de la biblioteca: **Guardar sesión**, **Cargar sesión**, **Duplicar sesión**, **Eliminar sesión** y **Exportar/Importar JSON**.
+### Enmascaramiento de Claves bajo LMK
+Al introducir una trama como `A00000U0123456789ABCDEF0123456789ABCDEF`:
+- El campo de clave bajo LMK se oculta por defecto mediante `••••••••`.
+- El icono de ojo permite revelar u ocultar la clave bajo demanda controlada del operador.
 
-![Biblioteca de Sesiones](../assets/screenshots/07-session-manager-modal.png)
+![Enmascaramiento Sensible Thales](../assets/screenshots/04-thales-command-masking.png)
 
 ---
 
-## 8. Flujo 6: Historial de Auditoría estilo `.bash_history` (`.chci_history`)
+## 8. Inspección de Comandos Futurex Excrypt
 
-Cada comando inspeccionado en la herramienta se registra automáticamente en una bitácora local de texto plano con formato idéntico a `.bash_history`:
+Los HSMs **Futurex Excrypt** emplean encuadre **Tag-Value**:
+- La trama inicia con `[` y finaliza con `]`.
+- Cada parámetro consta de una etiqueta de 2 caracteres (`AO`, `AG`, `BB`, etc.) seguida del valor y finalizada con punto y coma `;`.
 
-```text
-# Crypto Hardware Command Inspector History (.chci_history)
-# Format: ISO_TIMESTAMP | DEVICE_ID | VERSION | DIRECTION | RAW_COMMAND
-2026-10-20T20:10:00.000Z | futurex-excrypt | 7.6.1 | request | [AOECHO;AGhola;]
-2026-10-20T20:11:00.000Z | thales-payshield-10k | 2.3 | request | A00000U0123456789ABCDEF0123456789ABCDEF
-2026-10-20T20:11:30.000Z | thales-payshield-10k | 2.3 | response | A100
-2026-10-20T20:12:00.000Z | utimaco-atalla-at1000 | 8.60 | response | <31#Y#01#>
+### Ejemplo: Comando Echo
+Al introducir `[AOECHO;AGhola;]`:
+- Se desglosa `AO` como código de comando `ECHO`.
+- Se desglosa `AG` como datos de usuario (*Context Data*).
+
+![Inspección Futurex Excrypt](../assets/screenshots/03-futurex-command-inspection.png)
+
+---
+
+## 9. Correlación Automática de Petición ↔ Respuesta
+
+En auditorías bancarias es indispensable verificar si la respuesta devuelta por el HSM concuerda con la petición original.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Host as Sistema Host
+    participant HSM as HSM Hardware
+    participant CHCI as Inspector CHCI
+
+    Host->>HSM: Petición A0 (Generate Key) [Header: 0000]
+    HSM-->>Host: Respuesta A1 (Key Generated) [Header: 0000, Error: 00]
+    Host->>CHCI: Vincular Comando #2 con Comando #1
+    Note over CHCI: 1. Header Match: 0000 == 0000<br/>2. Command Pair: A0 <-> A1<br/>3. Context Token Match
+    CHCI-->>Host: Veredicto: CORRELACIÓN EXITOSA ✅
 ```
 
-Desde el modal de Historial (`Historial` en la cabecera):
-- Filtre y busque tramas históricas en tiempo real.
-- Inserte cualquier comando previo en el comando activo o como nuevo comando.
-- Descargue el archivo `.chci_history` a su máquina local o limpie el historial.
+### Procedimiento:
+1. Cree un comando #1 como `Petición` (`A0...`).
+2. Cree un comando #2 como `Respuesta` (`A100...`).
+3. En el comando #2, seleccione *"Vinculado al comando #1"*.
+4. El bloque **"Vínculo Petición ↔ Respuesta"** verificará automáticamente la paridad de cabecera, código y contexto.
 
+![Correlación Petición Respuesta](../assets/screenshots/05-correlation-request-response.png)
+
+---
+
+## 10. Visor Integrado de Documentación Hardware Offline
+
+`chci` integra los manuales técnicos oficiales de los fabricantes accesibles sin conexión a red:
+- **Botón en Cabecera**: Acceso directo al visor de documentación técnica.
+- **Pestañas de Filtrado**: Permite filtrar por *"Todos"*, *"Capítulos"*, *"Comandos"* o *"Apéndices"*.
+- **Búsqueda Instantánea**: Filtrado en tiempo real por código de comando (ej: `BF`, `A0`, `ECHO`) o descripción.
+- **Markdown Enriquecido**: Resaltado sintáctico, filas AKB/Variant coloreadas, enlaces interactivos y avisos oficiales del fabricante.
+
+![Visor de Documentación Hardware](../assets/screenshots/10-hardware-docs-viewer.png)
+
+---
+
+## 11. Simulador Oficial Utimaco Atalla AT1000
+
+Para desarrollo y pruebas locales sin disponer de un dispositivo físico, `chci` integra el control del contenedor Docker oficial del simulador Atalla AT1000:
+
+- **Telemetría en Vivo**: Estado del firmware SMOS SDK 5.6.4.1, número de serie `SIM123`, y Master File Keys (`MFK1: B196`, `AMK1: B9BC`).
+- **Barra de Progreso Animada**: Monitoriza los 4 hitos de inicialización interna de Utimaco (~30s): Contenedor Docker, Kernel SMOS, Memoria Flash y Socket TCP :7000.
+- **Monitor de Salud (Heartbeat)**: Sondeo continuo cada 4.5s que detecta caídas inesperadas del contenedor.
+- **Pruebas Rápidas de Diagnóstico**: Botones para ejecutar en vivo comandos de prueba:
+  - `<00#TEST#1234#>` (Echo).
+  - `<9A#ID#>` (HSM Info / Firmware).
+  - `<9A#KEY#>` (MFK Status).
+- **Parada Automática y Garantizada**: Al cerrar la aplicación (`X`, `Alt+F4`, menú salir o terminación del proceso), el simulador se detiene y elimina automáticamente sin dejar puertos ni contenedores huérfanos.
+
+![Consola del Simulador Atalla](../assets/screenshots/11-atalla-simulator-modal.png)
+
+---
+
+## 12. Conexiones Directas a Hardware y Ejecución en Vivo
+
+Para validar comandos contra dispositivos reales o proxies bancarios:
+- **Configuración de Protocolos**: Admite conexiones TCP directas, TLS cifrado o mTLS con autenticación mutua de certificados.
+- **Credenciales y Certificados PEM**: Campos para configurar el certificado CA del servidor, el certificado de cliente y la clave privada de cliente en formato PEM.
+- **Ejecución en Vivo con Diagnóstico de Red**: Botón *Play* en el editor para enviar la trama y recibir la respuesta en vivo con medición de latencia en milisegundos.
+
+![Conexiones Directas a Hardware](../assets/screenshots/12-direct-hardware-connections.png)
+
+---
+
+## 13. Biblioteca de Sesiones, Historial y Exportación JSON
+
+- **Biblioteca de Sesiones IndexedDB**: Guarde, cargue, clone y gestione múltiples sesiones de auditoría con todas sus pestañas, comandos y configuraciones intactas.
+- **Importación/Exportación JSON con Zod**: Exportación en formato abierto `chci-session-v1.json` con validación rigurosa de esquema para compartir sesiones entre auditores.
+- **Bitácora Plana `.chci_history`**: Registro automático en texto plano estilo `.bash_history` con marca temporal ISO, identificador de dispositivo, versión, dirección y trama cruda. Permite búsqueda rápida, reinserción de comandos y descarga directa del archivo.
+
+### Biblioteca de Sesiones
+![Biblioteca de Sesiones](../assets/screenshots/07-session-manager-modal.png)
+
+### Historial de Auditoría (.chci_history)
 ![Historial chci_history](../assets/screenshots/08-history-modal.png)
 
 ---
 
-## 9. Internacionalización Bilingüe (Español / Inglés)
+## 14. Soporte Multilingüe (Español / English / Galego)
 
-Toda la aplicación, incluyendo catálogos, descripciones de parámetros criptográficos, manuales de códigos de error y avisos de diagnóstico, cuenta con soporte nativo bilingüe (Español e Inglés):
-- Pulse el botón de selector de idioma (`ES` / `EN`) en la cabecera superior para alternar instantáneamente la interfaz sin recargar la página ni perder el estado de trabajo.
+Toda la aplicación, catálogos, campos y diagnósticos de error cuentan con soporte idiomático completo:
+- Selector en cabecera para conmutar al instante entre **Español (`ES`)**, **English (`EN`)** y **Galego (`GL`)** sin recargar la página ni perder el estado de la sesión activa.
 
 ![Interfaz en Inglés](../assets/screenshots/09-i18n-english.png)
 
 ---
 
-## 10. Resumen de Atajos y Consejos Prácticos
+## Resumen de Atajos y Procedimientos Rápidos
 
-| Acción | Atajo / Procedimiento |
+| Operación | Método / Atajo |
 |---|---|
-| **Alternar Tema** | Botón de tema en cabecera (`dark` / `light` / `system`). |
-| **Alternar Idioma** | Botón `ES` / `EN` en cabecera. |
-| **Reordenar Comandos** | Arrastrar el icono de agarre (`:::`) en la lista de comandos. |
+| **Nuevo Comando** | Botón `+` en cabecera o lista de comandos. |
+| **Documentación Hardware** | Botón con icono de libro en cabecera. |
+| **Simulador Atalla** | Botón con icono de servidor en cabecera o sidebar. |
+| **Conexiones Directas** | Botón con icono de enlace en la tarjeta del dispositivo. |
 | **Revelar Clave/PIN** | Clic en el icono de ojo en la fila de parámetro del panel de análisis. |
-| **Cerrar Modales** | Tecla `Escape` o clic fuera del diálogo. |
-| **Descargar Sesión** | Sesiones -> Botón *Exportar JSON*. |
+| **Ver Detalles de Parámetro** | Botón `(i)` en la fila del parámetro de la tabla. |
+| **Exportar Sesión** | Sesiones -> Botón *Exportar JSON*. |
 | **Descargar Bitácora** | Historial -> Botón *Descargar .chci_history*. |
+| **Cerrar Diálogos** | Tecla `Escape` o clic fuera del modal. |

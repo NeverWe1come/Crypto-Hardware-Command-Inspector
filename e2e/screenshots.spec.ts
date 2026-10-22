@@ -198,5 +198,143 @@ test.describe('CHCI Visual Workflows & Automated High-Res Screenshots', () => {
       path: path.join('docs', 'assets', 'screenshots', '09-i18n-english.png'),
       fullPage: true
     });
+
+    // Switch back to Spanish for remaining technical workflow captures
+    await langButton.click();
+    await page.waitForTimeout(300);
+
+    // -------------------------------------------------------------
+    // Screenshot 10: Offline Hardware Documentation Viewer
+    // -------------------------------------------------------------
+    const docsBtn = page.getByTestId('header-hardware-docs-button');
+    if (await docsBtn.isVisible()) {
+      await docsBtn.click();
+      await page.waitForTimeout(400);
+      await expect(page.getByRole('dialog')).toBeVisible();
+
+      // Select command BF in documentation
+      const docItemBf = page.getByTestId('hardware-doc-item-cmd-bf');
+      if (await docItemBf.isVisible()) {
+        await docItemBf.click();
+        await page.waitForTimeout(300);
+      }
+
+      await page.screenshot({
+        path: path.join('docs', 'assets', 'screenshots', '10-hardware-docs-viewer.png'),
+        fullPage: true
+      });
+
+      // Close documentation modal
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(300);
+    }
+
+    // -------------------------------------------------------------
+    // Screenshot 11: Utimaco Atalla AT1000 Simulator Modal
+    // -------------------------------------------------------------
+    const simBtn = page.getByTestId('simulator-button');
+    if (await simBtn.isVisible()) {
+      await simBtn.click();
+      await page.waitForTimeout(400);
+      await expect(page.getByRole('dialog')).toBeVisible();
+
+      await page.screenshot({
+        path: path.join('docs', 'assets', 'screenshots', '11-atalla-simulator-modal.png'),
+        fullPage: true
+      });
+
+      // Close simulator modal
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(300);
+    }
+
+    // -------------------------------------------------------------
+    // Screenshot 12: Direct Hardware Connections (TCP/TLS/mTLS)
+    // -------------------------------------------------------------
+    const atallaConnBtn = page.getByTestId('device-connections-button-utimaco-atalla-at1000');
+    if (await atallaConnBtn.isVisible()) {
+      await atallaConnBtn.click();
+      await page.waitForTimeout(400);
+      await expect(page.getByRole('dialog')).toBeVisible();
+
+      // Click "Nueva Conexión" button to show full configuration form
+      const addConnBtn = page.getByTestId('add-connection-button');
+      if (await addConnBtn.isVisible()) {
+        await addConnBtn.click();
+        await page.waitForTimeout(300);
+      }
+
+      await page.screenshot({
+        path: path.join('docs', 'assets', 'screenshots', '12-direct-hardware-connections.png'),
+        fullPage: true
+      });
+
+      // Close connections modal
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(300);
+    }
+
+    // -------------------------------------------------------------
+    // Screenshot 13: Dual-Mode AKB vs Variant & Expandable Info
+    // -------------------------------------------------------------
+    // Switch to Atalla AT1000 tab
+    await atallaCard.click();
+    await page.waitForTimeout(300);
+
+    // Input Atalla command BF with 74-character AKB key
+    const akbFrame = '<BF#1#11#00000000#1#1K100000000000000000000000000000000000000000000000000000000000000000000000#0#>';
+    await cmEditor.click();
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.press('Backspace');
+    await page.keyboard.insertText(akbFrame);
+    await page.waitForTimeout(400);
+
+    // Expand parameters accordion if not open
+    if ((await fieldsTrigger.getAttribute('aria-expanded')) === 'false') {
+      await fieldsTrigger.click();
+    }
+    await page.waitForTimeout(300);
+
+    // Expand the first field description button (i)
+    const infoButton = page.locator('button[data-testid^="field-info-btn-"]').first();
+    if (await infoButton.isVisible()) {
+      await infoButton.click();
+      await page.waitForTimeout(300);
+    }
+
+    await page.screenshot({
+      path: path.join('docs', 'assets', 'screenshots', '13-akb-variant-dual-mode.png'),
+      fullPage: true
+    });
+
+    // -------------------------------------------------------------
+    // Screenshot 14: Multi-Interface Selector (Standard vs Proprietary)
+    // -------------------------------------------------------------
+    // Open Thales Luna 7 tab which has multiple interfaces (PKCS#11 Callable APIs & CLI)
+    const lunaCard = page.getByTestId('device-card-thales-luna-7');
+    if (await lunaCard.isVisible()) {
+      await lunaCard.click();
+      await page.waitForTimeout(300);
+
+      await page.screenshot({
+        path: path.join('docs', 'assets', 'screenshots', '14-multi-interface-selector.png'),
+        fullPage: true
+      });
+    }
+
+    // -------------------------------------------------------------
+    // Screenshot 15: Cross-Platform Distribution Architecture
+    // -------------------------------------------------------------
+    // Return to main view with catalog
+    const allCategoryTab = page.locator('button').filter({ hasText: 'Todos' }).first();
+    if (await allCategoryTab.isVisible()) {
+      await allCategoryTab.click();
+      await page.waitForTimeout(300);
+    }
+
+    await page.screenshot({
+      path: path.join('docs', 'assets', 'screenshots', '15-installer-and-distribution.png'),
+      fullPage: true
+    });
   });
 });
