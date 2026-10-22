@@ -22,6 +22,7 @@ import {
   Settings
 } from 'lucide-react';
 import { HardwareConnectionsModal } from './HardwareConnectionsModal';
+import { AtallaSimulatorModal } from './AtallaSimulatorModal';
 
 interface MainCategoryOption {
   readonly id: CategoryFilter;
@@ -54,6 +55,7 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
   const { state, dispatch } = useWorkspace();
   const [internalIsCollapsed, setInternalIsCollapsed] = useState(false);
   const [selectedDeviceForConnections, setSelectedDeviceForConnections] = useState<string | null>(null);
+  const [simulatorOpen, setSimulatorOpen] = useState(false);
   const isCollapsed = props?.isCollapsed ?? internalIsCollapsed;
   const toggleCollapse =
     props?.onToggleCollapse ?? (() => setInternalIsCollapsed((prev) => !prev));
@@ -192,6 +194,21 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
             {device.name}
           </span>
           <div className="flex items-center gap-1 shrink-0">
+            {device.id === 'utimaco-atalla-at1000' && (
+              <button
+                type="button"
+                data-testid="sidebar-atalla-simulator-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSimulatorOpen(true);
+                }}
+                className="p-1 rounded text-sky-400 hover:text-sky-300 hover:bg-[#283350] transition-colors"
+                title="Abrir Simulador Atalla AT1000 (Docker Local)"
+                aria-label="Abrir Simulador Atalla AT1000"
+              >
+                <Server className="size-3.5" />
+              </button>
+            )}
             {isSupported && (
               <button
                 type="button"
@@ -372,6 +389,11 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
         open={!!selectedDeviceForConnections}
         onOpenChange={(open) => !open && setSelectedDeviceForConnections(null)}
         deviceId={selectedDeviceForConnections}
+      />
+      {/* Atalla AT1000 Local Simulator Modal */}
+      <AtallaSimulatorModal
+        open={simulatorOpen}
+        onOpenChange={setSimulatorOpen}
       />
     </aside>
   );

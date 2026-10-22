@@ -7,9 +7,10 @@ import React, { useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { useWorkspace } from '../state/workspace-context';
 import { Button } from './ui/button';
-import { Globe, History, FolderKanban } from 'lucide-react';
+import { Globe, History, FolderKanban, Server } from 'lucide-react';
 import { SessionManagerModal } from './SessionManagerModal';
 import { HistoryModal } from './HistoryModal';
+import { AtallaSimulatorModal } from './AtallaSimulatorModal';
 
 /**
  * Top application header providing brand identity, session library access,
@@ -22,10 +23,25 @@ export function Header() {
   const { state, dispatch } = useWorkspace();
   const [sessionsOpen, setSessionsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [simulatorOpen, setSimulatorOpen] = useState(false);
 
   const handleToggleLocale = () => {
     const nextLocale = state.locale === 'es' ? 'gl' : state.locale === 'gl' ? 'en' : 'es';
     dispatch({ type: 'SET_LOCALE', payload: nextLocale });
+  };
+
+  const handleLoadCommandIntoActive = (raw: string) => {
+    const activeTab = state.tabs.find((t) => t.id === state.activeTabId);
+    if (activeTab?.activeCommandId) {
+      dispatch({
+        type: 'UPDATE_COMMAND_RAW',
+        payload: {
+          tabId: activeTab.id,
+          commandId: activeTab.activeCommandId,
+          raw
+        }
+      });
+    }
   };
 
   return (
@@ -83,6 +99,23 @@ export function Header() {
             </span>
           </Button>
 
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSimulatorOpen(true)}
+            className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-foreground border-border hover:bg-secondary"
+            aria-label={intl.formatMessage({
+              id: 'header.actions.simulator',
+              defaultMessage: 'Simulador Atalla'
+            })}
+            data-testid="simulator-button"
+          >
+            <Server className="size-3.5 text-sky-400" />
+            <span className="hidden sm:inline">
+              <FormattedMessage id="header.actions.simulator" defaultMessage="Simulador Atalla" />
+            </span>
+          </Button>
+
           <div className="h-4 w-px bg-border mx-1" />
 
           {/* Locale toggle button */}
@@ -100,9 +133,14 @@ export function Header() {
         </div>
       </header>
 
-      {/* Persistence Modals */}
+      {/* Persistence & Tooling Modals */}
       <SessionManagerModal open={sessionsOpen} onOpenChange={setSessionsOpen} />
       <HistoryModal open={historyOpen} onOpenChange={setHistoryOpen} />
+      <AtallaSimulatorModal
+        open={simulatorOpen}
+        onOpenChange={setSimulatorOpen}
+        onLoadCommand={handleLoadCommandIntoActive}
+      />
     </>
   );
 }

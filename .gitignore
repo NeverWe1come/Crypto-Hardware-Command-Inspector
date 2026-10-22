@@ -30,6 +30,8 @@ docs/Thales_Payshield10K/
 docs/Utimaco_Atalla-AT1000/
 docs/Marvell_LiquidSecurity/
 docs/vendors/
+simulators/
+*.tar
 
 # Environment & local secrets
 .env

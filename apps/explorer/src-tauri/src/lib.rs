@@ -2,6 +2,12 @@ use std::io::{Read, Write};
 use std::net::{SocketAddr, TcpStream, ToSocketAddrs};
 use std::time::Duration;
 
+pub mod simulator;
+use simulator::{
+    get_atalla_simulator_logs, get_atalla_simulator_status, start_atalla_simulator,
+    stop_atalla_simulator,
+};
+
 #[derive(serde::Deserialize)]
 pub struct HardwareCommandRequest {
     pub host: String,
@@ -160,7 +166,13 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .invoke_handler(tauri::generate_handler![send_hardware_command])
+        .invoke_handler(tauri::generate_handler![
+            send_hardware_command,
+            get_atalla_simulator_status,
+            start_atalla_simulator,
+            stop_atalla_simulator,
+            get_atalla_simulator_logs
+        ])
         .run(tauri::generate_context!())
         .expect("error while running chci desktop application");
 }

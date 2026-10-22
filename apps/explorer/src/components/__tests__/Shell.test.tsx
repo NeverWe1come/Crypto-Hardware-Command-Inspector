@@ -38,9 +38,10 @@ describe('Application Shell Integration', () => {
       // Language toggle
       expect(screen.getByTestId('language-select')).toBeInTheDocument();
 
-      // Quick action buttons for history and sessions
+      // Quick action buttons for history, sessions, and atalla simulator
       expect(screen.getByTestId('history-button')).toBeInTheDocument();
       expect(screen.getByTestId('sessions-button')).toBeInTheDocument();
+      expect(screen.getByTestId('simulator-button')).toBeInTheDocument();
     });
 
     it('toggles application locale when clicking language toggle button', async () => {
