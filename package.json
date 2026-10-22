@@ -8,6 +8,7 @@
     "dev": "pnpm --filter @chci/explorer dev",
     "build": "pnpm --filter @chci/parser-core build && pnpm --filter @chci/device-specs build && pnpm --filter @chci/explorer build",
     "build:web": "VITE_TARGET=web pnpm build",
+    "build:installer": "pnpm build && pnpm dlx @tauri-apps/cli build --bundles nsis",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint packages apps e2e",
     "test": "vitest run",

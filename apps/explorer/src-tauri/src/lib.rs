@@ -166,6 +166,12 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        .on_window_event(|_window, event| {
+            if let tauri::WindowEvent::CloseRequested { .. } = event {
+                // Ensure Atalla simulator container is stopped when main window is closed
+                let _ = simulator::stop_atalla_simulator_sync();
+            }
+        })
         .invoke_handler(tauri::generate_handler![
             send_hardware_command,
             get_atalla_simulator_status,
@@ -173,6 +179,14 @@ pub fn run() {
             stop_atalla_simulator,
             get_atalla_simulator_logs
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running chci desktop application");
+        .build(tauri::generate_context!())
+        .expect("error while building chci desktop application")
+        .run(|_app_handle, event| {
+            match event {
+                tauri::RunEvent::ExitRequested { .. } | tauri::RunEvent::Exit => {
+                    let _ = simulator::stop_atalla_simulator_sync();
+                }
+                _ => {}
+            }
+        });
 }

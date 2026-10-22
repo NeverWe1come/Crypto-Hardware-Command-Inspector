@@ -196,8 +196,38 @@ pub fn check_simulator_ready(port: u16) -> bool {
 
 /// Automatically locate the Utimaco Atalla simulator .tar file in standard locations.
 pub fn find_default_tar_path() -> Option<PathBuf> {
+    // 1. Try relative to current running executable (installed application directory)
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(parent) = exe_path.parent() {
+            let exe_candidates = [
+                parent.join("simulators/atalla-at1000/utimaco_atalla_simulator_8.56.tar"),
+                parent.join("resources/simulators/atalla-at1000/utimaco_atalla_simulator_8.56.tar"),
+                parent.join("../simulators/atalla-at1000/utimaco_atalla_simulator_8.56.tar"),
+                parent.join("../resources/simulators/atalla-at1000/utimaco_atalla_simulator_8.56.tar"),
+            ];
+            for c in &exe_candidates {
+                if c.exists() {
+                    return Some(c.clone());
+                }
+            }
+        }
+    }
+
+    // 2. Try Windows ProgramData shared location
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(program_data) = std::env::var("ProgramData") {
+            let pd_path = PathBuf::from(program_data)
+                .join("Crypto Hardware Command Inspector/simulators/atalla-at1000/utimaco_atalla_simulator_8.56.tar");
+            if pd_path.exists() {
+                return Some(pd_path);
+            }
+        }
+    }
+
+    // 3. Try relative development workspace candidates
     let candidates = [
-        // Adjacent simulator folder
+        // Adjacent simulator folder in workspace
         PathBuf::from("simulators/atalla-at1000/utimaco_atalla_simulator_8.56.tar"),
         PathBuf::from("../simulators/atalla-at1000/utimaco_atalla_simulator_8.56.tar"),
         PathBuf::from("../../simulators/atalla-at1000/utimaco_atalla_simulator_8.56.tar"),
@@ -213,16 +243,6 @@ pub fn find_default_tar_path() -> Option<PathBuf> {
                 return Some(abs);
             }
             return Some(candidate.clone());
-        }
-    }
-
-    // Try relative to current exe
-    if let Ok(exe_path) = std::env::current_exe() {
-        if let Some(parent) = exe_path.parent() {
-            let exe_rel = parent.join("simulators/atalla-at1000/utimaco_atalla_simulator_8.56.tar");
-            if exe_rel.exists() {
-                return Some(exe_rel);
-            }
         }
     }
 
@@ -366,6 +386,15 @@ pub async fn start_atalla_simulator(
             Some("El contenedor inició pero el listener de comandos Atalla aún está inicializándose.".to_string())
         },
     })
+}
+
+/// Synchronous, guaranteed stop and cleanup of the Atalla simulator container.
+/// Designed for immediate execution in Tauri window close and exit lifecycle hooks.
+pub fn stop_atalla_simulator_sync() -> Result<(), String> {
+    // 2-second graceful stop timeout, then force kill & remove
+    let _ = run_docker_cli(&["stop", "-t", "2", CONTAINER_NAME]);
+    let _ = run_docker_cli(&["rm", "-f", CONTAINER_NAME]);
+    Ok(())
 }
 
 /// Stops and cleans up the Atalla simulator container.
