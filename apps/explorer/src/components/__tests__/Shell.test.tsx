@@ -265,4 +265,24 @@ describe('Application Shell Integration', () => {
       expect(screen.getByTestId('hardware-docs-modal')).toBeInTheDocument();
     });
   });
+
+  describe('Atalla Simulator Access', () => {
+    it('opens simulator modal when clicking the header simulator button', async () => {
+      const { user } = renderShell();
+
+      const simHeaderButton = screen.getByTestId('simulator-button');
+      await user.click(simHeaderButton);
+
+      expect(await screen.findByText('Simulador Utimaco Atalla AT1000')).toBeInTheDocument();
+    });
+
+    it('opens simulator modal when clicking sidebar atalla simulator button', async () => {
+      const { user } = renderShell();
+
+      const simSidebarButton = screen.getByTestId('sidebar-atalla-simulator-button');
+      await user.click(simSidebarButton);
+
+      expect(await screen.findByText('Simulador Utimaco Atalla AT1000')).toBeInTheDocument();
+    });
+  });
 });
