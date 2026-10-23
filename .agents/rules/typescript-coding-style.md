@@ -1,0 +1,1 @@
+../../.agents/ecc/rules/typescript/coding-style.md

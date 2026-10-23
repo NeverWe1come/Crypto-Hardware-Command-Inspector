@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+coverage/
+.turbo/
+*.tsbuildinfo
+
+# Tauri / Rust build artifacts
+target/
+**/target/
+apps/explorer/src-tauri/target/
+apps/explorer/src-tauri/gen/
+
+# Testing & Playwright artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Proprietary template bundle (only extracted components in apps/explorer are tracked)
+metronic-v9.5.0/
+
+# Vendor NDA documentation (keep out of git, track only docs/PRD.md, docs/plan.md, docs/user-guide/, docs/architecture/, docs/assets/, docs/adding-a-device.md)
+docs/Futurex_Excrypt/
+docs/Thales_Payshield10K/
+docs/Utimaco_Atalla-AT1000/
+docs/Marvell_LiquidSecurity/
+docs/vendors/
+simulators/
+*.tar
+
+# Environment & local secrets
+.env
+.env.*
+!.env.example
+
+# Local command history files
+.chci_history
+*.chci_history
+
+# OS / Editor / WSL metadata
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log
+scratch/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

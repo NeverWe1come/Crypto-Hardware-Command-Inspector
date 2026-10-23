@@ -1,0 +1,1 @@
+../../.agents/ecc/rules/web/hooks.md
