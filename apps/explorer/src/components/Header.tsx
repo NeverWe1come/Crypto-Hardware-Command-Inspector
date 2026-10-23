@@ -7,10 +7,14 @@ import React, { useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { useWorkspace } from '../state/workspace-context';
 import { Button } from './ui/button';
-import { Globe, History, FolderKanban, Server } from 'lucide-react';
+import { Globe, History, FolderKanban } from 'lucide-react';
 import { SessionManagerModal } from './SessionManagerModal';
 import { HistoryModal } from './HistoryModal';
 import { AtallaSimulatorModal } from './AtallaSimulatorModal';
+import { ThalesSimulatorModal } from './ThalesSimulatorModal';
+import { FuturexSimulatorModal } from './FuturexSimulatorModal';
+import { LiquidSecuritySimulatorModal } from './LiquidSecuritySimulatorModal';
+import { SimulatorsDropdown } from './SimulatorsDropdown';
 
 /**
  * Top application header providing brand identity, session library access,
@@ -24,6 +28,9 @@ export function Header() {
   const [sessionsOpen, setSessionsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [simulatorOpen, setSimulatorOpen] = useState(false);
+  const [thalesSimulatorOpen, setThalesSimulatorOpen] = useState(false);
+  const [futurexSimulatorOpen, setFuturexSimulatorOpen] = useState(false);
+  const [liquidSimulatorOpen, setLiquidSimulatorOpen] = useState(false);
 
   const handleToggleLocale = () => {
     const nextLocale = state.locale === 'es' ? 'gl' : state.locale === 'gl' ? 'en' : 'es';
@@ -99,22 +106,13 @@ export function Header() {
             </span>
           </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setSimulatorOpen(true)}
-            className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-foreground border-border hover:bg-secondary"
-            aria-label={intl.formatMessage({
-              id: 'header.actions.simulator',
-              defaultMessage: 'Simulador Atalla'
-            })}
-            data-testid="simulator-button"
-          >
-            <Server className="size-3.5 text-sky-400" />
-            <span className="hidden sm:inline">
-              <FormattedMessage id="header.actions.simulator" defaultMessage="Simulador Atalla" />
-            </span>
-          </Button>
+          {/* Unified HSM Simulators Dropdown Control Hub */}
+          <SimulatorsDropdown
+            onOpenAtallaConsole={() => setSimulatorOpen(true)}
+            onOpenThalesConsole={() => setThalesSimulatorOpen(true)}
+            onOpenFuturexConsole={() => setFuturexSimulatorOpen(true)}
+            onOpenLiquidConsole={() => setLiquidSimulatorOpen(true)}
+          />
 
           <div className="h-4 w-px bg-border mx-1" />
 
@@ -139,6 +137,21 @@ export function Header() {
       <AtallaSimulatorModal
         open={simulatorOpen}
         onOpenChange={setSimulatorOpen}
+        onLoadCommand={handleLoadCommandIntoActive}
+      />
+      <ThalesSimulatorModal
+        open={thalesSimulatorOpen}
+        onOpenChange={setThalesSimulatorOpen}
+        onLoadCommand={handleLoadCommandIntoActive}
+      />
+      <FuturexSimulatorModal
+        open={futurexSimulatorOpen}
+        onOpenChange={setFuturexSimulatorOpen}
+        onLoadCommand={handleLoadCommandIntoActive}
+      />
+      <LiquidSecuritySimulatorModal
+        open={liquidSimulatorOpen}
+        onOpenChange={setLiquidSimulatorOpen}
         onLoadCommand={handleLoadCommandIntoActive}
       />
     </>

@@ -23,6 +23,9 @@ import {
 } from 'lucide-react';
 import { HardwareConnectionsModal } from './HardwareConnectionsModal';
 import { AtallaSimulatorModal } from './AtallaSimulatorModal';
+import { ThalesSimulatorModal } from './ThalesSimulatorModal';
+import { FuturexSimulatorModal } from './FuturexSimulatorModal';
+import { LiquidSecuritySimulatorModal } from './LiquidSecuritySimulatorModal';
 
 interface MainCategoryOption {
   readonly id: CategoryFilter;
@@ -56,6 +59,9 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
   const [internalIsCollapsed, setInternalIsCollapsed] = useState(false);
   const [selectedDeviceForConnections, setSelectedDeviceForConnections] = useState<string | null>(null);
   const [simulatorOpen, setSimulatorOpen] = useState(false);
+  const [thalesSimulatorOpen, setThalesSimulatorOpen] = useState(false);
+  const [futurexSimulatorOpen, setFuturexSimulatorOpen] = useState(false);
+  const [liquidSimulatorOpen, setLiquidSimulatorOpen] = useState(false);
   const isCollapsed = props?.isCollapsed ?? internalIsCollapsed;
   const toggleCollapse =
     props?.onToggleCollapse ?? (() => setInternalIsCollapsed((prev) => !prev));
@@ -205,6 +211,51 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
                 className="p-1 rounded text-sky-400 hover:text-sky-300 hover:bg-[#283350] transition-colors"
                 title="Abrir Simulador Atalla AT1000 (Docker Local)"
                 aria-label="Abrir Simulador Atalla AT1000"
+              >
+                <Server className="size-3.5" />
+              </button>
+            )}
+            {device.id === 'thales-payshield-10k' && (
+              <button
+                type="button"
+                data-testid="sidebar-thales-simulator-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setThalesSimulatorOpen(true);
+                }}
+                className="p-1 rounded text-blue-400 hover:text-blue-300 hover:bg-[#283350] transition-colors"
+                title="Abrir Simulador Thales payShield 10K (Nativo Rust)"
+                aria-label="Abrir Simulador Thales payShield 10K"
+              >
+                <Server className="size-3.5" />
+              </button>
+            )}
+            {device.id === 'futurex-excrypt' && (
+              <button
+                type="button"
+                data-testid="sidebar-futurex-simulator-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFuturexSimulatorOpen(true);
+                }}
+                className="p-1 rounded text-orange-400 hover:text-orange-300 hover:bg-[#283350] transition-colors"
+                title="Abrir Simulador Futurex Excrypt (Nativo Rust)"
+                aria-label="Abrir Simulador Futurex Excrypt"
+              >
+                <Server className="size-3.5" />
+              </button>
+            )}
+            {device.id === 'marvell-liquid-security' && (
+              <button
+                type="button"
+                data-testid="sidebar-liquid-simulator-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLiquidSimulatorOpen(true);
+                }}
+                className="p-1 rounded text-indigo-400 hover:text-indigo-300 hover:bg-[#283350] transition-colors"
+                title="Abrir Simulador Marvell LiquidSecurity (Nativo Rust)"
+                aria-label="Abrir Simulador Marvell LiquidSecurity"
               >
                 <Server className="size-3.5" />
               </button>
@@ -394,6 +445,21 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
       <AtallaSimulatorModal
         open={simulatorOpen}
         onOpenChange={setSimulatorOpen}
+      />
+      {/* Thales payShield 10K Local Simulator Modal */}
+      <ThalesSimulatorModal
+        open={thalesSimulatorOpen}
+        onOpenChange={setThalesSimulatorOpen}
+      />
+      {/* Futurex Excrypt Local Simulator Modal */}
+      <FuturexSimulatorModal
+        open={futurexSimulatorOpen}
+        onOpenChange={setFuturexSimulatorOpen}
+      />
+      {/* Marvell LiquidSecurity Local Simulator Modal */}
+      <LiquidSecuritySimulatorModal
+        open={liquidSimulatorOpen}
+        onOpenChange={setLiquidSimulatorOpen}
       />
     </aside>
   );

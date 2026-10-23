@@ -64,7 +64,10 @@ The installer `Crypto-Hardware-Command-Inspector_x64-setup.exe` provides an inte
 - **Custom Destination Folder**: Operators can click *"Browse..."* and pick any drive or folder path (e.g. `D:\Tools\CHCI`).
 - **Modular Component Selection**:
   - ☑️ **CHCI Core Application**: Main application and hardware specifications viewer (~45 MB, Required).
-  - 🔲/☑️ **Utimaco Atalla AT1000 v8.56 Simulator**: Offline Docker `.tar` package (~848 MB, Optional checkbox). When selected, it installs neatly into `$INSTDIR\simulators\atalla-at1000\`. **It never litters the Desktop**.
+  - 🔲/☑️ **Utimaco Atalla AT1000 v8.56 Simulator**: Offline Docker `.tar` package (~848 MB, Optional checkbox). Installed into `$INSTDIR\simulators\atalla-at1000\`.
+  - 🔲/☑️ **Thales payShield 10K v2.3 Simulator**: Native Rust executable `thales-simulator.exe` and LMK template (~5 MB, Optional checkbox). Installed into `$INSTDIR\simulators\thales-payshield\`.
+  - 🔲/☑️ **Futurex Excrypt Plus v7.6.1 Simulator**: Native Rust executable `futurex-simulator.exe` and MFK template (~5 MB, Optional checkbox). Installed into `$INSTDIR\simulators\futurex-excrypt\`.
+  - 🔲/☑️ **Marvell LiquidSecurity v3.4.0 Simulator**: Native Rust executable `liquidsecurity-simulator.exe` and configuration template (~5 MB, Optional checkbox). Installed into `$INSTDIR\simulators\marvell-liquidsecurity\`.
 - **Optional Shortcuts (Opt-In Only)**:
   - Checkbox: *Create Desktop Shortcut* (unchecked by default).
   - Checkbox: *Create Start Menu Shortcut* (unchecked by default).
@@ -228,20 +231,90 @@ sequenceDiagram
 
 ---
 
-## 11. Utimaco Atalla AT1000 Official Simulator
+## 11. Integrated Hardware HSM Simulators
 
-For offline development without physical hardware, `chci` includes direct control of the official Utimaco Atalla AT1000 Docker simulator:
+For local development and testing without physical HSM rack appliances, `chci` includes a comprehensive simulator suite for the four leading hardware security module vendors:
 
+### 11.1 Utimaco Atalla AT1000 Official Simulator (Docker)
+- **Container Lifecycle**: Controlled via Docker Desktop/daemon utilizing the official `utimaco_atalla_simulator_8.56` image.
 - **Live Appliance Telemetry**: SMOS SDK 5.6.4.1 firmware status, serial number `SIM123`, and Master File Keys (`MFK1: B196`, `AMK1: B9BC`).
 - **Animated Startup Progress**: Tracks the 4 internal Utimaco initialization milestones (~30s): Docker Container, SMOS Kernel, Flash Memory, and TCP Port 7000 Listener.
 - **Continuous Health Heartbeat**: Polls every 4.5s and notifies if the container unexpectedly drops.
-- **Quick Self-Test Diagnostics**: Direct buttons to execute live tests:
-  - `<00#TEST#1234#>` (Echo).
-  - `<9A#ID#>` (HSM Info / Firmware).
-  - `<9A#KEY#>` (MFK Status).
-- **Guaranteed Automatic Stop**: When closing the application (`X`, `Alt+F4`, Quit, or process termination), the simulator is automatically and synchronously stopped and cleaned up (`docker stop -t 2 && docker rm -f`).
+- **Auto-Connect**: Connects directly to `127.0.0.1:7000` with delimited syntax `<CMD#...#>`.
 
 ![Atalla Simulator Console](../assets/screenshots/11-atalla-simulator-modal.png)
+
+### 11.2 Thales payShield 10K Native Simulator (Rust)
+- **High-Performance Native**: Pure Rust implementation (`crates/payment-simulators`) that boots in under 5 milliseconds with zero external dependencies (no Docker required).
+- **Exact Thales Framing**: Implements the standard 2-byte Big-Endian length header (`[Length 2B][Header mB][Command 2B][Data...]`).
+- **LMK Key Schemes**: Bundled with default Test LMK Pair 00 (2TDES with KCV `08D7B4`), supporting Variant derivations (ZMK, ZPK, PVK, CVK) and Thales Key Blocks (TR-31).
+- **Supported Commands**:
+  - `NC` / `ND`: Network diagnostics, `PS10-2.3a` firmware status, and LMK check digits.
+  - `A0` / `A1`: Key generation and export under LMK with KCV validation.
+  - `CW` / `CX`: Visa CVV/CVC generation and verification.
+  - `EE` / `EF`: IBM 3624 PIN offset calculation.
+  - `FA` / `FB`: ISO-0 (ANSI X9.8) PIN block verification.
+  - `M0` / `M1` & `M2` / `M3`: Retail MAC generation and verification (ISO 9797-1 Algorithm 3).
+- **Auto-Connect**: Connects to `127.0.0.1:1500` with `header-positional` framing.
+
+![Thales Simulator Console](../assets/screenshots/16-thales-simulator-modal.png)
+
+### 11.3 Futurex Excrypt Plus Native Simulator (Rust)
+- **High-Performance Native**: Pure Rust engine listening on TCP port `9000` with zero external dependencies.
+- **Bracketed Tag-Value Syntax**: Standard Futurex framing `[AO<cmd>;TOKENval;]`.
+- **MFK Key Scheme**: Configured by default with Master File Key (2TDES MFK with KCV `08D7B4`) for working key encryption and protection.
+- **Token AG Reflection**: Any request containing `AG<text>;` is echoed back intact in the response.
+- **General Failure Tag**: Explicit success indicator `GFY;` and structured error envelope `[AOERRO;AM<code>;AN<tag>;BB<desc>;GFN;]`.
+- **Supported Commands**:
+  - `ECHO`: Diagnostic connectivity test.
+  - `VR`: System build and `Excrypt Plus HSM Simulator` firmware info.
+  - `KG`: Working key generation under MFK with KCV.
+  - `BB`: PIN block translation across zone keys.
+  - `BO`: PIN / CVV verification.
+  - `DN`: Symmetric ECB data encryption and decryption.
+  - `FM`: Financial MAC calculation and formatting.
+- **Auto-Connect**: Connects to `127.0.0.1:9000` with `tag-value` framing.
+
+![Futurex Simulator Console](../assets/screenshots/17-futurex-simulator-modal.png)
+
+### 11.4 Marvell LiquidSecurity HSM Native Simulator (Rust)
+- **High-Performance Native**: Pure Rust engine listening on TCP port `2225` emulating Marvell NITROX PCIe accelerator hardware (firmware 3.4.0).
+- **Multi-Tenant Virtual Partitioning**: Supports independent virtual partition provisioning (`PART_CREATE`) with dedicated key quotas and isolated memory.
+- **Dual Communication Interface**:
+  - **Management CLI Console**: Structured hardware health and status commands (`KRN_STATUS` with 42°C thermal telemetry, `PART_CREATE`, `CLUSTER_SYNC`).
+  - **OASIS PKCS#11 v2.40 API Calls**: Standard Cryptoki C verbs (`C_Initialize`, `C_GenerateKey` with AES KCV calculation, `C_Encrypt`).
+- **Auto-Connect**: Connects to `127.0.0.1:2225` with structured CLI and callable framing support.
+
+![LiquidSecurity Simulator Console](../assets/screenshots/19-liquidsecurity-simulator-modal.png)
+
+### 11.5 Unified HSM Simulators Control Hub (Dropdown)
+`chci` groups all simulators into an interactive header dropdown menu:
+- **Live Active Badge**: Continuously displays active simulator count (e.g., `🟢 2/4`).
+- **Dedicated Non-Overlapping Ports**: Each simulator runs on its dedicated TCP port:
+  - Atalla AT1000: `TCP :7000`
+  - Thales payShield 10K: `TCP :1500`
+  - Futurex Excrypt Plus: `TCP :9000`
+  - Marvell LiquidSecurity: `TCP :2225`
+- **Batch Master Action ("Start All")**: A single click on *"Start All"* spins up all installed simulators concurrently. The action toggles to *"Stop All"* when simulators are running.
+- **Contextual Management**: Each row enables individual Start/Stop toggling and direct console access.
+
+![HSM Simulators Control Hub](../assets/screenshots/18-simulators-hub-dropdown.png)
+
+### 11.6 Runtime Download & Installation
+For simulators unselected during the initial installer or when using portable builds:
+- **Dynamic Inventory Detection**: The application automatically inspects the filesystem and Docker daemon for simulator availability.
+- **Prominent "Install" Button**: Uninstalled simulators present an *"Install"* action.
+- **Dual Installation Wizard**:
+  1. **Online Download**: Streaming download with animated progress bar and checksum verification.
+  2. **Local Archive Loading**: Tailored for **Air-Gapped** banking environments; unpacks any local `.zip`, `.tar`, or `.tar.gz` directly into user storage (`%APPDATA%\chci\simulators\`).
+
+### 11.7 Unified Auto-Shutdown
+When closing the application (`X`, `Alt+F4`, Quit menu, or process signal), `chci` synchronously stops all active instances:
+- Atalla Docker container (`docker stop` and `docker rm`).
+- Thales TCP socket (port 1500).
+- Futurex TCP socket (port 9000).
+- LiquidSecurity TCP socket (port 2225).
+Preventing orphaned processes and open ports across the operating system.
 
 ---
 

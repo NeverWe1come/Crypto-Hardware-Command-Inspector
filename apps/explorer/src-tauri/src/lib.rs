@@ -3,10 +3,132 @@ use std::net::{SocketAddr, TcpStream, ToSocketAddrs};
 use std::time::Duration;
 
 pub mod simulator;
+pub mod simulator_installer;
+
 use simulator::{
     get_atalla_simulator_logs, get_atalla_simulator_status, start_atalla_simulator,
     stop_atalla_simulator,
 };
+
+use simulator_installer::{
+    detect_all_simulators, install_from_local_archive, InstallResult, SimulatorInventoryItem,
+};
+
+use payment_simulators::{
+    get_futurex_simulator_status as get_fx_status,
+    get_liquidsecurity_simulator_status as get_ls_status,
+    get_thales_simulator_status as get_ts_status,
+    start_futurex_simulator as start_fx,
+    start_liquidsecurity_simulator as start_ls,
+    start_thales_simulator as start_ts,
+    stop_futurex_simulator as stop_fx,
+    stop_futurex_simulator_sync,
+    stop_liquidsecurity_simulator as stop_ls,
+    stop_liquidsecurity_simulator_sync,
+    stop_thales_simulator as stop_ts,
+    stop_thales_simulator_sync,
+    FuturexSimulatorStatus, LiquidSecuritySimulatorStatus, ThalesSimulatorStatus,
+};
+
+#[tauri::command]
+async fn start_thales_simulator(port: Option<u16>) -> Result<ThalesSimulatorStatus, String> {
+    start_ts(port).await
+}
+
+#[tauri::command]
+async fn stop_thales_simulator() -> Result<ThalesSimulatorStatus, String> {
+    stop_ts().await
+}
+
+#[tauri::command]
+async fn get_thales_simulator_status() -> Result<ThalesSimulatorStatus, String> {
+    get_ts_status().await
+}
+
+#[tauri::command]
+async fn start_futurex_simulator(port: Option<u16>) -> Result<FuturexSimulatorStatus, String> {
+    start_fx(port).await
+}
+
+#[tauri::command]
+async fn stop_futurex_simulator() -> Result<FuturexSimulatorStatus, String> {
+    stop_fx().await
+}
+
+#[tauri::command]
+async fn get_futurex_simulator_status() -> Result<FuturexSimulatorStatus, String> {
+    get_fx_status().await
+}
+
+#[tauri::command]
+async fn start_liquidsecurity_simulator(port: Option<u16>) -> Result<LiquidSecuritySimulatorStatus, String> {
+    start_ls(port).await
+}
+
+#[tauri::command]
+async fn stop_liquidsecurity_simulator() -> Result<LiquidSecuritySimulatorStatus, String> {
+    stop_ls().await
+}
+
+#[tauri::command]
+async fn get_liquidsecurity_simulator_status() -> Result<LiquidSecuritySimulatorStatus, String> {
+    get_ls_status().await
+}
+
+#[tauri::command]
+async fn get_simulators_inventory() -> Result<Vec<SimulatorInventoryItem>, String> {
+    let atalla_st = get_atalla_simulator_status().await.ok();
+    let atalla_running = atalla_st.as_ref().map(|s| s.container_running && s.tcp_reachable).unwrap_or(false);
+    let atalla_image = atalla_st.as_ref().map(|s| s.image_loaded).unwrap_or(false);
+
+    let thales_st = get_ts_status().await.ok();
+    let thales_running = thales_st.as_ref().map(|s| s.running).unwrap_or(false);
+
+    let fx_st = get_fx_status().await.ok();
+    let fx_running = fx_st.as_ref().map(|s| s.running).unwrap_or(false);
+
+    let ls_st = get_ls_status().await.ok();
+    let ls_running = ls_st.as_ref().map(|s| s.running).unwrap_or(false);
+
+    Ok(detect_all_simulators(
+        atalla_running,
+        atalla_image,
+        thales_running,
+        fx_running,
+        ls_running,
+    ))
+}
+
+#[tauri::command]
+async fn start_all_installed_simulators() -> Result<Vec<SimulatorInventoryItem>, String> {
+    let _ = start_ts(None).await;
+    let _ = start_fx(None).await;
+    let _ = start_ls(None).await;
+
+    let atalla_st = get_atalla_simulator_status().await.ok();
+    if let Some(st) = atalla_st {
+        if st.image_loaded && !st.container_running {
+            let _ = start_atalla_simulator(None, None).await;
+        }
+    }
+
+    get_simulators_inventory().await
+}
+
+#[tauri::command]
+async fn stop_all_simulators() -> Result<Vec<SimulatorInventoryItem>, String> {
+    let _ = stop_ts().await;
+    let _ = stop_fx().await;
+    let _ = stop_ls().await;
+    let _ = stop_atalla_simulator().await;
+
+    get_simulators_inventory().await
+}
+
+#[tauri::command]
+async fn install_simulator_from_file(sim_id: String, file_path: String) -> Result<InstallResult, String> {
+    install_from_local_archive(&sim_id, &file_path)
+}
 
 #[derive(serde::Deserialize)]
 pub struct HardwareCommandRequest {
@@ -168,8 +290,11 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .on_window_event(|_window, event| {
             if let tauri::WindowEvent::CloseRequested { .. } = event {
-                // Ensure Atalla simulator container is stopped when main window is closed
+                // Ensure all simulators are stopped cleanly when main window is closed
                 let _ = simulator::stop_atalla_simulator_sync();
+                stop_thales_simulator_sync();
+                stop_futurex_simulator_sync();
+                stop_liquidsecurity_simulator_sync();
             }
         })
         .invoke_handler(tauri::generate_handler![
@@ -177,7 +302,20 @@ pub fn run() {
             get_atalla_simulator_status,
             start_atalla_simulator,
             stop_atalla_simulator,
-            get_atalla_simulator_logs
+            get_atalla_simulator_logs,
+            get_thales_simulator_status,
+            start_thales_simulator,
+            stop_thales_simulator,
+            get_futurex_simulator_status,
+            start_futurex_simulator,
+            stop_futurex_simulator,
+            get_liquidsecurity_simulator_status,
+            start_liquidsecurity_simulator,
+            stop_liquidsecurity_simulator,
+            get_simulators_inventory,
+            start_all_installed_simulators,
+            stop_all_simulators,
+            install_simulator_from_file
         ])
         .build(tauri::generate_context!())
         .expect("error while building chci desktop application")
@@ -185,6 +323,9 @@ pub fn run() {
             match event {
                 tauri::RunEvent::ExitRequested { .. } | tauri::RunEvent::Exit => {
                     let _ = simulator::stop_atalla_simulator_sync();
+                    stop_thales_simulator_sync();
+                    stop_futurex_simulator_sync();
+                    stop_liquidsecurity_simulator_sync();
                 }
                 _ => {}
             }

@@ -64,7 +64,10 @@ El instalador `Crypto-Hardware-Command-Inspector_x64-setup.exe` ofrece un asiste
 - **Selector de Carpeta de Destino (`Custom Destination Folder`)**: El usuario puede pulsar *"Examinar..."* y elegir cualquier ruta o unidad (ej: `D:\Herramientas\CHCI`).
 - **Selector de Componentes Modular**:
   - ☑️ **CHCI Core Application**: Programa principal y visor de especificaciones (~45 MB, Obligatorio).
-  - 🔲/☑️ **Simulador Utimaco Atalla AT1000 v8.56**: Imagen Docker offline `.tar` (~848 MB, Opcional). Si se marca, se despliega en `$INSTDIR\simulators\atalla-at1000\`. **Nunca ensucia el Escritorio**.
+  - 🔲/☑️ **Simulador Utimaco Atalla AT1000 v8.56**: Imagen Docker offline `.tar` (~848 MB, Opcional). Desplegado en `$INSTDIR\simulators\atalla-at1000\`.
+  - 🔲/☑️ **Simulador Thales payShield 10K v2.3**: Ejecutable nativo Rust `thales-simulator.exe` y plantilla LMK (~5 MB, Opcional). Desplegado en `$INSTDIR\simulators\thales-payshield\`.
+  - 🔲/☑️ **Simulador Futurex Excrypt Plus v7.6.1**: Ejecutable nativo Rust `futurex-simulator.exe` y plantilla MFK (~5 MB, Opcional). Desplegado en `$INSTDIR\simulators\futurex-excrypt\`.
+  - 🔲/☑️ **Simulador Marvell LiquidSecurity v3.4.0**: Ejecutable nativo Rust `liquidsecurity-simulator.exe` y plantilla de configuración (~5 MB, Opcional). Desplegado en `$INSTDIR\simulators\marvell-liquidsecurity\`.
 - **Accesos Directos Opcionales (NO automáticos)**:
   - Casilla: *Crear acceso directo en el Escritorio* (desmarcada por defecto).
   - Casilla: *Crear acceso directo en el Menú Inicio* (desmarcada por defecto).
@@ -228,20 +231,90 @@ sequenceDiagram
 
 ---
 
-## 11. Simulador Oficial Utimaco Atalla AT1000
+## 11. Simuladores de Hardware HSM Integrados
 
-Para desarrollo y pruebas locales sin disponer de un dispositivo físico, `chci` integra el control del contenedor Docker oficial del simulador Atalla AT1000:
+Para desarrollo y pruebas locales sin disponer de hardware físico en rack, `chci` integra una suite completa de simuladores para los cuatro principales entornos HSM del mercado:
 
+### 11.1 Simulador Oficial Utimaco Atalla AT1000 (Docker)
+- **Gestión por Contenedor**: Requiere Docker Desktop/daemon y utiliza la imagen `utimaco_atalla_simulator_8.56`.
 - **Telemetría en Vivo**: Estado del firmware SMOS SDK 5.6.4.1, número de serie `SIM123`, y Master File Keys (`MFK1: B196`, `AMK1: B9BC`).
-- **Barra de Progreso Animada**: Monitoriza los 4 hitos de inicialización interna de Utimaco (~30s): Contenedor Docker, Kernel SMOS, Memoria Flash y Socket TCP :7000.
+- **Barra de Progreso Animada**: Monitoriza los 4 hitos de arranque (~30s): Contenedor Docker, Kernel SMOS, Memoria Flash y Socket TCP :7000.
 - **Monitor de Salud (Heartbeat)**: Sondeo continuo cada 4.5s que detecta caídas inesperadas del contenedor.
-- **Pruebas Rápidas de Diagnóstico**: Botones para ejecutar en vivo comandos de prueba:
-  - `<00#TEST#1234#>` (Echo).
-  - `<9A#ID#>` (HSM Info / Firmware).
-  - `<9A#KEY#>` (MFK Status).
-- **Parada Automática y Garantizada**: Al cerrar la aplicación (`X`, `Alt+F4`, menú salir o terminación del proceso), el simulador se detiene y elimina automáticamente sin dejar puertos ni contenedores huérfanos.
+- **Auto-conexión**: Conexión directa a `127.0.0.1:7000` con sintaxis delimitada `<CMD#...#>`.
 
 ![Consola del Simulador Atalla](../assets/screenshots/11-atalla-simulator-modal.png)
+
+### 11.2 Simulador Nativo Thales payShield 10K (Rust)
+- **Ultra-rápido y Nativo**: Desarrollado en Rust puro (`crates/payment-simulators`), arranca en menos de 5 milisegundos sin requerir Docker ni máquinas virtuales.
+- **Encuadre Exacto Thales**: Soporta el protocolo TCP estándar con prefijo de longitud Big-Endian de 2 bytes (`[Length 2B][Header mB][Command 2B][Data...]`).
+- **Esquema de Claves LMK**: Incluye por defecto LMK Pair 00 (2TDES con KCV `08D7B4`) con soporte para derivación de variantes (ZMK, ZPK, PVK, CVK) y Thales Key Blocks (TR-31).
+- **Comandos Soportados**:
+  - `NC` / `ND`: Diagnóstico de red, estado del firmware `PS10-2.3a` y check digits de LMK.
+  - `A0` / `A1`: Generación de claves bajo LMK con KCV de control.
+  - `CW` / `CX`: Generación y verificación de CVV/CVC según algoritmo estándar Visa.
+  - `EE` / `EF`: Generación y cálculo de offsets IBM 3624.
+  - `FA` / `FB`: Verificación de PIN Block ISO-0 (ANSI X9.8).
+  - `M0` / `M1` y `M2` / `M3`: Generación y verificación de MAC Retail (ISO 9797-1 Algoritmo 3).
+- **Auto-conexión**: Conexión a `127.0.0.1:1500` con encuadre `header-positional`.
+
+![Consola del Simulador Thales](../assets/screenshots/16-thales-simulator-modal.png)
+
+### 11.3 Simulador Nativo Futurex Excrypt Plus (Rust)
+- **Ultra-rápido y Nativo**: Motor en Rust puro sin dependencias externas en puerto TCP `9000`.
+- **Sintaxis Tag-Valor Bracketed**: Formato de tramas entre corchetes `[AO<cmd>;TOKENval;]`.
+- **Esquema de Claves MFK**: Configurado por defecto con Major File Key (MFK de 2TDES con KCV `08D7B4`) para derivación y protección de claves de trabajo.
+- **Reflexión de Token AG**: Todo token `AG<texto>;` enviado en la petición se devuelve íntegro en la respuesta.
+- **General Failure Tag**: Respuestas exitosas marcadas con `GFY;` y respuestas de error con `[AOERRO;AM<cód>;AN<tag>;BB<desc>;GFN;]`.
+- **Comandos Soportados**:
+  - `ECHO`: Verificación de conectividad.
+  - `VR`: Versión del sistema y firmware `Excrypt Plus HSM Simulator`.
+  - `KG`: Generación de claves bajo MFK con KCV de control.
+  - `BB`: Traducción de bloques PIN entre claves de zona.
+  - `BO`: Verificación de PIN / CVV.
+  - `DN`: Cifrado y descifrado simétrico de datos.
+  - `FM`: Cálculo y formateo de MAC financiero.
+- **Auto-conexión**: Conexión a `127.0.0.1:9000` con encuadre `tag-value`.
+
+![Consola del Simulador Futurex](../assets/screenshots/17-futurex-simulator-modal.png)
+
+### 11.4 Simulador Nativo Marvell LiquidSecurity HSM (Rust)
+- **Ultra-rápido y Nativo**: Motor en Rust puro en puerto TCP `2225` emulando el procesador criptográfico Marvell NITROX PCIe (firmware 3.4.0).
+- **Multi-Tenant y Particionado Virtual**: Soporta asignación de particiones independientes (`PART_CREATE`) con cuotas dedicadas de claves y memoria aislada.
+- **Doble Interfaz de Comunicación**:
+  - **Consola de Gestión CLI**: Comandos estructurados de diagnóstico de hardware (`KRN_STATUS` con telemetría de temperatura a 42°C, `PART_CREATE`, `CLUSTER_SYNC`).
+  - **Llamadas OASIS PKCS#11 v2.40**: Verbos estándar de la API C Cryptoki (`C_Initialize`, `C_GenerateKey` con cálculo de AES KCV, `C_Encrypt`).
+- **Auto-conexión**: Conexión a `127.0.0.1:2225` con soporte para encuadre estructurado CLI y callable.
+
+![Consola del Simulador LiquidSecurity](../assets/screenshots/19-liquidsecurity-simulator-modal.png)
+
+### 11.5 Centro de Control Unificado de Simuladores (Hub Desplegable)
+`chci` agrupa todos los simuladores en un único menú desplegable interactivo accesible desde la barra superior (`Header`):
+- **Badge de Estado en Vivo**: Muestra en todo momento el número de simuladores activos frente al total (ej: `🟢 2/4`).
+- **Puertos Dedicados Sin Conflictos**: Cada simulador se ejecuta en su propio puerto TCP sin colisiones:
+  - Atalla AT1000: `TCP :7000`
+  - Thales payShield 10K: `TCP :1500`
+  - Futurex Excrypt Plus: `TCP :9000`
+  - Marvell LiquidSecurity: `TCP :2225`
+- **Control Masivo ("Activar Todos")**: Un solo clic en el botón *"Activar Todos"* levanta concurrentemente todos los simuladores instalados. El botón conmuta a *"Detener Todos"* cuando hay simuladores en ejecución.
+- **Acceso Contextual**: Cada fila permite arrancar/detener el simulador individualmente o acceder a su consola de diagnóstico.
+
+![Centro de Control de Simuladores HSM](../assets/screenshots/18-simulators-hub-dropdown.png)
+
+### 11.6 Descarga e Instalación en Tiempo de Ejecución
+Para simuladores que no se hayan seleccionado en el instalador NSIS o al utilizar versiones portables:
+- **Detección Dinámica de Instalación**: La aplicación detecta en tiempo real si los binarios, configuraciones o imágenes Docker existen en el sistema.
+- **Botón "Instalar" Contextual**: Los simuladores ausentes muestran un botón destacado *"Instalar"*.
+- **Asistente de Instalación Dual**:
+  1. **Descarga Online**: Descarga asistida con barra de progreso animada y verificación de integridad checksum.
+  2. **Carga de Archivo Local**: Diseñado para servidores **Air-Gapped** bancarios sin internet; permite seleccionar cualquier archivo local `.zip`, `.tar` o `.tar.gz` para su extracción y registro inmediato en el espacio de usuario (`%APPDATA%\chci\simulators\`).
+
+### 11.7 Parada Automática Unificada
+Al cerrar la aplicación (`X`, `Alt+F4`, menú salir o terminación del proceso), `chci` apaga ordenadamente:
+- El contenedor Docker de Atalla (`docker stop` y `docker rm`).
+- El socket TCP del simulador Thales (puerto 1500).
+- El socket TCP del simulador Futurex (puerto 9000).
+- El socket TCP del simulador LiquidSecurity (puerto 2225).
+Sin dejar procesos huérfanos ni puertos bloqueados en el sistema operativo.
 
 ---
 

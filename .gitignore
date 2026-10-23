@@ -12,6 +12,8 @@ coverage/
 *.tsbuildinfo
 
 # Tauri / Rust build artifacts
+target/
+**/target/
 apps/explorer/src-tauri/target/
 apps/explorer/src-tauri/gen/
 

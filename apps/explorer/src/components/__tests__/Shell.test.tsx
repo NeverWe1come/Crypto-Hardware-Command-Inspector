@@ -41,7 +41,7 @@ describe('Application Shell Integration', () => {
       // Quick action buttons for history, sessions, and atalla simulator
       expect(screen.getByTestId('history-button')).toBeInTheDocument();
       expect(screen.getByTestId('sessions-button')).toBeInTheDocument();
-      expect(screen.getByTestId('simulator-button')).toBeInTheDocument();
+      expect(screen.getByTestId('simulators-hub-button')).toBeInTheDocument();
     });
 
     it('toggles application locale when clicking language toggle button', async () => {
@@ -270,10 +270,13 @@ describe('Application Shell Integration', () => {
     it('opens simulator modal when clicking the header simulator button', async () => {
       const { user } = renderShell();
 
-      const simHeaderButton = screen.getByTestId('simulator-button');
+      const simHeaderButton = screen.getByTestId('simulators-hub-button');
       await user.click(simHeaderButton);
 
-      expect(await screen.findByText('Simulador Utimaco Atalla AT1000')).toBeInTheDocument();
+      const thalesConsoleBtn = screen.getByTestId('console-sim-thales-payshield');
+      await user.click(thalesConsoleBtn);
+
+      expect(await screen.findByText(/Simulador Thales payShield 10K/i)).toBeInTheDocument();
     });
 
     it('opens simulator modal when clicking sidebar atalla simulator button', async () => {

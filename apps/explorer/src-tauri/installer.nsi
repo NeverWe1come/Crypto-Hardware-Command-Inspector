@@ -525,6 +525,18 @@ LangString compSimAtalla 0 "Utimaco Atalla AT1000 Simulator"
 LangString compSimAtalla ${LANG_SPANISH} "Simulador Utimaco Atalla AT1000 v8.56 (Docker .tar - ~848 MB)"
 LangString compSimAtalla ${LANG_ENGLISH} "Utimaco Atalla AT1000 v8.56 Simulator (Docker .tar - ~848 MB)"
 
+LangString compSimThales 0 "Thales payShield 10K Simulator"
+LangString compSimThales ${LANG_SPANISH} "Simulador Thales payShield 10K v2.3 (Nativo Rust - ~5 MB, Puerto 1500)"
+LangString compSimThales ${LANG_ENGLISH} "Thales payShield 10K v2.3 Simulator (Native Rust - ~5 MB, Port 1500)"
+
+LangString compSimFuturex 0 "Futurex Excrypt Simulator"
+LangString compSimFuturex ${LANG_SPANISH} "Simulador Futurex Excrypt Plus v7.6.1 (Nativo Rust - ~5 MB, Puerto 9000)"
+LangString compSimFuturex ${LANG_ENGLISH} "Futurex Excrypt Plus v7.6.1 Simulator (Native Rust - ~5 MB, Port 9000)"
+
+LangString compSimLiquidSecurity 0 "Marvell LiquidSecurity Simulator"
+LangString compSimLiquidSecurity ${LANG_SPANISH} "Simulador Marvell LiquidSecurity v3.4.0 (Nativo Rust - ~5 MB, Puerto 2225)"
+LangString compSimLiquidSecurity ${LANG_ENGLISH} "Marvell LiquidSecurity v3.4.0 Simulator (Native Rust - ~5 MB, Port 2225)"
+
 LangString compGroupShortcuts 0 "Shortcuts"
 LangString compGroupShortcuts ${LANG_SPANISH} "Accesos Directos (Opcional)"
 LangString compGroupShortcuts ${LANG_ENGLISH} "Shortcuts (Optional)"
@@ -545,6 +557,18 @@ LangString descCore ${LANG_ENGLISH} "Main application, multi-hardware parser and
 LangString descSimAtalla 0 "Utimaco Atalla AT1000 simulator Docker package"
 LangString descSimAtalla ${LANG_SPANISH} "Imagen Docker del simulador oficial Utimaco Atalla AT1000 v8.56 para diagnóstico offline y pruebas locales en puerto TCP 7000 (Opcional)."
 LangString descSimAtalla ${LANG_ENGLISH} "Official Utimaco Atalla AT1000 v8.56 Docker simulator image for offline diagnostics and local TCP port 7000 testing (Optional)."
+
+LangString descSimThales 0 "Thales payShield 10K native simulator binary"
+LangString descSimThales ${LANG_SPANISH} "Simulador nativo en Rust de Thales payShield 10K v2.3 con soporte de LMK Variant, Key Blocks y puerto TCP 1500 (Opcional)."
+LangString descSimThales ${LANG_ENGLISH} "Native Rust simulator for Thales payShield 10K v2.3 with LMK Variant, Key Blocks and TCP port 1500 support (Optional)."
+
+LangString descSimFuturex 0 "Futurex Excrypt Plus native simulator binary"
+LangString descSimFuturex ${LANG_SPANISH} "Simulador nativo en Rust de Futurex Excrypt Plus v7.6.1 con sintaxis tag-valor y puerto TCP 9000 (Opcional)."
+LangString descSimFuturex ${LANG_ENGLISH} "Native Rust simulator for Futurex Excrypt Plus v7.6.1 with tag-value syntax and TCP port 9000 (Optional)."
+
+LangString descSimLiquidSecurity 0 "Marvell LiquidSecurity HSM native simulator binary"
+LangString descSimLiquidSecurity ${LANG_SPANISH} "Simulador nativo en Rust de Marvell LiquidSecurity v3.4.0 con consola CLI, llamadas PKCS#11 y puerto TCP 2225 (Opcional)."
+LangString descSimLiquidSecurity ${LANG_ENGLISH} "Native Rust simulator for Marvell LiquidSecurity v3.4.0 with CLI console, PKCS#11 calls and TCP port 2225 (Optional)."
 
 LangString descOptDesktop 0 "Desktop shortcut icon"
 LangString descOptDesktop ${LANG_SPANISH} "Crea un acceso directo en el Escritorio del usuario (Opcional)."
@@ -829,6 +853,24 @@ SectionGroup /e $(compGroupSimulators) SecGroupSimulators
     SetOutPath "$INSTDIR\simulators\atalla-at1000"
     File /nonfatal /a "..\..\..\simulators\atalla-at1000\utimaco_atalla_simulator_8.56.tar"
   SectionEnd
+
+  Section /o $(compSimThales) SecSimThales
+    SetOutPath "$INSTDIR\simulators\thales-payshield"
+    File /nonfatal /a "..\..\..\simulators\thales-payshield\thales-simulator.exe"
+    File /nonfatal /a "..\..\..\simulators\thales-payshield\lmk-test.json"
+  SectionEnd
+
+  Section /o $(compSimFuturex) SecSimFuturex
+    SetOutPath "$INSTDIR\simulators\futurex-excrypt"
+    File /nonfatal /a "..\..\..\simulators\futurex-excrypt\futurex-simulator.exe"
+    File /nonfatal /a "..\..\..\simulators\futurex-excrypt\mfk-test.json"
+  SectionEnd
+
+  Section /o $(compSimLiquidSecurity) SecSimLiquidSecurity
+    SetOutPath "$INSTDIR\simulators\marvell-liquidsecurity"
+    File /nonfatal /a "..\..\..\simulators\marvell-liquidsecurity\liquidsecurity-simulator.exe"
+    File /nonfatal /a "..\..\..\simulators\marvell-liquidsecurity\config-test.json"
+  SectionEnd
 SectionGroupEnd
 
 ; Optional Shortcuts Group (Checkboxes for Desktop & Start Menu, unchecked by default)
@@ -846,6 +888,9 @@ SectionGroupEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SecCore} $(descCore)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecSimAtalla} $(descSimAtalla)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecSimThales} $(descSimThales)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecSimFuturex} $(descSimFuturex)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecSimLiquidSecurity} $(descSimLiquidSecurity)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecOptDesktop} $(descOptDesktop)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecOptStartMenu} $(descOptStartMenu)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
@@ -890,7 +935,13 @@ Section Uninstall
   ; Clean up optional simulator files if installed
   Delete "$INSTDIR\\simulators\\atalla-at1000\\utimaco_atalla_simulator_8.56.tar"
   RMDir "$INSTDIR\\simulators\\atalla-at1000"
-  RMDir "$INSTDIR\\simulators"
+  Delete "$INSTDIR\\simulators\\thales-payshield\\thales-simulator.exe"
+  Delete "$INSTDIR\\simulators\\thales-payshield\\lmk-test.json"
+  RMDir "$INSTDIR\\simulators\\thales-payshield"
+  Delete "$INSTDIR\\simulators\\futurex-excrypt\\futurex-simulator.exe"
+  Delete "$INSTDIR\\simulators\\futurex-excrypt\\mfk-test.json"
+  RMDir "$INSTDIR\\simulators\\futurex-excrypt"
+  RMDir /r "$INSTDIR\\simulators"
 
   !ifmacrodef NSIS_HOOK_PREUNINSTALL
     !insertmacro NSIS_HOOK_PREUNINSTALL
