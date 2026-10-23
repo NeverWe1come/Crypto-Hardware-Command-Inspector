@@ -110,6 +110,31 @@ describe('workspaceReducer', () => {
       expect(state3.activeTabId).toBe(firstTabId);
     });
 
+    it('auto-assigns existing hardware connection and enables live execution when opening device tab', () => {
+      const stateWithConn = {
+        ...initialWorkspaceState,
+        hardwareConnections: [
+          {
+            id: 'conn-atalla-sim',
+            deviceId: 'utimaco-atalla-at1000',
+            host: '127.0.0.1',
+            port: 7000,
+            connectionType: 'TCP' as const,
+          },
+        ],
+      };
+
+      const nextState = workspaceReducer(freeze(stateWithConn), {
+        type: 'OPEN_DEVICE_TAB',
+        payload: { deviceId: 'utimaco-atalla-at1000' },
+      });
+
+      expect(nextState.tabs).toHaveLength(1);
+      const tab = nextState.tabs[0]!;
+      expect(tab.commands[0]?.selectedConnectionId).toBe('conn-atalla-sim');
+      expect(tab.commands[0]?.liveExecutionEnabled).toBe(true);
+    });
+
     it('ignores unknown or unsupported devices without altering state', () => {
       const state = freeze(initialWorkspaceState);
       const nextState = workspaceReducer(state, {
@@ -439,6 +464,39 @@ describe('workspaceReducer', () => {
         payload: 'ALL'
       });
       expect(nextState).toBe(state);
+    });
+  });
+
+  describe('SAVE_HARDWARE_CONNECTION', () => {
+    it('saves a new connection and automatically assigns it to open tabs of the same device', () => {
+      const openTabState = workspaceReducer(initialWorkspaceState, {
+        type: 'OPEN_DEVICE_TAB',
+        payload: { deviceId: 'thales-payshield-10k' },
+      });
+
+      const tabBefore = openTabState.tabs[0]!;
+      expect(tabBefore.commands[0]?.selectedConnectionId).toBeUndefined();
+      expect(tabBefore.commands[0]?.liveExecutionEnabled).toBeUndefined();
+
+      const conn = {
+        id: 'conn-thales-sim',
+        deviceId: 'thales-payshield-10k',
+        host: '127.0.0.1',
+        port: 1500,
+        connectionType: 'TCP' as const,
+      };
+
+      const nextState = workspaceReducer(freeze(openTabState), {
+        type: 'SAVE_HARDWARE_CONNECTION',
+        payload: { connection: conn },
+      });
+
+      expect(nextState.hardwareConnections).toHaveLength(1);
+      expect(nextState.hardwareConnections[0]).toEqual(conn);
+
+      const tabAfter = nextState.tabs[0]!;
+      expect(tabAfter.commands[0]?.selectedConnectionId).toBe('conn-thales-sim');
+      expect(tabAfter.commands[0]?.liveExecutionEnabled).toBe(true);
     });
   });
 });

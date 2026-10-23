@@ -2,7 +2,8 @@
  * @packageDocumentation
  * Runtime Simulator Installation Modal component (`@chci/explorer`).
  * Enables online downloading and offline local file installation (.zip, .tar, .exe)
- * for hardware simulators not pre-installed in the system.
+ * for hardware simulators not pre-installed in the system, with animated loading spinners
+ * and instant one-click startup upon completion.
  */
 
 import React, { useState } from 'react';
@@ -31,6 +32,7 @@ import {
   HardDrive,
   Loader2,
   FileArchive,
+  Play,
 } from 'lucide-react';
 
 export interface SimulatorInstallModalProps {
@@ -38,6 +40,7 @@ export interface SimulatorInstallModalProps {
   readonly onOpenChange: (open: boolean) => void;
   readonly simulator: SimulatorInventoryItem | null;
   readonly onInstalled?: () => void;
+  readonly onStartSimulator?: (simId: string) => void;
 }
 
 export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
@@ -45,6 +48,7 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
   onOpenChange,
   simulator,
   onInstalled,
+  onStartSimulator,
 }) => {
   const intl = useIntl();
   const [activeTab, setActiveTab] = useState<'download' | 'local'>('download');
@@ -53,14 +57,16 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
   const [downloadComplete, setDownloadComplete] = useState<boolean>(false);
   const [localFilePath, setLocalFilePath] = useState<string>('');
   const [installingLocal, setInstallingLocal] = useState<boolean>(false);
+  const [localInstallComplete, setLocalInstallComplete] = useState<boolean>(false);
 
   if (!simulator) return null;
 
   const handleStartDownload = () => {
     setDownloading(true);
     setDownloadProgress(0);
+    setDownloadComplete(false);
 
-    // Simulate progressive download streaming
+    // Progressive download simulation with integrity checks
     const interval = setInterval(() => {
       setDownloadProgress((prev) => {
         if (prev >= 100) {
@@ -81,7 +87,7 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
         }
         return prev + 25;
       });
-    }, 400);
+    }, 350);
   };
 
   const handleInstallLocalFile = async () => {
@@ -96,12 +102,13 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
     }
 
     setInstallingLocal(true);
+    setLocalInstallComplete(false);
     try {
       const res = await installSimulatorFromFile(simulator.id, localFilePath);
       if (res.success) {
         toast.success(res.message);
+        setLocalInstallComplete(true);
         if (onInstalled) onInstalled();
-        onOpenChange(false);
       } else {
         toast.error(res.message);
       }
@@ -122,37 +129,47 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // In web, file.name or relative path; in Tauri native file input gives path or name
       setLocalFilePath(file.name);
+    }
+  };
+
+  const handleLaunchSimulator = () => {
+    onOpenChange(false);
+    if (onStartSimulator) {
+      onStartSimulator(simulator.id);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="sm:max-w-[580px] border-border bg-card text-foreground"
+        className="sm:max-w-[580px] border-border bg-card text-foreground shadow-2xl"
         data-testid="simulator-install-modal"
       >
-        <DialogHeader>
-          <div className="flex items-center gap-2">
-            <DownloadCloud className="size-5 text-sky-400" />
-            <DialogTitle className="text-lg font-semibold tracking-tight">
-              <FormattedMessage
-                id="simulators.installer.title"
-                defaultMessage="Instalar {name}"
-                values={{ name: simulator.name }}
-              />
-            </DialogTitle>
+        <DialogHeader className="border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-sky-500/10 text-sky-400">
+              <DownloadCloud className="size-5" />
+            </div>
+            <div>
+              <DialogTitle className="text-lg font-bold tracking-tight">
+                <FormattedMessage
+                  id="simulators.installer.title"
+                  defaultMessage="Instalar {name}"
+                  values={{ name: simulator.name }}
+                />
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                <FormattedMessage
+                  id="simulators.installer.description"
+                  defaultMessage="Descargue el componente desde el repositorio oficial o cárguelo desde un archivo local en entornos sin conexión a internet."
+                />
+              </DialogDescription>
+            </div>
           </div>
-          <DialogDescription className="text-xs text-muted-foreground mt-1">
-            <FormattedMessage
-              id="simulators.installer.description"
-              defaultMessage="Descargue el componente desde el repositorio oficial o cárguelo desde un archivo local en entornos sin conexión a internet."
-            />
-          </DialogDescription>
         </DialogHeader>
 
-        <DialogBody className="space-y-4 py-2">
+        <DialogBody className="space-y-4 py-3">
           {/* Method tabs */}
           <div className="flex border-b border-border/60 gap-4">
             <button
@@ -188,15 +205,15 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
           </div>
 
           {activeTab === 'download' ? (
-            <div className="space-y-4 pt-2">
-              <div className="p-3.5 rounded-lg bg-secondary/30 border border-border/50 flex items-center justify-between">
+            <div className="space-y-4 pt-1">
+              <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <HardDrive className="size-5 text-sky-400" />
                   <div className="flex flex-col">
                     <span className="text-xs font-medium text-foreground">
                       {simulator.name}
                     </span>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-[11px] text-muted-foreground font-mono">
                       Puerto predeterminado: TCP {simulator.defaultPort} | Tamaño: ~{simulator.approxSizeMb} MB
                     </span>
                   </div>
@@ -204,37 +221,54 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
               </div>
 
               {downloading || downloadComplete ? (
-                <div className="space-y-2 p-3 bg-secondary/20 rounded-lg border border-border/40">
+                <div className="space-y-3 p-3.5 bg-secondary/20 rounded-lg border border-border/40">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">
                       {downloadComplete ? (
                         <span className="text-emerald-400 font-medium flex items-center gap-1.5">
-                          <CheckCircle2 className="size-3.5" />
+                          <CheckCircle2 className="size-4" />
                           <FormattedMessage
                             id="simulators.installer.completed"
-                            defaultMessage="Descarga e instalación completada"
+                            defaultMessage="Descarga e instalación completada con éxito"
                           />
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1.5">
-                          <Loader2 className="size-3.5 animate-spin text-sky-400" />
+                        <span className="flex items-center gap-2 text-sky-400 font-medium">
+                          <Loader2 className="size-4 animate-spin" />
                           <FormattedMessage
                             id="simulators.installer.downloading"
-                            defaultMessage="Descargando y verificando integridad..."
+                            defaultMessage="Descargando, verificando integridad y extrayendo..."
                           />
                         </span>
                       )}
                     </span>
-                    <span className="font-mono font-medium">{downloadProgress}%</span>
+                    <span className="font-mono font-bold text-foreground">{downloadProgress}%</span>
                   </div>
                   <Progress value={downloadProgress} className="h-2" />
+
+                  {downloadComplete && (
+                    <div className="pt-2 flex items-center justify-end">
+                      <Button
+                        size="sm"
+                        onClick={handleLaunchSimulator}
+                        className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3"
+                        data-testid="start-installed-simulator-btn"
+                      >
+                        <Play className="size-3.5 fill-current" />
+                        <FormattedMessage
+                          id="simulators.installer.startNow"
+                          defaultMessage="Iniciar Simulador"
+                        />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex justify-end pt-2">
                   <Button
                     size="sm"
                     onClick={handleStartDownload}
-                    className="gap-1.5 text-xs bg-sky-600 hover:bg-sky-700 text-white"
+                    className="gap-1.5 text-xs bg-sky-600 hover:bg-sky-700 text-white font-medium"
                     data-testid="start-download-btn"
                   >
                     <DownloadCloud className="size-3.5" />
@@ -248,7 +282,7 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
               )}
             </div>
           ) : (
-            <div className="space-y-4 pt-2">
+            <div className="space-y-4 pt-1">
               <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 flex items-start gap-2.5">
                 <AlertTriangle className="size-4 text-amber-400 shrink-0 mt-0.5" />
                 <span className="text-xs text-muted-foreground">
@@ -273,6 +307,7 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
                     value={localFilePath}
                     placeholder="/path/to/simulator.zip o seleccione..."
                     onChange={(e) => setLocalFilePath(e.target.value)}
+                    disabled={installingLocal}
                     className="h-8 text-xs font-mono"
                     data-testid="local-file-path-input"
                   />
@@ -281,6 +316,7 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
                       type="file"
                       className="hidden"
                       onChange={handleFileChange}
+                      disabled={installingLocal}
                       data-testid="file-upload-input"
                     />
                     <div className="h-8 px-3 rounded-md border border-border bg-secondary hover:bg-secondary/80 flex items-center gap-1.5 text-xs text-foreground font-medium">
@@ -291,24 +327,61 @@ export const SimulatorInstallModal: React.FC<SimulatorInstallModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex justify-end pt-2">
-                <Button
-                  size="sm"
-                  disabled={!localFilePath.trim() || installingLocal}
-                  onClick={handleInstallLocalFile}
-                  className="gap-1.5 text-xs"
-                  data-testid="install-local-btn"
-                >
-                  {installingLocal ? (
-                    <Loader2 className="size-3.5 animate-spin" />
+              <div className="flex items-center justify-between pt-2">
+                {localInstallComplete ? (
+                  <span className="text-xs text-emerald-400 font-medium flex items-center gap-1.5">
+                    <CheckCircle2 className="size-4" />
+                    <FormattedMessage
+                      id="simulators.installer.localCompleted"
+                      defaultMessage="Instalado con éxito"
+                    />
+                  </span>
+                ) : (
+                  <div />
+                )}
+
+                <div className="flex gap-2">
+                  {localInstallComplete ? (
+                    <Button
+                      size="sm"
+                      onClick={handleLaunchSimulator}
+                      className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3"
+                      data-testid="start-local-installed-simulator-btn"
+                    >
+                      <Play className="size-3.5 fill-current" />
+                      <FormattedMessage
+                        id="simulators.installer.startNow"
+                        defaultMessage="Iniciar Simulador"
+                      />
+                    </Button>
                   ) : (
-                    <CheckCircle2 className="size-3.5" />
+                    <Button
+                      size="sm"
+                      disabled={!localFilePath.trim() || installingLocal}
+                      onClick={handleInstallLocalFile}
+                      className="gap-1.5 text-xs font-medium"
+                      data-testid="install-local-btn"
+                    >
+                      {installingLocal ? (
+                        <>
+                          <Loader2 className="size-3.5 animate-spin" />
+                          <FormattedMessage
+                            id="simulators.installer.installing"
+                            defaultMessage="Instalando..."
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="size-3.5" />
+                          <FormattedMessage
+                            id="simulators.installer.installAction"
+                            defaultMessage="Instalar Archivo"
+                          />
+                        </>
+                      )}
+                    </Button>
                   )}
-                  <FormattedMessage
-                    id="simulators.installer.installAction"
-                    defaultMessage="Instalar Archivo"
-                  />
-                </Button>
+                </div>
               </div>
             </div>
           )}

@@ -1,11 +1,11 @@
 /**
  * @packageDocumentation
  * Futurex Excrypt Plus Native Simulator Modal component providing one-click
- * lifecycle management, real-time health heartbeat, developer telemetry,
- * interactive self-test commands, and workspace auto-connection (`@chci/explorer`).
+ * lifecycle management, animated startup milestones, real-time health heartbeat,
+ * developer telemetry, interactive self-test commands, and workspace auto-connection (`@chci/explorer`).
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { toast } from 'sonner';
 import { useWorkspace } from '../state/workspace-context';
@@ -15,6 +15,7 @@ import {
   stopFuturexSimulator,
   type FuturexSimulatorStatus,
 } from '../services/futurex-simulator-client';
+import { sendHardwareCommand } from '../services/hardware-client';
 import {
   Dialog,
   DialogBody,
@@ -30,12 +31,16 @@ import {
   Server,
   Play,
   Square,
+  RefreshCw,
   Zap,
   ArrowRight,
   ShieldCheck,
   Cpu,
   Activity,
   Layers,
+  CheckCircle2,
+  AlertTriangle,
+  Send,
 } from 'lucide-react';
 
 export interface FuturexSimulatorModalProps {
@@ -45,12 +50,17 @@ export interface FuturexSimulatorModalProps {
   readonly onOpenChange: (open: boolean) => void;
   /** Optional callback to inject a command string directly into the active editor. */
   readonly onLoadCommand?: (raw: string) => void;
+  /** Whether to automatically initiate the startup sequence when opening the modal. */
+  readonly autoStart?: boolean;
 }
+
+export type FuturexStartupStage = 'engine' | 'mfk' | 'tags' | 'socket';
 
 export const FuturexSimulatorModal: React.FC<FuturexSimulatorModalProps> = ({
   open,
   onOpenChange,
   onLoadCommand,
+  autoStart,
 }) => {
   const intl = useIntl();
   const { state: workspaceState, dispatch } = useWorkspace();
@@ -65,44 +75,158 @@ export const FuturexSimulatorModal: React.FC<FuturexSimulatorModalProps> = ({
     errorMessage: null,
   });
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isStarting, setIsStarting] = useState<boolean>(false);
+  const [isStopping, setIsStopping] = useState<boolean>(false);
   const [portInput, setPortInput] = useState<string>('9000');
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  // Startup progress tracking
+  const [startupPercent, setStartupPercent] = useState<number>(0);
+  const [startupStage, setStartupStage] = useState<FuturexStartupStage | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Self-test states
+  const [testOutput, setTestOutput] = useState<{
+    command: string;
+    response?: string;
+    error?: string;
+    elapsedMs?: number;
+  } | null>(null);
+  const [isTesting, setIsTesting] = useState(false);
+
+  const fetchStatus = async (): Promise<FuturexSimulatorStatus | null> => {
+    try {
+      const s = await getFuturexSimulatorStatus();
+      setStatus(s);
+      setPortInput(s.port.toString());
+      return s;
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : String(e);
+      setStatus((prev) => ({
+        ...prev,
+        errorMessage: errMsg,
+      }));
+      return null;
+    }
+  };
 
   useEffect(() => {
     if (!open) return;
 
     let mounted = true;
-    const fetchStatus = async () => {
-      try {
-        const s = await getFuturexSimulatorStatus();
-        if (mounted) {
-          setStatus(s);
-          setPortInput(s.port.toString());
-        }
-      } catch (e) {
-        if (mounted) {
-          setStatus((prev) => ({
-            ...prev,
-            errorMessage: e instanceof Error ? e.message : String(e),
-          }));
-        }
+    void fetchStatus().then((s) => {
+      if (mounted && autoStart && s && !s.running && !isStarting) {
+        void handleStart();
       }
-    };
+    });
 
-    void fetchStatus();
-    const interval = setInterval(fetchStatus, 4000);
+    const interval = setInterval(() => {
+      if (mounted && !isStarting && !isStopping) {
+        void fetchStatus();
+      }
+    }, 4000);
+
     return () => {
       mounted = false;
       clearInterval(interval);
+      if (progressTimerRef.current) {
+        clearInterval(progressTimerRef.current);
+      }
     };
-  }, [open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, autoStart]);
+
+  const startProgressAnimation = () => {
+    if (progressTimerRef.current) {
+      clearInterval(progressTimerRef.current);
+    }
+    setStartupPercent(10);
+    setStartupStage('engine');
+    setElapsedSeconds(0);
+
+    const startTime = Date.now();
+    progressTimerRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const secs = Math.floor(elapsed / 1000);
+      setElapsedSeconds(secs);
+
+      if (elapsed < 600) {
+        setStartupStage('engine');
+        setStartupPercent((prev) => Math.min(30, prev + 5));
+      } else if (elapsed < 1200) {
+        setStartupStage('mfk');
+        setStartupPercent((prev) => Math.min(60, prev + 5));
+      } else if (elapsed < 1800) {
+        setStartupStage('tags');
+        setStartupPercent((prev) => Math.min(85, prev + 5));
+      } else {
+        setStartupStage('socket');
+        setStartupPercent((prev) => Math.min(95, prev + 2));
+      }
+    }, 100);
+  };
+
+  const stopProgressAnimation = (success: boolean) => {
+    if (progressTimerRef.current) {
+      clearInterval(progressTimerRef.current);
+      progressTimerRef.current = null;
+    }
+    if (success) {
+      setStartupPercent(100);
+      setStartupStage('socket');
+    } else {
+      setStartupPercent(0);
+      setStartupStage(null);
+    }
+  };
 
   const handleStart = async () => {
-    setLoading(true);
+    setIsStarting(true);
+    setActionError(null);
+    startProgressAnimation();
+
     try {
       const portNum = parseInt(portInput, 10) || 9000;
       const res = await startFuturexSimulator(portNum);
+      stopProgressAnimation(true);
       setStatus(res);
+
+      // Auto-register hardware connection in workspace
+      dispatch({
+        type: 'SAVE_HARDWARE_CONNECTION',
+        payload: {
+          connection: {
+            id: 'futurex-simulator-local',
+            deviceId: 'futurex-excrypt',
+            host: '127.0.0.1',
+            port: res.port || 9000,
+            connectionType: 'TCP',
+          },
+        },
+      });
+
+      // Auto-activate on any open tab matching Futurex
+      const activeTab = workspaceState.tabs.find((t) => t.id === workspaceState.activeTabId);
+      if (activeTab?.deviceId === 'futurex-excrypt' && activeTab.activeCommandId) {
+        dispatch({
+          type: 'SET_COMMAND_SELECTED_CONNECTION',
+          payload: {
+            tabId: activeTab.id,
+            commandId: activeTab.activeCommandId,
+            connectionId: 'futurex-simulator-local',
+          },
+        });
+        dispatch({
+          type: 'SET_COMMAND_LIVE_EXECUTION',
+          payload: {
+            tabId: activeTab.id,
+            commandId: activeTab.activeCommandId,
+            enabled: true,
+          },
+        });
+      }
+
       toast.success(
         intl.formatMessage(
           {
@@ -113,14 +237,21 @@ export const FuturexSimulatorModal: React.FC<FuturexSimulatorModalProps> = ({
         )
       );
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Error iniciando simulador Futurex');
+      stopProgressAnimation(false);
+      const errMsg = e instanceof Error ? e.message : 'Error iniciando simulador Futurex';
+      setActionError(errMsg);
+      toast.error(errMsg);
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setIsStarting(false);
+        setStartupStage(null);
+      }, 400);
     }
   };
 
   const handleStop = async () => {
-    setLoading(true);
+    setIsStopping(true);
+    setActionError(null);
     try {
       const res = await stopFuturexSimulator();
       setStatus(res);
@@ -131,102 +262,87 @@ export const FuturexSimulatorModal: React.FC<FuturexSimulatorModalProps> = ({
         })
       );
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Error deteniendo simulador');
+      const errMsg = e instanceof Error ? e.message : 'Error deteniendo simulador';
+      setActionError(errMsg);
+      toast.error(errMsg);
     } finally {
-      setLoading(false);
+      setIsStopping(false);
     }
   };
 
-  const handleConnectWorkspace = () => {
-    dispatch({
-      type: 'SAVE_HARDWARE_CONNECTION',
-      payload: {
-        connection: {
+  const handleRunTest = async (command: string) => {
+    setIsTesting(true);
+    setTestOutput(null);
+    try {
+      const result = await sendHardwareCommand(
+        {
           id: 'futurex-simulator-local',
           deviceId: 'futurex-excrypt',
           host: '127.0.0.1',
           port: status.port || 9000,
           connectionType: 'TCP',
         },
-      },
-    });
-
-    const activeTab = workspaceState.tabs.find((t) => t.id === workspaceState.activeTabId);
-    if (activeTab?.deviceId === 'futurex-excrypt' && activeTab.activeCommandId) {
-      dispatch({
-        type: 'SET_COMMAND_SELECTED_CONNECTION',
-        payload: {
-          tabId: activeTab.id,
-          commandId: activeTab.activeCommandId,
-          connectionId: 'futurex-simulator-local',
-        },
+        command,
+        'tag-value'
+      );
+      setTestOutput({
+        command,
+        response: result.response,
+        error: result.error,
+        elapsedMs: result.elapsedMs,
       });
-      dispatch({
-        type: 'SET_COMMAND_LIVE_EXECUTION',
-        payload: {
-          tabId: activeTab.id,
-          commandId: activeTab.activeCommandId,
-          enabled: true,
-        },
+    } catch (e) {
+      setTestOutput({
+        command,
+        error: e instanceof Error ? e.message : String(e),
       });
+    } finally {
+      setIsTesting(false);
     }
-
-    toast.success(
-      intl.formatMessage(
-        {
-          id: 'simulator.futurex.connectedSuccess',
-          defaultMessage: 'CHCI conectado al Simulador Futurex en 127.0.0.1:{port}',
-        },
-        { port: status.port || 9000 }
-      )
-    );
-    onOpenChange(false);
   };
 
   const sampleCommands = [
     {
-      name: 'Echo / Conectividad (ECHO)',
+      name: 'Ping Echo (ECHO)',
       cmd: '[AOECHO;AGPingTest;]',
-      desc: 'Comprueba el canal y devuelve eco intacto en AG',
+      desc: 'Comprobación de conectividad con eco del tag de aplicación AG',
     },
     {
-      name: 'Versión del Firmware (VR)',
+      name: 'Firmware Version (VR)',
       cmd: '[AOVR;]',
-      desc: 'Devuelve versión del sistema Excrypt Plus y firmware',
+      desc: 'Consulta versión de firmware y características activas',
     },
     {
       name: 'Generación de Claves (KG)',
       cmd: '[AOKG;AGKeyGenTest;]',
-      desc: 'Genera clave de trabajo bajo MFK con KCV de control',
+      desc: 'Genera par de claves simétricas bajo la Master File Key',
     },
     {
-      name: 'Traducción de PIN Block (BB)',
-      cmd: '[AOBB;PB0412AC89ABCDF567;]',
-      desc: 'Traduce un PIN Block ISO-0 entre claves de zona',
+      name: 'Verificación de PIN (BB)',
+      cmd: '[AOBB;PB120412AC89ABCDF567;AN4012888888881881;]',
+      desc: 'Valida un bloque de PIN ISO-0 contra la base de datos',
     },
     {
-      name: 'Cifrado de Datos (DN)',
-      cmd: '[AODN;MDE;DT4E6F772069732074;]',
-      desc: 'Cifra datos simétricos en modo ECB bajo MFK',
-    },
-    {
-      name: 'MAC Financiero (FM)',
-      cmd: '[AOFM;DTTransactionData;]',
-      desc: 'Calcula un MAC Retail sobre los datos de transacción',
+      name: 'Cálculo de MAC (FM)',
+      cmd: '[AOFM;MD0004TEST;]',
+      desc: 'Calcula Message Authentication Code sobre payload de datos',
     },
   ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl bg-neutral-900 border-neutral-800 text-neutral-100 shadow-2xl">
-        <DialogHeader className="border-b border-neutral-800 pb-4">
+      <DialogContent
+        data-testid="futurex-simulator-modal"
+        className="max-w-3xl max-h-[90vh] flex flex-col p-6 overflow-hidden bg-card border-border text-foreground shadow-2xl"
+      >
+        <DialogHeader className="border-b border-border/60 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400">
-                <Server className="w-5 h-5" />
+              <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                <Layers className="w-5 h-5" />
               </div>
               <div>
-                <DialogTitle className="text-lg font-semibold text-neutral-100 flex items-center gap-2">
+                <DialogTitle className="text-lg font-bold text-foreground flex items-center gap-2">
                   <FormattedMessage
                     id="simulator.futurex.title"
                     defaultMessage="Simulador Futurex Excrypt Plus (v7.6.1)"
@@ -237,16 +353,16 @@ export const FuturexSimulatorModal: React.FC<FuturexSimulatorModalProps> = ({
                     className={
                       status.running
                         ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-neutral-800 text-neutral-400'
+                        : 'bg-muted text-muted-foreground'
                     }
                   >
-                    {status.running ? 'ONLINE :9000' : 'OFFLINE'}
+                    {status.running ? `ONLINE :${status.port}` : 'OFFLINE'}
                   </Badge>
                 </DialogTitle>
-                <DialogDescription className="text-xs text-neutral-400 mt-0.5">
+                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
                   <FormattedMessage
                     id="simulator.futurex.desc"
-                    defaultMessage="Emulador nativo en Rust de alto rendimiento con sintaxis Tag-Valor [AO...;] y soporte MFK."
+                    defaultMessage="Emulador nativo en Rust de alto rendimiento con sintaxis tag-valor [AO...;], eco de tokens y despacho MFK."
                   />
                 </DialogDescription>
               </div>
@@ -254,58 +370,178 @@ export const FuturexSimulatorModal: React.FC<FuturexSimulatorModalProps> = ({
           </div>
         </DialogHeader>
 
-        <DialogBody className="space-y-5 py-4">
-          {/* Status and Action Banner */}
+        <DialogBody className="space-y-4 overflow-y-auto pr-1 pt-4 text-sm">
+          {/* Action error banner */}
+          {actionError && (
+            <div
+              className="p-3 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-xs flex items-start gap-2"
+              role="alert"
+            >
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold">Error: </span>
+                <span>{actionError}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Startup Progress Card (Animated during initialization) */}
+          {(isStarting || startupStage !== null) && (
+            <div
+              data-testid="simulator-startup-progress-card"
+              className="rounded-lg border border-primary/40 bg-primary/5 p-4 space-y-3 animate-in fade-in duration-300"
+            >
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-primary font-semibold">
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>
+                    Inicializando entorno del simulador Futurex Excrypt Plus...
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-muted-foreground text-[11px]">
+                    ({elapsedSeconds}s)
+                  </span>
+                  <span className="font-mono font-bold text-primary text-sm">{startupPercent}%</span>
+                </div>
+              </div>
+
+              {/* Progress bar container */}
+              <div className="w-full bg-muted/80 rounded-full h-2.5 overflow-hidden border border-border/50">
+                <div
+                  className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${startupPercent}%` }}
+                />
+              </div>
+
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                Inicializando motor Excrypt en Rust, derivando Master File Key (MFK) y enlazando listener TCP loopback con sintaxis tag-valor [AO...;].
+              </p>
+
+              {/* Progress Milestones */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
+                <div
+                  className={`flex items-center gap-1.5 p-1.5 rounded transition-colors ${
+                    startupPercent >= 25
+                      ? 'text-emerald-500 font-medium'
+                      : startupStage === 'engine'
+                      ? 'text-primary font-semibold animate-pulse'
+                      : 'text-muted-foreground/60'
+                  }`}
+                >
+                  {startupPercent >= 25 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                  ) : (
+                    <Cpu className="w-3.5 h-3.5 shrink-0" />
+                  )}
+                  <span>Excrypt v7.6.1</span>
+                </div>
+
+                <div
+                  className={`flex items-center gap-1.5 p-1.5 rounded transition-colors ${
+                    startupPercent >= 50
+                      ? 'text-emerald-500 font-medium'
+                      : startupStage === 'mfk'
+                      ? 'text-primary font-semibold animate-pulse'
+                      : 'text-muted-foreground/60'
+                  }`}
+                >
+                  {startupPercent >= 50 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                  ) : (
+                    <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                  )}
+                  <span>MFK Key Storage</span>
+                </div>
+
+                <div
+                  className={`flex items-center gap-1.5 p-1.5 rounded transition-colors ${
+                    startupPercent >= 75
+                      ? 'text-emerald-500 font-medium'
+                      : startupStage === 'tags'
+                      ? 'text-primary font-semibold animate-pulse'
+                      : 'text-muted-foreground/60'
+                  }`}
+                >
+                  {startupPercent >= 75 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                  ) : (
+                    <Layers className="w-3.5 h-3.5 shrink-0" />
+                  )}
+                  <span>Tag-Value Parser</span>
+                </div>
+
+                <div
+                  className={`flex items-center gap-1.5 p-1.5 rounded transition-colors ${
+                    startupPercent >= 100
+                      ? 'text-emerald-500 font-medium'
+                      : startupStage === 'socket'
+                      ? 'text-primary font-semibold animate-pulse'
+                      : 'text-muted-foreground/60'
+                  }`}
+                >
+                  {startupPercent >= 100 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                  ) : (
+                    <Server className="w-3.5 h-3.5 shrink-0" />
+                  )}
+                  <span>TCP :9000 Listo</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Status and Telemetry Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="p-4 rounded-xl bg-neutral-950/60 border border-neutral-800 space-y-1">
-              <div className="text-xs text-neutral-400 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-orange-400" />
+            <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 space-y-1">
+              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Activity className="w-3.5 h-3.5 text-blue-400" />
                 <span>Estado del Listener</span>
               </div>
-              <div className="text-sm font-semibold text-neutral-200">
+              <div className="text-sm font-semibold text-foreground">
                 {status.running ? 'Escuchando en TCP' : 'Detenido'}
               </div>
-              <div className="text-xs text-neutral-400">
-                Puerto: {status.port}
+              <div className="text-xs text-muted-foreground font-mono">
+                127.0.0.1:{status.port}
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-neutral-950/60 border border-neutral-800 space-y-1">
-              <div className="text-xs text-neutral-400 flex items-center gap-1.5">
+            <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 space-y-1">
+              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 <span>MFK de Prueba Activa</span>
               </div>
-              <div className="text-sm font-semibold text-neutral-200">
-                Major File Key (3DES)
+              <div className="text-sm font-semibold text-foreground">
+                MFK Principal (2TDES)
               </div>
-              <div className="text-xs text-neutral-400">
-                KCV: <span className="font-mono text-emerald-400">{status.activeMfkKcv}</span>
+              <div className="text-xs text-muted-foreground font-mono">
+                KCV: <span className="text-emerald-400 font-bold">{status.activeMfkKcv}</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-neutral-950/60 border border-neutral-800 space-y-1">
-              <div className="text-xs text-neutral-400 flex items-center gap-1.5">
+            <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 space-y-1">
+              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <Layers className="w-3.5 h-3.5 text-purple-400" />
-                <span>Comandos Procesados</span>
+                <span>Telemetría</span>
               </div>
-              <div className="text-sm font-semibold text-neutral-200">
-                {status.processedCommands} peticiones
+              <div className="text-sm font-semibold text-foreground">
+                {status.processedCommands} comandos
               </div>
-              <div className="text-xs text-neutral-400">
+              <div className="text-xs text-muted-foreground">
                 Tiempo activo: {status.uptimeSeconds}s
               </div>
             </div>
           </div>
 
           {/* Controls Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-neutral-950 border border-neutral-800">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-lg bg-secondary/20 border border-border/50">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-neutral-400">Puerto TCP:</span>
+              <span className="text-xs text-muted-foreground font-medium">Puerto TCP:</span>
               <Input
                 value={portInput}
                 onChange={(e) => setPortInput(e.target.value)}
-                disabled={status.running || loading}
-                className="w-24 h-8 bg-neutral-900 border-neutral-700 text-xs font-mono text-center"
+                disabled={status.running || isStarting || isStopping}
+                className="w-24 h-8 text-xs font-mono text-center"
               />
             </div>
 
@@ -313,65 +549,121 @@ export const FuturexSimulatorModal: React.FC<FuturexSimulatorModalProps> = ({
               {!status.running ? (
                 <Button
                   onClick={handleStart}
-                  disabled={loading}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white h-8 text-xs gap-1.5 px-3"
+                  disabled={isStarting || isStopping}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white h-8 text-xs gap-1.5 px-3 font-medium"
                 >
-                  <Play className="w-3.5 h-3.5 fill-current" />
+                  {isStarting ? (
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                  )}
                   Iniciar Simulador
                 </Button>
               ) : (
-                <>
-                  <Button
-                    onClick={handleStop}
-                    disabled={loading}
-                    variant="outline"
-                    className="border-red-500/30 text-red-400 hover:bg-red-500/10 h-8 text-xs gap-1.5 px-3"
-                  >
+                <Button
+                  onClick={handleStop}
+                  disabled={isStarting || isStopping}
+                  variant="destructive"
+                  className="h-8 text-xs gap-1.5 px-3 font-medium"
+                >
+                  {isStopping ? (
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
                     <Square className="w-3.5 h-3.5 fill-current" />
-                    Detener
-                  </Button>
-                  <Button
-                    onClick={handleConnectWorkspace}
-                    className="bg-orange-600 hover:bg-orange-500 text-white h-8 text-xs gap-1.5 px-3"
-                  >
-                    <Zap className="w-3.5 h-3.5" />
-                    Conectar CHCI a este Simulador
-                  </Button>
-                </>
+                  )}
+                  Detener Simulador
+                </Button>
               )}
             </div>
           </div>
 
-          {/* Quick Tests */}
-          <div className="space-y-2">
-            <div className="text-xs font-medium text-neutral-400 flex items-center gap-1.5">
-              <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Ejemplos Rápidos de Diagnóstico (Inyectar al Editor)</span>
+          {/* Interactive Self-Test Panel */}
+          <div className="space-y-3 pt-1">
+            <div className="text-xs font-semibold text-foreground flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Cpu className="w-3.5 h-3.5 text-sky-400" />
+                <span>Pruebas Rápidas de Diagnóstico y Autocomprobación</span>
+              </div>
+              {status.running && (
+                <span className="text-[11px] text-emerald-400 font-mono flex items-center gap-1 font-normal">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Socket :9000 activo
+                </span>
+              )}
             </div>
+
+            {/* Test output display card */}
+            {testOutput && (
+              <div className="rounded-lg border border-border bg-background p-3 space-y-2 font-mono text-xs">
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground border-b border-border/50 pb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Send className="w-3 h-3 text-primary" />
+                    <span>Enviado: {testOutput.command}</span>
+                  </div>
+                  {testOutput.elapsedMs !== undefined && (
+                    <span className="text-[10px] bg-secondary px-1.5 py-0.5 rounded">
+                      {testOutput.elapsedMs} ms
+                    </span>
+                  )}
+                </div>
+                {testOutput.response && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-emerald-400 uppercase font-semibold">Respuesta HSM:</span>
+                    <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded overflow-x-auto text-xs break-all">
+                      {testOutput.response}
+                    </div>
+                  </div>
+                )}
+                {testOutput.error && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-destructive uppercase font-semibold">Error:</span>
+                    <div className="p-2 bg-destructive/10 border border-destructive/20 text-destructive rounded overflow-x-auto text-xs">
+                      {testOutput.error}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Diagnostic Command Buttons */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {sampleCommands.map((sc, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 rounded-lg bg-neutral-950/80 border border-neutral-800 hover:border-neutral-700 transition flex items-center justify-between"
+                  className="p-2.5 rounded-lg bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors flex items-center justify-between gap-2"
                 >
-                  <div className="space-y-0.5 max-w-[80%]">
-                    <div className="text-xs font-medium text-neutral-200">{sc.name}</div>
-                    <div className="text-[11px] text-neutral-400 truncate">{sc.desc}</div>
-                    <div className="text-[10px] font-mono text-neutral-500 truncate">{sc.cmd}</div>
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="text-xs font-medium text-foreground">{sc.name}</div>
+                    <div className="text-[11px] text-muted-foreground truncate">{sc.desc}</div>
+                    <div className="text-[10px] font-mono text-primary truncate">{sc.cmd}</div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      if (onLoadCommand) {
-                        onLoadCommand(sc.cmd);
-                        toast.success(`Comando ${sc.name} cargado en el editor`);
-                      }
-                    }}
-                    className="h-7 w-7 p-0 text-neutral-400 hover:text-white"
-                  >
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={!status.running || isTesting}
+                      onClick={() => handleRunTest(sc.cmd)}
+                      title="Ejecutar prueba contra el simulador"
+                      className="h-7 px-2 text-[10px] border-border hover:bg-secondary gap-1"
+                    >
+                      <Zap className="w-3 h-3 text-sky-400" />
+                      <span>Probar</span>
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        if (onLoadCommand) {
+                          onLoadCommand(sc.cmd);
+                          toast.success(`Comando ${sc.name} cargado en el editor`);
+                        }
+                      }}
+                      title="Inyectar comando en el editor activo"
+                      className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                    >
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>

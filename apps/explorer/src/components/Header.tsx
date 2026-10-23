@@ -28,9 +28,13 @@ export function Header() {
   const [sessionsOpen, setSessionsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [simulatorOpen, setSimulatorOpen] = useState(false);
+  const [atallaAutoStart, setAtallaAutoStart] = useState(false);
   const [thalesSimulatorOpen, setThalesSimulatorOpen] = useState(false);
+  const [thalesAutoStart, setThalesAutoStart] = useState(false);
   const [futurexSimulatorOpen, setFuturexSimulatorOpen] = useState(false);
+  const [futurexAutoStart, setFuturexAutoStart] = useState(false);
   const [liquidSimulatorOpen, setLiquidSimulatorOpen] = useState(false);
+  const [liquidAutoStart, setLiquidAutoStart] = useState(false);
 
   const handleToggleLocale = () => {
     const nextLocale = state.locale === 'es' ? 'gl' : state.locale === 'gl' ? 'en' : 'es';
@@ -108,10 +112,22 @@ export function Header() {
 
           {/* Unified HSM Simulators Dropdown Control Hub */}
           <SimulatorsDropdown
-            onOpenAtallaConsole={() => setSimulatorOpen(true)}
-            onOpenThalesConsole={() => setThalesSimulatorOpen(true)}
-            onOpenFuturexConsole={() => setFuturexSimulatorOpen(true)}
-            onOpenLiquidConsole={() => setLiquidSimulatorOpen(true)}
+            onOpenAtallaConsole={(autoStart) => {
+              setAtallaAutoStart(Boolean(autoStart));
+              setSimulatorOpen(true);
+            }}
+            onOpenThalesConsole={(autoStart) => {
+              setThalesAutoStart(Boolean(autoStart));
+              setThalesSimulatorOpen(true);
+            }}
+            onOpenFuturexConsole={(autoStart) => {
+              setFuturexAutoStart(Boolean(autoStart));
+              setFuturexSimulatorOpen(true);
+            }}
+            onOpenLiquidConsole={(autoStart) => {
+              setLiquidAutoStart(Boolean(autoStart));
+              setLiquidSimulatorOpen(true);
+            }}
           />
 
           <div className="h-4 w-px bg-border mx-1" />
@@ -136,23 +152,39 @@ export function Header() {
       <HistoryModal open={historyOpen} onOpenChange={setHistoryOpen} />
       <AtallaSimulatorModal
         open={simulatorOpen}
-        onOpenChange={setSimulatorOpen}
+        onOpenChange={(open) => {
+          setSimulatorOpen(open);
+          if (!open) setAtallaAutoStart(false);
+        }}
         onLoadCommand={handleLoadCommandIntoActive}
+        autoStart={atallaAutoStart}
       />
       <ThalesSimulatorModal
         open={thalesSimulatorOpen}
-        onOpenChange={setThalesSimulatorOpen}
+        onOpenChange={(open) => {
+          setThalesSimulatorOpen(open);
+          if (!open) setThalesAutoStart(false);
+        }}
         onLoadCommand={handleLoadCommandIntoActive}
+        autoStart={thalesAutoStart}
       />
       <FuturexSimulatorModal
         open={futurexSimulatorOpen}
-        onOpenChange={setFuturexSimulatorOpen}
+        onOpenChange={(open) => {
+          setFuturexSimulatorOpen(open);
+          if (!open) setFuturexAutoStart(false);
+        }}
         onLoadCommand={handleLoadCommandIntoActive}
+        autoStart={futurexAutoStart}
       />
       <LiquidSecuritySimulatorModal
         open={liquidSimulatorOpen}
-        onOpenChange={setLiquidSimulatorOpen}
+        onOpenChange={(open) => {
+          setLiquidSimulatorOpen(open);
+          if (!open) setLiquidAutoStart(false);
+        }}
         onLoadCommand={handleLoadCommandIntoActive}
+        autoStart={liquidAutoStart}
       />
     </>
   );

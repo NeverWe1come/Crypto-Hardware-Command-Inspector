@@ -36,10 +36,10 @@ import {
 } from 'lucide-react';
 
 export interface SimulatorsDropdownProps {
-  readonly onOpenAtallaConsole: () => void;
-  readonly onOpenThalesConsole: () => void;
-  readonly onOpenFuturexConsole: () => void;
-  readonly onOpenLiquidConsole: () => void;
+  readonly onOpenAtallaConsole: (autoStart?: boolean) => void;
+  readonly onOpenThalesConsole: (autoStart?: boolean) => void;
+  readonly onOpenFuturexConsole: (autoStart?: boolean) => void;
+  readonly onOpenLiquidConsole: (autoStart?: boolean) => void;
 }
 
 export const SimulatorsDropdown: React.FC<SimulatorsDropdownProps> = ({
@@ -150,12 +150,12 @@ export const SimulatorsDropdown: React.FC<SimulatorsDropdownProps> = ({
     }
   };
 
-  const handleOpenConsole = (simId: string) => {
+  const handleOpenConsole = (simId: string, autoStart: boolean = false) => {
     setIsOpen(false);
-    if (simId === 'atalla-at1000') onOpenAtallaConsole();
-    else if (simId === 'thales-payshield') onOpenThalesConsole();
-    else if (simId === 'futurex-excrypt') onOpenFuturexConsole();
-    else if (simId === 'marvell-liquidsecurity') onOpenLiquidConsole();
+    if (simId === 'atalla-at1000') onOpenAtallaConsole(autoStart);
+    else if (simId === 'thales-payshield') onOpenThalesConsole(autoStart);
+    else if (simId === 'futurex-excrypt') onOpenFuturexConsole(autoStart);
+    else if (simId === 'marvell-liquidsecurity') onOpenLiquidConsole(autoStart);
   };
 
   const getSimIcon = (id: string) => {
@@ -310,9 +310,9 @@ export const SimulatorsDropdown: React.FC<SimulatorsDropdownProps> = ({
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => handleToggleSingle(sim)}
+                          onClick={() => handleOpenConsole(sim.id, true)}
                           className="h-7 px-2 text-[10px] text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 gap-1"
-                          title="Iniciar este simulador"
+                          title="Iniciar este simulador y ver despliegue"
                           data-testid={`toggle-sim-${sim.id}`}
                         >
                           <Play className="size-3 fill-current" />
@@ -364,6 +364,10 @@ export const SimulatorsDropdown: React.FC<SimulatorsDropdownProps> = ({
           simulator={installTarget}
           onInstalled={() => {
             fetchInventory();
+          }}
+          onStartSimulator={(simId) => {
+            setInstallTarget(null);
+            handleOpenConsole(simId, true);
           }}
         />
       )}

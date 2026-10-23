@@ -104,6 +104,7 @@ export function workspaceReducer(
       const initialHeaderLen =
         spec.framing.type === 'header-positional' ? spec.framing.defaultHeaderLength ?? 4 : undefined;
       const initialInterface = spec.defaultInterface ?? spec.interfaces?.[0]?.id;
+      const matchingConn = state.hardwareConnections.find((c) => c.deviceId === deviceId);
       const initialCommand: CommandEntry = {
         id: initialCommandId,
         raw: '',
@@ -111,7 +112,9 @@ export function workspaceReducer(
         direction: 'request',
         linkedCommandId: null,
         headerLength: initialHeaderLen,
-        interfaceId: initialInterface
+        interfaceId: initialInterface,
+        selectedConnectionId: matchingConn?.id,
+        liveExecutionEnabled: matchingConn ? true : undefined
       };
 
       const tabId = action.payload.tabId ?? createId(`tab_${deviceId}`);
@@ -655,9 +658,32 @@ export function workspaceReducer(
       } else {
         nextConnections = [...state.hardwareConnections, connection];
       }
+
+      // Auto-assign connection to open tabs of the same device
+      const nextTabs = state.tabs.map((tab) => {
+        if (tab.deviceId === connection.deviceId) {
+          const updatedCmds = tab.commands.map((cmd) => {
+            if (!cmd.selectedConnectionId || connection.id.endsWith('-simulator-local')) {
+              return {
+                ...cmd,
+                selectedConnectionId: connection.id,
+                liveExecutionEnabled: true
+              };
+            }
+            return cmd;
+          });
+          return {
+            ...tab,
+            commands: updatedCmds
+          };
+        }
+        return tab;
+      });
+
       return {
         ...state,
-        hardwareConnections: nextConnections
+        hardwareConnections: nextConnections,
+        tabs: nextTabs
       };
     }
 

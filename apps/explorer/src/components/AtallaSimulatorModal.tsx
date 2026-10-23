@@ -57,6 +57,8 @@ export interface AtallaSimulatorModalProps {
   readonly onOpenChange: (open: boolean) => void;
   /** Optional callback to inject a command string directly into the active editor. */
   readonly onLoadCommand?: (raw: string) => void;
+  /** Whether to automatically initiate the startup sequence when opening the modal. */
+  readonly autoStart?: boolean;
 }
 
 export type StartupStage = 'docker' | 'kernel' | 'flash' | 'socket';
@@ -64,7 +66,8 @@ export type StartupStage = 'docker' | 'kernel' | 'flash' | 'socket';
 export function AtallaSimulatorModal({
   open,
   onOpenChange,
-  onLoadCommand
+  onLoadCommand,
+  autoStart
 }: AtallaSimulatorModalProps) {
   const intl = useIntl();
   const { state: workspaceState, dispatch } = useWorkspace();
@@ -101,7 +104,7 @@ export function AtallaSimulatorModal({
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
   const [copiedLogs, setCopiedLogs] = useState(false);
 
-  const fetchStatus = async () => {
+  const fetchStatus = async (): Promise<SimulatorStatus | null> => {
     setIsRefreshing(true);
     setActionError(null);
     try {
@@ -110,8 +113,10 @@ export function AtallaSimulatorModal({
         previousRunningRef.current = true;
       }
       setStatus(s);
+      return s;
     } catch (e) {
       setActionError(e instanceof Error ? e.message : String(e));
+      return null;
     } finally {
       setIsRefreshing(false);
     }
@@ -129,13 +134,18 @@ export function AtallaSimulatorModal({
     }
   };
 
-  // Poll status when modal opens
+  // Poll status when modal opens and trigger autoStart if requested
   useEffect(() => {
     if (open) {
-      void fetchStatus();
+      void fetchStatus().then((s) => {
+        if (autoStart && s && !s.containerRunning) {
+          void handleStart();
+        }
+      });
       void fetchLogs();
     }
-  }, [open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, autoStart]);
 
   // Clean up progress timer on unmount
   useEffect(() => {

@@ -182,4 +182,28 @@ describe('SimulatorsDropdown Component', () => {
 
     expect(await screen.findByTestId('simulator-install-modal')).toBeInTheDocument();
   });
+
+  it('opens deployment console with autoStart=true when clicking left Iniciar/Play button', async () => {
+    const handleThalesConsole = vi.fn();
+
+    renderWithProviders(
+      <SimulatorsDropdown
+        onOpenAtallaConsole={() => {}}
+        onOpenThalesConsole={handleThalesConsole}
+        onOpenFuturexConsole={() => {}}
+        onOpenLiquidConsole={() => {}}
+      />
+    );
+
+    const trigger = screen.getByTestId('simulators-hub-button');
+    await waitFor(() => {
+      expect(screen.getByTestId('simulators-active-badge')).toHaveTextContent('1/4');
+    });
+    fireEvent.click(trigger);
+
+    const toggleThalesBtn = screen.getByTestId('toggle-sim-thales-payshield');
+    fireEvent.click(toggleThalesBtn);
+
+    expect(handleThalesConsole).toHaveBeenCalledWith(true);
+  });
 });

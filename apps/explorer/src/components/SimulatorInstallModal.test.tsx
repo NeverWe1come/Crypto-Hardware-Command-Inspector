@@ -53,13 +53,16 @@ describe('SimulatorInstallModal Component', () => {
     });
 
     const handleInstalled = vi.fn();
+    const handleStart = vi.fn();
+    const handleOpenChange = vi.fn();
 
     renderWithProviders(
       <SimulatorInstallModal
         open={true}
-        onOpenChange={() => {}}
+        onOpenChange={handleOpenChange}
         simulator={dummySim}
         onInstalled={handleInstalled}
+        onStartSimulator={handleStart}
       />
     );
 
@@ -74,5 +77,12 @@ describe('SimulatorInstallModal Component', () => {
     fireEvent.click(installBtn);
 
     expect(hubClient.installSimulatorFromFile).toHaveBeenCalledWith('atalla-at1000', '/tmp/atalla.tar');
+
+    const startSimBtn = await screen.findByTestId('start-local-installed-simulator-btn');
+    expect(startSimBtn).toBeInTheDocument();
+    fireEvent.click(startSimBtn);
+
+    expect(handleStart).toHaveBeenCalledWith('atalla-at1000');
+    expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
 });
