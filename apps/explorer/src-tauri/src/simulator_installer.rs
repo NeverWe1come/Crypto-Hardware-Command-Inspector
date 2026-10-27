@@ -116,17 +116,17 @@ pub fn detect_all_simulators(
         .unwrap_or(false);
     let atalla_installed = atalla_image_loaded || atalla_has_tar;
 
-    // 2. Thales payShield 10K
+    // 2. Thales payShield 10K (Built-in Rust engine)
     let thales_dir = find_simulator_dir("thales-payshield");
-    let thales_installed = thales_dir.is_some() || cfg!(debug_assertions);
+    let thales_installed = true;
 
-    // 3. Futurex Excrypt Plus
+    // 3. Futurex Excrypt Plus (Built-in Rust engine)
     let futurex_dir = find_simulator_dir("futurex-excrypt");
-    let futurex_installed = futurex_dir.is_some() || cfg!(debug_assertions);
+    let futurex_installed = true;
 
-    // 4. Marvell LiquidSecurity
+    // 4. Marvell LiquidSecurity (Built-in Rust engine)
     let liquid_dir = find_simulator_dir("marvell-liquidsecurity");
-    let liquid_installed = liquid_dir.is_some() || cfg!(debug_assertions);
+    let liquid_installed = true;
 
     vec![
         SimulatorInventoryItem {

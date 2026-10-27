@@ -12,7 +12,7 @@ export const azurePaymentHsmSpec: DeviceSpec = {
   name: 'Azure Dedicated Payment HSM',
   vendor: 'Microsoft Azure',
   category: 'HSMAAS',
-  status: 'supported',
+  status: 'coming-soon',
   icon: 'cloud',
   defaultVersion: '2024-02-01',
   defaultInterface: 'payshield-host',

@@ -12,7 +12,7 @@ export const yubicoYubihsm2Spec: DeviceSpec = {
   name: 'Yubico YubiHSM 2',
   vendor: 'Yubico',
   category: 'HSM_GP',
-  status: 'supported',
+  status: 'coming-soon',
   icon: 'cpu',
   defaultVersion: '2.4.0',
   defaultInterface: 'yubihsm-wire',

@@ -11,7 +11,7 @@ export const hashicorpVaultSpec: DeviceSpec = {
   name: 'HashiCorp Vault Transit Engine',
   vendor: 'HashiCorp',
   category: 'KMS',
-  status: 'supported',
+  status: 'coming-soon',
   icon: 'shield',
   defaultVersion: '1.18',
   defaultInterface: 'vault-rest',

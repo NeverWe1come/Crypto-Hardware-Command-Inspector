@@ -1,6 +1,6 @@
 # Futurex Excrypt v7.6.1 — Comprehensive Command Verification & Audit Report
 
-> **Generated**: 2026-10-23T08:43:21.415Z  
+> **Generated**: 2026-10-27T18:36:45.910Z  
 > **Auditor**: Crypto Hardware Command Inspector (`chci`) — Test Harness Suite  
 > **Hardware Profile**: Futurex Excrypt (Firmware v7.6.1)  
 > **Framing Architecture**: Tag-Value Delimited (`[AO<Code>;TAG<Val>;...]`)  

@@ -8,7 +8,6 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import { DEVICE_CATALOG, type DeviceCatalogEntry } from '@chci/device-specs';
 import { useWorkspace } from '../state/workspace-context';
 import type { CategoryFilter } from '../state/types';
-import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import {
@@ -284,14 +283,13 @@ export function CatalogSidebar(props?: CatalogSidebarProps) {
                 <FormattedMessage id="sidebar.badges.supported" defaultMessage="Soportado" />
               </span>
             ) : (
-              <Badge
-                variant="secondary"
-                appearance="outline"
-                size="xs"
+              <span
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide bg-amber-500/10 text-amber-400/90 border border-amber-500/30 shrink-0"
                 data-testid={`badge-coming-soon-${device.id}`}
               >
-                <FormattedMessage id="sidebar.badges.comingSoon" defaultMessage="Próximamente" />
-              </Badge>
+                <span className="size-1.5 rounded-full bg-amber-400/70" />
+                <FormattedMessage id="sidebar.badges.workingProgress" defaultMessage="Working progress" />
+              </span>
             )}
           </div>
         </div>

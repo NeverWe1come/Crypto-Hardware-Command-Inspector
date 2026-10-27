@@ -12,7 +12,7 @@ export const marvellLiquidSecuritySpec: DeviceSpec = {
   name: 'Marvell LiquidSecurity HSM',
   vendor: 'Marvell',
   category: 'HSM_GP',
-  status: 'supported',
+  status: 'coming-soon',
   icon: 'cpu',
   defaultVersion: '3.4.0',
   defaultInterface: 'liquidsecurity-cli',

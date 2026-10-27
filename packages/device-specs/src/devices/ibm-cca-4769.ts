@@ -12,7 +12,7 @@ export const ibmCca4769Spec: DeviceSpec = {
   name: 'IBM 4769 / 4767 PCIe Cryptographic Coprocessor',
   vendor: 'IBM',
   category: 'HSM_FINANCIAL',
-  status: 'supported',
+  status: 'coming-soon',
   icon: 'cpu',
   defaultVersion: '8.1',
   defaultInterface: 'cca-verb',

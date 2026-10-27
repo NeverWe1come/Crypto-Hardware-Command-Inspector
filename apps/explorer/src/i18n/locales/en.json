@@ -21,6 +21,7 @@
   "sidebar.categories.hsm_gp": "General Purpose HSM",
   "sidebar.categories.hsmaas": "HSM as a Service",
   "sidebar.badges.supported": "Supported",
+  "sidebar.badges.workingProgress": "Working progress",
   "sidebar.badges.comingSoon": "Coming Soon",
   "tabs.newTab": "Open hardware",
   "tabs.closeTab": "Close tab",

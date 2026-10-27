@@ -11,7 +11,7 @@ export const awsKmsSpec: DeviceSpec = {
   name: 'AWS Key Management Service',
   vendor: 'Amazon Web Services',
   category: 'KMS',
-  status: 'supported',
+  status: 'coming-soon',
   icon: 'cloud',
   defaultVersion: '2014-11-01',
   defaultInterface: 'aws-json',

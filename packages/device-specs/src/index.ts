@@ -35,10 +35,10 @@ export { azurePaymentHsmSpec } from './devices/azure-payment-hsm';
  * Type guard verifying if a catalog entry is a fully modeled `DeviceSpec`.
  *
  * @param entry - Catalog entry or item to inspect.
- * @returns True if entry has status 'supported' with versions and framing schemas.
+ * @returns True if entry has versions and framing schemas modeled.
  */
 export function isDeviceSpec(entry: DeviceCatalogEntry): entry is DeviceSpec {
-  return entry.status === 'supported' && 'versions' in entry && 'framing' in entry;
+  return 'versions' in entry && 'framing' in entry;
 }
 
 /**
@@ -56,7 +56,7 @@ export function getAllDevices(): readonly DeviceCatalogItem[] {
  * @returns Readonly array of fully parsed DeviceSpec objects.
  */
 export function getSupportedDevices(): readonly DeviceSpec[] {
-  return DEVICE_CATALOG.filter(isDeviceSpec);
+  return DEVICE_CATALOG.filter((d): d is DeviceSpec => isDeviceSpec(d) && d.status === 'supported');
 }
 
 /**

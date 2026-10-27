@@ -72,9 +72,9 @@ pub fn process_futurex_command(raw_frame: &str, mfk: &[u8]) -> String {
     }
 
     match cmd {
-        // ECHO: Connectivity & Diagnostics
+        // ECHO: Connectivity & Diagnostics (official Excrypt spec: AO + BC + AG, no GFY)
         "ECHO" => {
-            format!("[AOECHO;{}BC7.6.1.1ck;GFY;]", echo_ag)
+            format!("[AOECHO;BC7.6.1.1ck;{}]", echo_ag)
         }
 
         // VR: Version Information
@@ -268,9 +268,8 @@ mod tests {
     fn test_futurex_echo_and_ag_token() {
         let mfk = hex::decode(DEFAULT_TEST_MFK_HEX).unwrap();
         let resp = process_futurex_command("[AOECHO;AGMyEchoToken;]", &mfk);
-        assert!(resp.starts_with("[AOECHO;"));
-        assert!(resp.contains("AGMyEchoToken;"));
-        assert!(resp.contains("GFY;"));
+        assert_eq!(resp, "[AOECHO;BC7.6.1.1ck;AGMyEchoToken;]");
+        assert!(!resp.contains("GFY;"));
     }
 
     #[test]

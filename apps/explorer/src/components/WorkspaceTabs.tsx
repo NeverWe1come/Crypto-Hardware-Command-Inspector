@@ -46,6 +46,25 @@ export function WorkspaceTabs() {
             aria-selected={isActive}
             tabIndex={0}
             onClick={() => dispatch({ type: 'SELECT_DEVICE_TAB', payload: { tabId: tab.id } })}
+            onAuxClick={(e) => {
+              if (e.button === 1) {
+                e.preventDefault();
+                e.stopPropagation();
+                dispatch({ type: 'CLOSE_DEVICE_TAB', payload: { tabId: tab.id } });
+              }
+            }}
+            onMouseUp={(e) => {
+              if (e.button === 1) {
+                e.preventDefault();
+                e.stopPropagation();
+                dispatch({ type: 'CLOSE_DEVICE_TAB', payload: { tabId: tab.id } });
+              }
+            }}
+            onMouseDown={(e) => {
+              if (e.button === 1) {
+                e.preventDefault();
+              }
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();

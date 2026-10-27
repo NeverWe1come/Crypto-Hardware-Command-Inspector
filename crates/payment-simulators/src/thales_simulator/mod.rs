@@ -95,37 +95,62 @@ fn get_paired_response_code(cmd: &str) -> String {
     }
 }
 
-/// Processes an incoming Thales command payload (excluding the 2-byte BE length prefix).
-/// Returns the full response payload (to be prefixed with 2-byte BE length before transmission).
-pub fn process_thales_command(payload: &str, lmk: &[u8]) -> String {
+/// Identifies the Message Header (if any), Command Code (2 ASCII chars), and remaining Data.
+fn extract_thales_header_and_code(payload: &str) -> (&str, &str, &str) {
     let known_commands = [
         "NC", "A0", "A2", "A4", "A6", "A8", "CW", "CY", "EE", "FA", "M0", "M2",
-        "CC", "KQ", "BU", "CA", "DA", "NO", "PA", "BA", "BC",
+        "CC", "KQ", "BU", "CA", "DA", "NO", "PA", "BA", "BC", "BW", "FE", "G0",
+        "HA", "HC", "HE", "HG", "HI", "HK", "HQ", "HS", "HU", "HW", "HY",
     ];
 
-    // Identify command code and header
-    let mut detected: Option<(usize, &str)> = None;
-    for &kc in &known_commands {
-        if let Some(pos) = payload.find(kc) {
-            match detected {
-                Some((prev_pos, _)) if pos < prev_pos => detected = Some((pos, kc)),
-                None => detected = Some((pos, kc)),
-                _ => {}
+    // Priority 1: Check known command code at standard 4-character header offset (pos 4)
+    if payload.len() >= 6 {
+        for &kc in &known_commands {
+            if payload[4..].starts_with(kc) {
+                return (&payload[0..4], kc, &payload[6..]);
             }
         }
     }
 
-    let (header, cmd_code, data) = match detected {
-        Some((pos, kc)) => (&payload[0..pos], kc, &payload[pos + 2..]),
-        None => {
-            if payload.len() >= 2 {
-                ("", &payload[0..2], &payload[2..])
-            } else {
-                ("", "NC", "")
+    // Priority 2: Check known command code at offset 0 (no header)
+    if payload.len() >= 2 {
+        for &kc in &known_commands {
+            if payload.starts_with(kc) {
+                return ("", kc, &payload[2..]);
             }
         }
-    };
+    }
 
+    // Priority 3: If payload is >= 6 and characters 4..6 look like an ASCII uppercase command code
+    if payload.len() >= 6 {
+        let candidate = &payload[4..6];
+        let bytes = candidate.as_bytes();
+        if bytes[0].is_ascii_uppercase() && (bytes[1].is_ascii_alphanumeric()) {
+            return (&payload[0..4], candidate, &payload[6..]);
+        }
+    }
+
+    // Priority 4: If payload starts with an ASCII uppercase command code at index 0
+    if payload.len() >= 2 {
+        let candidate = &payload[0..2];
+        let bytes = candidate.as_bytes();
+        if bytes[0].is_ascii_uppercase() && (bytes[1].is_ascii_alphanumeric()) {
+            return ("", candidate, &payload[2..]);
+        }
+    }
+
+    // Fallback: Default to NC diagnostics
+    if payload.len() >= 4 {
+        (&payload[0..4], "NC", &payload[4..])
+    } else {
+        ("", "NC", "")
+    }
+}
+
+/// Processes an incoming Thales command payload (excluding the 2-byte BE length prefix).
+/// Returns the full response payload (to be prefixed with 2-byte BE length before transmission).
+pub fn process_thales_command(payload: &str, lmk: &[u8]) -> String {
+    let (header, cmd_code, data) = extract_thales_header_and_code(payload);
     let resp_code = get_paired_response_code(cmd_code);
 
     // 2. Dispatch command
@@ -254,31 +279,45 @@ pub async fn start_thales_simulator(port: Option<u16>) -> Result<ThalesSimulator
                 Ok((mut socket, _)) => {
                     let lmk_clone = test_lmk.clone();
                     tokio::spawn(async move {
-                        let mut len_buf = [0u8; 2];
+                        let mut buffer = [0u8; 4096];
                         while RUNNING_FLAG.load(Ordering::SeqCst) {
-                            // Read 2-byte Big-Endian length header
-                            if socket.read_exact(&mut len_buf).await.is_err() {
-                                break;
-                            }
-                            let frame_len = u16::from_be_bytes(len_buf) as usize;
-                            if frame_len == 0 || frame_len > 4096 {
+                            let bytes_read = match socket.read(&mut buffer).await {
+                                Ok(0) => break,
+                                Ok(n) => n,
+                                Err(_) => break,
+                            };
+
+                            if bytes_read == 0 {
                                 break;
                             }
 
-                            let mut payload_buf = vec![0u8; frame_len];
-                            if socket.read_exact(&mut payload_buf).await.is_err() {
-                                break;
+                            // Auto-detect framing: check if incoming payload starts with 2-byte BE length prefix
+                            let (req_str, framed_with_be_len) = if bytes_read >= 2 {
+                                let be_len = u16::from_be_bytes([buffer[0], buffer[1]]) as usize;
+                                let is_ascii_prefix = buffer[0] >= 0x20 && buffer[1] >= 0x20;
+                                if !is_ascii_prefix && be_len > 0 && be_len <= bytes_read - 2 {
+                                    (String::from_utf8_lossy(&buffer[2..2 + be_len]).to_string(), true)
+                                } else {
+                                    (String::from_utf8_lossy(&buffer[..bytes_read]).trim().to_string(), false)
+                                }
+                            } else {
+                                (String::from_utf8_lossy(&buffer[..bytes_read]).trim().to_string(), false)
+                            };
+
+                            if req_str.is_empty() {
+                                continue;
                             }
 
-                            let req_str = String::from_utf8_lossy(&payload_buf).to_string();
                             let resp_str = process_thales_command(&req_str, &lmk_clone);
                             PROCESSED_COUNTER.fetch_add(1, Ordering::SeqCst);
 
-                            // Send 2-byte BE length prefix followed by response payload
+                            // Send response with matching framing format
                             let resp_bytes = resp_str.as_bytes();
-                            let resp_len = (resp_bytes.len() as u16).to_be_bytes();
-                            if socket.write_all(&resp_len).await.is_err() {
-                                break;
+                            if framed_with_be_len {
+                                let resp_len = (resp_bytes.len() as u16).to_be_bytes();
+                                if socket.write_all(&resp_len).await.is_err() {
+                                    break;
+                                }
                             }
                             if socket.write_all(resp_bytes).await.is_err() {
                                 break;
@@ -387,7 +426,13 @@ mod tests {
     #[test]
     fn test_thales_header_preservation() {
         let lmk = hex::decode(DEFAULT_TEST_LMK_HEX).unwrap();
-        let resp = process_thales_command("MYHEADER99NC", &lmk);
-        assert!(resp.starts_with("MYHEADER99ND00"));
+        let resp = process_thales_command("0001NC", &lmk);
+        assert!(resp.starts_with("0001ND00"));
+
+        let resp_bw = process_thales_command("0001BW001234", &lmk);
+        assert!(resp_bw.starts_with("0001BX00"));
+
+        let resp_no_hdr = process_thales_command("BW001234", &lmk);
+        assert!(resp_no_hdr.starts_with("BX00"));
     }
 }

@@ -12,7 +12,7 @@ export const thalesLuna7Spec: DeviceSpec = {
   name: 'Thales Luna PCIe / Network HSM 7',
   vendor: 'Thales',
   category: 'HSM_GP',
-  status: 'supported',
+  status: 'coming-soon',
   icon: 'cpu',
   defaultVersion: '7.8.0',
   defaultInterface: 'pkcs11',

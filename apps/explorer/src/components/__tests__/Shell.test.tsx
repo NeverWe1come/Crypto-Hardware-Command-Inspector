@@ -118,18 +118,18 @@ describe('Application Shell Integration', () => {
       expect(screen.getByTestId('device-card-utimaco-atalla-at1000')).toBeInTheDocument();
     });
 
-    it('displays Soportado badge on supported devices across all categories', async () => {
+    it('displays Soportado badge on supported devices and Working progress on others', async () => {
       const { user } = renderShell();
 
-      // Supported badges in financial and general purpose HSM category
+      // Supported badges in the 3 official primary HSMs
       expect(screen.getByTestId('badge-supported-utimaco-atalla-at1000')).toHaveTextContent(/Soportado/i);
       expect(screen.getByTestId('badge-supported-thales-payshield-10k')).toHaveTextContent(/Soportado/i);
       expect(screen.getByTestId('badge-supported-futurex-excrypt')).toHaveTextContent(/Soportado/i);
-      expect(screen.getByTestId('badge-supported-thales-luna-7')).toHaveTextContent(/Soportado/i);
+      expect(screen.getByTestId('badge-coming-soon-thales-luna-7')).toHaveTextContent(/Working progress/i);
 
-      // Switch to KMS for AWS KMS supported badge
+      // Switch to KMS for AWS KMS working progress badge
       await user.click(screen.getByTestId('category-filter-kms'));
-      expect(screen.getByTestId('badge-supported-aws-kms')).toHaveTextContent(/Soportado/i);
+      expect(screen.getByTestId('badge-coming-soon-aws-kms')).toHaveTextContent(/Working progress/i);
     });
   });
 
@@ -196,21 +196,32 @@ describe('Application Shell Integration', () => {
       expect(screen.getByTestId('empty-workspace-state')).toBeInTheDocument();
     });
 
-    it('opens a workspace tab when clicking a KMS device card like aws-kms', async () => {
+    it('closes tab when middle-clicking (mouse wheel click) on the tab element', async () => {
       const { user } = renderShell();
 
-      // Switch to KMS category where aws-kms is located
-      await user.click(screen.getByTestId('category-filter-kms'));
+      await user.click(screen.getByTestId('device-card-utimaco-atalla-at1000'));
+      const atallaTab = screen.getByTestId('workspace-tab-utimaco-atalla-at1000');
+      expect(atallaTab).toBeInTheDocument();
 
-      const awsCard = screen.getByTestId('device-card-aws-kms');
-      expect(awsCard).toHaveAttribute('aria-disabled', 'false');
+      // Fire middle-click (mouse wheel click with button: 1)
+      fireEvent.mouseUp(atallaTab, { button: 1 });
+
+      expect(screen.queryByTestId('workspace-tab-utimaco-atalla-at1000')).not.toBeInTheDocument();
+      expect(screen.getByTestId('empty-workspace-state')).toBeInTheDocument();
+    });
+
+    it('opens a workspace tab when clicking a supported device card like futurex-excrypt', async () => {
+      const { user } = renderShell();
+
+      const futurexCard = screen.getByTestId('device-card-futurex-excrypt');
+      expect(futurexCard).toHaveAttribute('aria-disabled', 'false');
 
       // Click card
-      await user.click(awsCard);
+      await user.click(futurexCard);
 
       // Tab should be opened
       expect(screen.getByTestId('workspace-tabs-bar')).toBeInTheDocument();
-      expect(screen.getByTestId('workspace-tab-aws-kms')).toBeInTheDocument();
+      expect(screen.getByTestId('workspace-tab-futurex-excrypt')).toBeInTheDocument();
     });
   });
 

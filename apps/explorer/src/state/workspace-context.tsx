@@ -24,7 +24,7 @@ interface WorkspaceContextValue {
   readonly dispatch: React.Dispatch<WorkspaceAction>;
 }
 
-const WorkspaceContext = createContext<WorkspaceContextValue | undefined>(undefined);
+export const WorkspaceContext = createContext<WorkspaceContextValue | undefined>(undefined);
 
 /**
  * Props accepted by the {@link WorkspaceProvider} component.

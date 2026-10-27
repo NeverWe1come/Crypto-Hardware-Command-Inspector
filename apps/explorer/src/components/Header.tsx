@@ -15,6 +15,7 @@ import { ThalesSimulatorModal } from './ThalesSimulatorModal';
 import { FuturexSimulatorModal } from './FuturexSimulatorModal';
 import { LiquidSecuritySimulatorModal } from './LiquidSecuritySimulatorModal';
 import { SimulatorsDropdown } from './SimulatorsDropdown';
+import { BrandLogo } from './BrandLogo';
 
 /**
  * Top application header providing brand identity, session library access,
@@ -63,12 +64,13 @@ export function Header() {
       >
         {/* Brand title */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="size-7 rounded-md bg-[#283350] text-[#feffff] flex items-center justify-center font-bold text-xs tracking-wider border border-[#ff7800]/40 shadow-xs">
-              CHCI
-            </div>
-            <h1 className="font-semibold text-sm tracking-tight text-foreground">
+          <div className="flex items-center gap-2.5">
+            <BrandLogo size={30} />
+            <h1 className="font-semibold text-sm tracking-tight text-foreground flex items-center gap-2">
               <FormattedMessage id="app.title" defaultMessage="Crypto Hardware Command Inspector" />
+              <span className="hidden lg:inline text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-normal">
+                v1.0
+              </span>
             </h1>
           </div>
         </div>
