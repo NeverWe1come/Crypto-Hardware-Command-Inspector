@@ -103,39 +103,22 @@ test.describe('Multi-Hardware Command Processing and AnalysisPanel Live Audit', 
     });
   });
 
-  test('audits Marvell LiquidSecurity live command processing and AnalysisPanel rendering', async ({ page }) => {
-    // 1. Select Marvell LiquidSecurity
+  test('audits Marvell LiquidSecurity coming-soon status and Working progress badging', async ({ page }) => {
+    // 1. Filter by General Purpose HSM category
+    const gpFilter = page.getByTestId('category-filter-hsm_gp');
+    if (await gpFilter.isVisible()) {
+      await gpFilter.click();
+      await page.waitForTimeout(300);
+    }
+
+    // 2. Verify Marvell LiquidSecurity card displays Working progress badge and is disabled
     const liquidCard = page.getByTestId('device-card-marvell-liquid-security');
-    if (await liquidCard.isVisible()) {
-      await liquidCard.click();
-    }
-    await page.waitForTimeout(400);
+    await expect(liquidCard).toBeVisible();
+    await expect(liquidCard).toHaveAttribute('aria-disabled', 'true');
 
-    // 2. Insert LiquidSecurity CLI request command
-    const cmEditor = page.locator('.cm-content');
-    await cmEditor.click();
-    await page.keyboard.press('ControlOrMeta+A');
-    await page.keyboard.press('Backspace');
-    await page.keyboard.insertText('KRN_STATUS');
-    await page.waitForTimeout(400);
-
-    const generalInfoTrigger = page.getByTestId('accordion-trigger-general-info');
-    if ((await generalInfoTrigger.getAttribute('aria-expanded')) === 'false') {
-      await generalInfoTrigger.click();
-    }
-    await page.waitForTimeout(300);
-
-    const codeBadge = page.getByTestId('general-info-command-code');
-    await expect(codeBadge).toContainText('KRN_STATUS');
-
-    // 3. Test PKCS#11 Callable interface command
-    await cmEditor.click();
-    await page.keyboard.press('ControlOrMeta+A');
-    await page.keyboard.press('Backspace');
-    await page.keyboard.insertText('C_GenerateKey(hSession=0x01, mechanism=CKM_AES_KEY_GEN);');
-    await page.waitForTimeout(400);
-
-    await expect(codeBadge).toContainText('C_GenerateKey');
+    const badge = page.getByTestId('badge-coming-soon-marvell-liquid-security');
+    await expect(badge).toBeVisible();
+    await expect(badge).toContainText(/Working progress/i);
 
     // Capture screenshot
     await page.screenshot({

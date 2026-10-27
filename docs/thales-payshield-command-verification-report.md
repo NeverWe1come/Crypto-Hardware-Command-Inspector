@@ -1,6 +1,6 @@
 # Thales payShield 10K v2.3 — Comprehensive Command Verification & Audit Report
 
-> **Generated**: 2026-10-27T18:36:58.433Z  
+> **Generated**: 2026-10-27T22:49:31.616Z  
 > **Auditor**: Crypto Hardware Command Inspector (`chci`) — Test Harness Suite  
 > **Hardware Profile**: Thales payShield 10K (Firmware v2.3, extends v1.9)  
 > **Framing Architecture**: Header-Positional (`[Header 4B][Code 2B][ErrorCode 2B][Data...]`)  

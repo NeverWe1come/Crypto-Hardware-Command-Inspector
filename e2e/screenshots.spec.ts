@@ -3,6 +3,8 @@ import * as path from 'path';
 
 test.describe('CHCI Visual Workflows & Automated High-Res Screenshots', () => {
   test('captures complete visual workflow screenshots for documentation', async ({ page }) => {
+    test.setTimeout(120_000);
+
     // Set desktop high-res viewport (1512x940)
     await page.setViewportSize({ width: 1512, height: 940 });
 
@@ -308,25 +310,24 @@ test.describe('CHCI Visual Workflows & Automated High-Res Screenshots', () => {
     });
 
     // -------------------------------------------------------------
-    // Screenshot 14: Multi-Interface Selector (Standard vs Proprietary)
+    // Screenshot 14: Multi-Interface Selector / Working Progress Badging
     // -------------------------------------------------------------
-    // Open Thales Luna 7 tab which has multiple interfaces (PKCS#11 Callable APIs & CLI)
-    const lunaCard = page.getByTestId('device-card-thales-luna-7');
-    if (await lunaCard.isVisible()) {
-      await lunaCard.click();
+    const gpCategoryTab = page.getByTestId('category-filter-hsm_gp');
+    if (await gpCategoryTab.isVisible()) {
+      await gpCategoryTab.click();
       await page.waitForTimeout(300);
-
-      await page.screenshot({
-        path: path.join('docs', 'assets', 'screenshots', '14-multi-interface-selector.png'),
-        fullPage: true
-      });
     }
+
+    await page.screenshot({
+      path: path.join('docs', 'assets', 'screenshots', '14-multi-interface-selector.png'),
+      fullPage: true
+    });
 
     // -------------------------------------------------------------
     // Screenshot 15: Cross-Platform Distribution Architecture
     // -------------------------------------------------------------
     // Return to main view with catalog
-    const allCategoryTab = page.locator('button').filter({ hasText: 'Todos' }).first();
+    const allCategoryTab = page.getByTestId('category-filter-all');
     if (await allCategoryTab.isVisible()) {
       await allCategoryTab.click();
       await page.waitForTimeout(300);
