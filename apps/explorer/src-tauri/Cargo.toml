@@ -1,6 +1,6 @@
 [package]
 name = "crypto-hardware-command-inspector"
-version = "0.1.0"
+version = "1.0.0"
 description = "Crypto Hardware Command Inspector - Offline Security Diagnostic Tool"
 authors = ["Crypto Hardware Command Inspector Contributors"]
 edition = "2021"

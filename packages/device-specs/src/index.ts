@@ -10,7 +10,7 @@ import { DEVICE_CATALOG } from './catalog';
 /**
  * Current release version of `@chci/device-specs`.
  */
-export const DEVICE_SPECS_VERSION = '0.1.0';
+export const DEVICE_SPECS_VERSION = '1.0.0';
 
 export * from './types';
 export { DEVICE_CATALOG } from './catalog';
