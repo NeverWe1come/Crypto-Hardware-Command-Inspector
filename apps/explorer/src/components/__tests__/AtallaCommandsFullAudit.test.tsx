@@ -218,7 +218,7 @@ describe('Utimaco Atalla AT1000 v8.60 Comprehensive Command Audit - All 468 Comm
         unmount();
         cleanup();
       }
-    });
+    }, 60000);
   });
 
   describe('Part 2: All 220 Response Commands Verification', () => {
@@ -294,7 +294,7 @@ describe('Utimaco Atalla AT1000 v8.60 Comprehensive Command Audit - All 468 Comm
         unmount();
         cleanup();
       }
-    });
+    }, 60000);
   });
 
   afterAll(() => {

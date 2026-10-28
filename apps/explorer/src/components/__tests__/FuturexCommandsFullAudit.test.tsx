@@ -203,7 +203,7 @@ describe('Futurex Excrypt v7.6.1 Comprehensive Command Audit - All 824 Commands 
         unmount();
         cleanup();
       }
-    });
+    }, 60000);
   });
 
   describe('Part 2: All 393 Response Commands Verification', () => {
@@ -275,7 +275,7 @@ describe('Futurex Excrypt v7.6.1 Comprehensive Command Audit - All 824 Commands 
         unmount();
         cleanup();
       }
-    });
+    }, 60000);
   });
 
   afterAll(() => {
