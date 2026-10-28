@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import * as simulatorClient from './services/simulator-client';
 import * as thalesClient from './services/thales-simulator-client';
@@ -7,11 +7,17 @@ import * as futurexClient from './services/futurex-simulator-client';
 import * as liquidClient from './services/liquidsecurity-simulator-client';
 
 describe('App bootstrap', () => {
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+  });
+
   it('renders the application title', () => {
-    render(<App />);
+    const { unmount } = render(<App />);
     expect(
       screen.getByRole('heading', { name: /Crypto Hardware Command Inspector/i })
     ).toBeInTheDocument();
+    unmount();
   });
 
   it('triggers cleanup for all simulators on beforeunload event', () => {
@@ -48,13 +54,15 @@ describe('App bootstrap', () => {
       uptimeSeconds: 0,
     });
 
-    render(<App />);
+    const { unmount } = render(<App />);
     fireEvent(window, new Event('beforeunload'));
 
     expect(atallaSpy).toHaveBeenCalledTimes(1);
     expect(thalesSpy).toHaveBeenCalledTimes(1);
     expect(futurexSpy).toHaveBeenCalledTimes(1);
     expect(liquidSpy).toHaveBeenCalledTimes(1);
+
+    unmount();
   });
 
   it('unregisters beforeunload listener when unmounted', () => {
@@ -86,13 +94,15 @@ describe('App bootstrap', () => {
     const atallaSpy = vi.spyOn(simulatorClient, 'stopAtallaSimulator').mockRejectedValue(new Error('Docker daemon unavailable'));
     const thalesSpy = vi.spyOn(thalesClient, 'stopThalesSimulator').mockRejectedValue(new Error('Socket error'));
 
-    render(<App />);
+    const { unmount } = render(<App />);
     expect(() => {
       fireEvent(window, new Event('beforeunload'));
     }).not.toThrow();
 
     expect(atallaSpy).toHaveBeenCalledTimes(1);
     expect(thalesSpy).toHaveBeenCalledTimes(1);
+
+    unmount();
   });
 });
 
