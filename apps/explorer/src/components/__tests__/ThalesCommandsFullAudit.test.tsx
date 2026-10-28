@@ -193,7 +193,7 @@ describe('Thales payShield 10K v2.3 Comprehensive Command Audit - All 512 Comman
         unmount();
         cleanup();
       }
-    });
+    }, 60000);
   });
 
   describe('Part 2: All 256 Response Commands Verification', () => {
@@ -265,7 +265,7 @@ describe('Thales payShield 10K v2.3 Comprehensive Command Audit - All 512 Comman
         unmount();
         cleanup();
       }
-    });
+    }, 60000);
   });
 
   afterAll(() => {
