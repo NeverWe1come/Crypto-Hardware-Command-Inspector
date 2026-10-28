@@ -19,11 +19,9 @@ export default defineConfig({
     environment: 'jsdom',
     testTimeout: 15000,
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        maxForks: 2,
-        minForks: 1
-      }
+    forks: {
+      maxForks: 2,
+      minForks: 1
     },
     setupFiles: [path.resolve(__dirname, 'vitest.setup.ts')],
     include: [
