@@ -1,6 +1,6 @@
 # Marvell LiquidSecurity HSM — Comprehensive Command Verification & Audit Report
 
-> **Generated**: 2026-10-27T22:49:54.901Z  
+> **Generated**: 2026-10-28T16:58:45.957Z  
 > **Auditor**: Crypto Hardware Command Inspector (`chci`) — Test Harness Suite  
 > **Hardware Profile**: Marvell LiquidSecurity HSM (Firmware v3.4.0, extends v2.3.0)  
 > **Framing Architecture**: Structured CLI (`<Command> <arg>=<val>...`) and Callable PKCS#11 (`C_Func(...)`)  

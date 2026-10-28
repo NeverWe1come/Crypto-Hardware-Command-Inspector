@@ -6,7 +6,7 @@
 /**
  * Current release version of `@chci/parser-core`.
  */
-export const PARSER_CORE_VERSION = '0.1.0';
+export const PARSER_CORE_VERSION = '1.0.0';
 
 export * from './types';
 export * from './normalizer';
