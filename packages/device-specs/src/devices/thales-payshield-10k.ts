@@ -9,6 +9,7 @@ import {
   thalesPayshieldCommandsV23
 } from './thales-payshield-commands';
 import { thalesPayshieldDocs } from './thales-payshield-docs';
+import { THALES_PAYSHIELD_V23_ERRORS } from './thales-payshield-v23-errors';
 
 /**
  * Thales payShield 10K hardware specification.
@@ -340,92 +341,7 @@ export const thalesPayshield10kSpec: DeviceSpec = {
           (c) => !['NC', 'ND', 'A0', 'A1', 'CA', 'CB'].includes(c.code)
         )
       ],
-      errorCodes: {
-        '00': {
-          code: '00',
-          title: { es: 'Sin Error', en: 'No Error' },
-          description: { es: 'El comando se ejecutó exitosamente.', en: 'The command was executed successfully.' },
-          troubleshooting: { es: 'No se requiere acción correctiva.', en: 'No troubleshooting required.' }
-        },
-        '01': {
-          code: '01',
-          title: { es: 'Fallo de Verificación', en: 'Verification Failure' },
-          description: { es: 'Fallo de verificación de PIN, MAC o firma criptográfica.', en: 'PIN, MAC, or digital signature verification failure.' },
-          troubleshooting: { es: 'Compruebe los datos de entrada o la clave de verificación utilizada.', en: 'Verify input data or verification key used.' }
-        },
-        '02': {
-          code: '02',
-          title: { es: 'Longitud de Clave Inapropiada', en: 'Inappropriate Key Length' },
-          description: { es: 'La longitud de la clave no es válida para el algoritmo o esquema indicado.', en: 'Key length is invalid for the specified algorithm or scheme.' },
-          troubleshooting: { es: 'Verifique si el algoritmo requiere clave simple, doble o triple longitud.', en: 'Verify single, double, or triple length requirement.' }
-        },
-        '04': {
-          code: '04',
-          title: { es: 'Tipo de Clave Inválido', en: 'Invalid Key Type' },
-          description: { es: 'El tipo de clave especificado no está definido en el firmware.', en: 'The specified key type code is not defined in firmware.' }
-        },
-        '05': {
-          code: '05',
-          title: { es: 'Tipo de Clave Inapropiado', en: 'Inappropriate Key Type' },
-          description: { es: 'El tipo de clave no puede emplearse para la operación solicitada.', en: 'The key type is inappropriate for the requested operation.' }
-        },
-        '10': {
-          code: '10',
-          title: { es: 'Error de Paridad en Clave de Origen', en: 'Source Key Parity Error' },
-          description: { es: 'Uno o más bytes de la clave de origen tienen paridad incorrecta.', en: 'One or more bytes in source key have invalid parity.' }
-        },
-        '11': {
-          code: '11',
-          title: { es: 'Error de Paridad en Clave de Destino', en: 'Destination Key Parity Error' },
-          description: { es: 'Uno o más bytes de la clave de destino tienen paridad incorrecta.', en: 'One or more bytes in destination key have invalid parity.' }
-        },
-        '12': {
-          code: '12',
-          title: { es: 'Error de Paridad en Clave', en: 'Key Parity Error' },
-          description: { es: 'La clave no cumple con la regla de paridad impar requerida.', en: 'Supplied key fails odd parity validation.' }
-        },
-        '14': {
-          code: '14',
-          title: { es: 'PIN Block Inválido', en: 'Invalid PIN Block' },
-          description: { es: 'El PIN block contiene dígitos que no son hexadecimales válidos o formato corrupto.', en: 'PIN block contains non-hexadecimal characters or corrupt format.' }
-        },
-        '15': {
-          code: '15',
-          title: { es: 'Datos de Entrada Inválidos', en: 'Invalid Input Data' },
-          description: { es: 'Uno o más campos contienen caracteres no reconocidos, delimitadores faltantes o longitud incorrecta.', en: 'One or more fields contain unrecognized characters, missing delimiters, or invalid length.' },
-          troubleshooting: { es: 'Inspeccione la trama enviada comparando con la especificación del comando.', en: 'Inspect request frame structure against command specification.' }
-        },
-        '20': {
-          code: '20',
-          title: { es: 'Error Hardware del HSM', en: 'HSM Hardware Error' },
-          description: { es: 'Fallo interno en el coprocesador criptográfico o memoria volátil.', en: 'Internal error in cryptographic coprocessor or volatile memory.' }
-        },
-        '21': {
-          code: '21',
-          title: { es: 'Comando Inválido', en: 'Invalid Command' },
-          description: { es: 'El código de comando de dos caracteres no es reconocido por el HSM.', en: 'The two-character command code is not recognized by HSM.' }
-        },
-        '24': {
-          code: '24',
-          title: { es: 'Longitud de PIN Fuera de Rango', en: 'PIN Length Out of Range' },
-          description: { es: 'La longitud de PIN indicada no está entre 4 y 12 dígitos.', en: 'Specified PIN length is outside 4 to 12 digit range.' }
-        },
-        '26': {
-          code: '26',
-          title: { es: 'Formato de PIN Inválido', en: 'Invalid PIN Format' },
-          description: { es: 'El código de formato de PIN block no es compatible o no está soportado.', en: 'The PIN block format code is unsupported or unknown.' }
-        },
-        '27': {
-          code: '27',
-          title: { es: 'Operación no Permitida por LMK', en: 'Operation Not Permitted by LMK' },
-          description: { es: 'La directiva de seguridad del LMK prohíbe la operación solicitada.', en: 'LMK security configuration disallows the requested operation.' }
-        },
-        '68': {
-          code: '68',
-          title: { es: 'Error de Formato en Key Block', en: 'Key Block Format Error' },
-          description: { es: 'El encabezado o la estructura del bloque TR-31 / S Key Block no es válida.', en: 'Header or structure in TR-31 / S Key Block is corrupt or invalid.' }
-        }
-      }
+      errorCodes: THALES_PAYSHIELD_V23_ERRORS
     },
     '2.3': {
       version: '2.3',
@@ -443,13 +359,7 @@ export const thalesPayshield10kSpec: DeviceSpec = {
           (c) => !['NC', 'ND', 'A0', 'A1', 'CA', 'CB'].includes(c.code)
         )
       ],
-      errorCodes: {
-        '28': {
-          code: '28',
-          title: { es: 'Fallo de Autenticación en Key Block TR-31', en: 'TR-31 Key Block MAC Verification Failure' },
-          description: { es: 'El MAC de autenticación del bloque TR-31 no coincide con el calculado.', en: 'Authentication MAC on TR-31 block does not match calculated MAC.' }
-        }
-      }
+      errorCodes: THALES_PAYSHIELD_V23_ERRORS
     }
   }
 };
