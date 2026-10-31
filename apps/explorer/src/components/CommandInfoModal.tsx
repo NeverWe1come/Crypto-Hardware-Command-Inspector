@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import type { CommandSpec, DeviceSpec } from '@chci/parser-core';
+import type { CommandSpec, DeviceSpec, FieldSpec } from '@chci/parser-core';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogDescription
 } from './ui/dialog';
-import { BookOpen, Layers, ShieldCheck, Tag, FileText } from 'lucide-react';
+import { BookOpen, Layers, ShieldCheck, Tag, FileText, Code2, Copy, Check } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { Button } from './ui/button';
 
@@ -28,7 +28,7 @@ export interface CommandInfoModalProps {
 
 /**
  * Modal displaying complete architectural details, full Markdown documentation,
- * parameter breakdown, and citations for the selected cryptographic command.
+ * parameter breakdown, AKB/Variant mode specs, and official examples.
  */
 export function CommandInfoModal({
   isOpen,
@@ -37,7 +37,9 @@ export function CommandInfoModal({
   deviceSpec,
   locale
 }: CommandInfoModalProps) {
-  const [activeView, setActiveView] = useState<'markdown' | 'fields'>('markdown');
+  const [activeView, setActiveView] = useState<'markdown' | 'fields' | 'examples'>('markdown');
+  const [modeFilter, setModeFilter] = useState<'all' | 'akb' | 'variant'>('all');
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   if (!commandSpec) return null;
 
@@ -48,6 +50,29 @@ export function CommandInfoModal({
 
   const rawDoc = resolve(commandSpec.markdownDoc);
   const hasMarkdownDoc = Boolean(rawDoc && rawDoc.trim().length > 0);
+  const hasExamples = Boolean(commandSpec.examples && commandSpec.examples.length > 0);
+  const hasFieldsByMode = Boolean(
+    commandSpec.fieldsByMode &&
+      (commandSpec.fieldsByMode.akb?.length || commandSpec.fieldsByMode.variant?.length)
+  );
+
+  const displayFields: readonly FieldSpec[] = (() => {
+    if (modeFilter === 'akb' && commandSpec.fieldsByMode?.akb?.length) {
+      return commandSpec.fieldsByMode.akb;
+    }
+    if (modeFilter === 'variant' && commandSpec.fieldsByMode?.variant?.length) {
+      return commandSpec.fieldsByMode.variant;
+    }
+    return commandSpec.fields;
+  })();
+
+  const handleCopyExample = (raw: string, idx: number) => {
+    navigator.clipboard.writeText(raw).catch(() => {});
+    setCopiedIndex(idx);
+    setTimeout(() => {
+      setCopiedIndex(null);
+    }, 2000);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -56,7 +81,7 @@ export function CommandInfoModal({
         className="max-w-4xl w-[92vw] max-h-[88vh] flex flex-col bg-[#1a2236] border-[#2e3b5b] text-[#feffff] p-0 overflow-hidden"
       >
         <DialogHeader className="space-y-1.5 px-6 pt-5 pb-3 border-b border-[#2e3b5b] shrink-0">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#ff7800] text-[#131927]">
                 {commandSpec.code}
@@ -65,8 +90,8 @@ export function CommandInfoModal({
                 {resolve(commandSpec.name)}
               </DialogTitle>
             </div>
-            {hasMarkdownDoc && (
-              <div className="flex items-center gap-1 bg-[#131927] p-0.5 rounded border border-[#2e3b5b]">
+            <div className="flex items-center gap-1 bg-[#131927] p-0.5 rounded border border-[#2e3b5b]">
+              {hasMarkdownDoc && (
                 <Button
                   type="button"
                   variant="ghost"
@@ -79,24 +104,41 @@ export function CommandInfoModal({
                   }`}
                 >
                   <FileText className="size-3.5" />
-                  <span>Manual Oficial (.md)</span>
+                  <span>Manual Oficial</span>
                 </Button>
+              )}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setActiveView('fields')}
+                className={`h-7 px-2.5 text-xs gap-1 rounded-xs ${
+                  activeView === 'fields'
+                    ? 'bg-[#ff7800] text-[#131927] font-semibold'
+                    : 'text-[#94a3b8] hover:text-[#feffff]'
+                }`}
+              >
+                <Layers className="size-3.5" />
+                <span>Parámetros ({commandSpec.fields.length})</span>
+              </Button>
+              {hasExamples && (
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => setActiveView('fields')}
+                  data-testid="btn-tab-examples"
+                  onClick={() => setActiveView('examples')}
                   className={`h-7 px-2.5 text-xs gap-1 rounded-xs ${
-                    activeView === 'fields'
+                    activeView === 'examples'
                       ? 'bg-[#ff7800] text-[#131927] font-semibold'
                       : 'text-[#94a3b8] hover:text-[#feffff]'
                   }`}
                 >
-                  <Layers className="size-3.5" />
-                  <span>Parámetros ({commandSpec.fields.length})</span>
+                  <Code2 className="size-3.5" />
+                  <span>Ejemplos ({commandSpec.examples?.length})</span>
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
           <DialogDescription className="text-xs text-[#94a3b8]">
             {deviceSpec?.name} • {resolve(commandSpec.category)}
@@ -105,11 +147,62 @@ export function CommandInfoModal({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 text-xs">
-          {hasMarkdownDoc && activeView === 'markdown' ? (
+          {hasMarkdownDoc && activeView === 'markdown' && (
             <div data-testid="command-markdown-view" className="space-y-4">
               <MarkdownRenderer markdown={rawDoc} />
             </div>
-          ) : (
+          )}
+
+          {activeView === 'examples' && (
+            <div data-testid="command-examples-view" className="space-y-3">
+              <h4 className="font-semibold text-xs text-[#38bdf8] mb-1 flex items-center gap-1.5">
+                <Code2 className="size-3.5" />
+                <span>Ejemplos Oficiales de Trama ({commandSpec.examples?.length})</span>
+              </h4>
+              <p className="text-[#94a3b8] text-[11px]">
+                Tramas verificadas directamente del manual del fabricante:
+              </p>
+              <div className="space-y-2.5">
+                {commandSpec.examples?.map((ex, exIdx) => (
+                  <div
+                    key={exIdx}
+                    data-testid={`official-example-${exIdx}`}
+                    className="p-3 rounded bg-[#131927] border border-[#2e3b5b] space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-xs text-[#feffff]">
+                        {resolve(ex.title)}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleCopyExample(ex.raw, exIdx)}
+                        className="h-6 px-2 text-[10px] gap-1 bg-[#1a2236] border-[#2e3b5b] hover:bg-[#2e3b5b] text-[#feffff]"
+                      >
+                        {copiedIndex === exIdx ? (
+                          <>
+                            <Check className="size-3 text-emerald-400" />
+                            <span className="text-emerald-400">¡Copiado!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="size-3" />
+                            <span>Copiar trama</span>
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <pre className="p-2 rounded bg-black/40 border border-[#2e3b5b]/60 font-mono text-[11px] text-[#38bdf8] overflow-x-auto select-all">
+                      {ex.raw}
+                    </pre>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeView === 'fields' && (
             <div data-testid="command-fields-view" className="space-y-4">
               {/* Summary / Description */}
               <div>
@@ -135,15 +228,65 @@ export function CommandInfoModal({
                 </div>
               )}
 
+              {/* Mode filter tabs if fieldsByMode is available */}
+              {hasFieldsByMode && (
+                <div className="flex items-center gap-1.5 pt-1">
+                  <span className="text-[11px] text-muted-foreground mr-1">Filtrar tabla:</span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setModeFilter('all')}
+                    className={`h-6 px-2 text-[11px] rounded-xs ${
+                      modeFilter === 'all'
+                        ? 'bg-[#38bdf8]/20 text-[#38bdf8] font-bold border border-[#38bdf8]/30'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Estándar ({commandSpec.fields.length})
+                  </Button>
+                  {commandSpec.fieldsByMode?.akb && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setModeFilter('akb')}
+                      className={`h-6 px-2 text-[11px] rounded-xs ${
+                        modeFilter === 'akb'
+                          ? 'bg-[#FBD5CD]/20 text-[#f472b6] font-bold border border-[#f472b6]/40'
+                          : 'text-muted-foreground hover:text-[#f472b6]'
+                      }`}
+                    >
+                      AKB ({commandSpec.fieldsByMode.akb.length})
+                    </Button>
+                  )}
+                  {commandSpec.fieldsByMode?.variant && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setModeFilter('variant')}
+                      className={`h-6 px-2 text-[11px] rounded-xs ${
+                        modeFilter === 'variant'
+                          ? 'bg-[#B5B1D2]/20 text-purple-300 font-bold border border-purple-500/40'
+                          : 'text-muted-foreground hover:text-purple-300'
+                      }`}
+                    >
+                      Variant ({commandSpec.fieldsByMode.variant.length})
+                    </Button>
+                  )}
+                </div>
+              )}
+
               {/* Fields list */}
-              {commandSpec.fields && commandSpec.fields.length > 0 && (
+              {displayFields && displayFields.length > 0 && (
                 <div>
                   <h4 className="font-semibold text-xs text-[#38bdf8] mb-1.5 flex items-center gap-1.5">
                     <Layers className="size-3.5" />
-                    <span>Estructura de Parámetros ({commandSpec.fields.length})</span>
+                    <span>Estructura de Parámetros ({displayFields.length})</span>
                   </h4>
                   <div className="space-y-2">
-                    {commandSpec.fields.map((f, idx) => (
+                    {displayFields.map((f, idx) => (
                       <div
                         key={f.id || idx}
                         className="p-2.5 rounded bg-[#131927] border border-[#2e3b5b] text-xs flex flex-col gap-1.5"
@@ -156,6 +299,11 @@ export function CommandInfoModal({
                             {f.required && (
                               <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-[#018934]/20 text-[#0da845] border border-[#018934]/40">
                                 Requerido
+                              </span>
+                            )}
+                            {f.presence === 'optional' && (
+                              <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground border border-border">
+                                Opcional
                               </span>
                             )}
                             {f.sensitive && (

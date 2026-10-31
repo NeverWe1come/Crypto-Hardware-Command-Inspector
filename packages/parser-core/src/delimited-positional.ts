@@ -5,7 +5,7 @@
 
 import { resolveDeviceVersion } from './engine';
 import { maskSensitiveValue, normalizeInput } from './normalizer';
-import { validateEncoding, validateFieldLength } from './validation';
+import { isVolatileTableLocation, validateEncoding, validateFieldLength } from './validation';
 import type {
   CommandDirection,
   CommandSpec,
@@ -13,6 +13,7 @@ import type {
   ErrorCodeSpec,
   FieldSpec,
   FrameSegment,
+  KeyManagementMode,
   ParseCommandOptions,
   ParseDiagnostic,
   ParsedField,
@@ -25,17 +26,10 @@ import type {
  * Used primarily by hardware such as Utimaco / Atalla AT1000 where frames are
  * enclosed by start/end delimiters (`<` and `>`) and tokens are separated by `#`.
  *
- * @param raw - Raw ASCII or hexadecimal command string received from wire/host.
+ * @param raw - Raw ASCII command string.
  * @param spec - Hardware device specification containing framing and command schemas.
- * @param options - Optional parsing flags (expected direction, explicit firmware version).
+ * @param options - Optional parsing flags (expected direction, explicit firmware version, key management).
  * @returns Fully structured {@link ParseResult} with extracted fields, diagnostics, and segments.
- *
- * @example
- * ```typescript
- * const result = parseDelimitedPositional('<31#Y#01#>', atallaSpec);
- * console.log(result.commandCode); // "31"
- * console.log(result.errorCode); // "01"
- * ```
  */
 export function parseDelimitedPositional(
   raw: string,
@@ -93,8 +87,11 @@ export function parseDelimitedPositional(
   const { startDelimiter, endDelimiter, fieldDelimiter, requireTrailingDelimiter, contextTagPrefix } =
     framing;
 
-  // Verify start delimiter
-  if (!text.startsWith(startDelimiter)) {
+  // Handle leading noise before '<' or trailing [CRLF] after '>'
+  const startIdx = text.indexOf(startDelimiter);
+  const endIdx = text.lastIndexOf(endDelimiter);
+
+  if (startIdx === -1) {
     diagnostics.push({
       code: 'MALFORMED_FRAME',
       severity: 'error',
@@ -108,8 +105,7 @@ export function parseDelimitedPositional(
     valid = false;
   }
 
-  // Verify end delimiter
-  if (!text.endsWith(endDelimiter)) {
+  if (endIdx === -1 || (startIdx !== -1 && endIdx < startIdx)) {
     diagnostics.push({
       code: 'UNCLOSED_FRAME',
       severity: 'error',
@@ -145,11 +141,38 @@ export function parseDelimitedPositional(
     };
   }
 
-  // Slice content inside start/end delimiters
-  const innerContent = text.slice(
-    startDelimiter.length,
-    text.length - endDelimiter.length
-  );
+  // Check for leading or trailing noise
+  if (startIdx > 0) {
+    diagnostics.push({
+      code: 'NOISE_IGNORED',
+      severity: 'info',
+      message: {
+        es: `Se ignoraron ${startIdx} caracteres de ruido antes del delimitador inicial '${startDelimiter}'.`,
+        en: `Ignored ${startIdx} noise characters before start delimiter '${startDelimiter}'.`
+      },
+      start: 0,
+      end: startIdx
+    });
+  }
+
+  if (endIdx < text.length - 1) {
+    const trailingNoise = text.slice(endIdx + 1);
+    if (trailingNoise !== '\r\n' && trailingNoise !== '\n' && trailingNoise !== '\r' && trailingNoise !== '[CRLF]') {
+      diagnostics.push({
+        code: 'NOISE_IGNORED',
+        severity: 'info',
+        message: {
+          es: `Se ignoraron caracteres posteriores al delimitador final '${endDelimiter}'.`,
+          en: `Ignored characters after end delimiter '${endDelimiter}'.`
+        },
+        start: endIdx + 1,
+        end: text.length
+      });
+    }
+  }
+
+  // Slice content strictly inside start/end delimiters
+  const innerContent = text.slice(startIdx + startDelimiter.length, endIdx);
 
   if (requireTrailingDelimiter && !innerContent.endsWith(fieldDelimiter)) {
     diagnostics.push({
@@ -159,8 +182,8 @@ export function parseDelimitedPositional(
         es: `El comando debe finalizar con el separador de campo '${fieldDelimiter}' antes de '${endDelimiter}'.`,
         en: `Command must end with field delimiter '${fieldDelimiter}' before '${endDelimiter}'.`
       },
-      start: text.length - endDelimiter.length,
-      end: text.length
+      start: endIdx - 1,
+      end: endIdx
     });
     return {
       deviceId: spec.id,
@@ -189,13 +212,13 @@ export function parseDelimitedPositional(
     role: 'delimiter',
     label: { es: 'Delimitador Inicial', en: 'Start Delimiter' },
     rawValue: startDelimiter,
-    start: 0,
-    end: startDelimiter.length
+    start: startIdx,
+    end: startIdx + startDelimiter.length
   });
 
   // Tokenize inner content by field delimiter
   const tokensWithPositions: { value: string; start: number; end: number }[] = [];
-  let currentPos = startDelimiter.length;
+  let currentPos = startIdx + startDelimiter.length;
   const rawTokens = innerContent.split(fieldDelimiter);
 
   // If requireTrailingDelimiter is true and innerContent ends with fieldDelimiter,
@@ -249,7 +272,7 @@ export function parseDelimitedPositional(
 
   // Token 0 is command code
   const cmdToken = tokensWithPositions[0]!;
-  const commandCode = cmdToken.value;
+  const commandCode = cmdToken.value.toUpperCase();
 
   if (commandCode.length === 0) {
     valid = false;
@@ -269,7 +292,7 @@ export function parseDelimitedPositional(
     id: 'seg-command-code',
     role: 'command-code',
     label: { es: 'Código de Comando', en: 'Command Code' },
-    rawValue: commandCode,
+    rawValue: cmdToken.value,
     start: cmdToken.start,
     end: cmdToken.end
   });
@@ -300,6 +323,7 @@ export function parseDelimitedPositional(
   // Handle Atalla status & error responses
   let isErrorResponse = false;
   let errorCode: string | null = null;
+  let detailedErrorCode: string | null = null;
   let errorSpec: ErrorCodeSpec | null = null;
   let offendingFieldOrTag: string | null = null;
   let firmwareVersionToken: string | null = null;
@@ -318,15 +342,21 @@ export function parseDelimitedPositional(
       offendingFieldOrTag = ff;
       firmwareVersionToken = vv;
 
+      // Extract optional detailed error code (Table 11-2) in field 1
+      if (ee !== '00' && fieldTokens.length > 1 && fieldTokens[1]!.value.length > 0) {
+        detailedErrorCode = fieldTokens[1]!.value;
+      }
+
       if (ee !== '00') {
         isErrorResponse = true;
         errorSpec = versionSpec.errorCodes[ee] ?? null;
+        const errTitle = errorSpec?.title.en ?? 'Error';
         diagnostics.push({
           code: 'ERROR_RESPONSE_CODE',
           severity: 'error',
           message: {
-            es: `El HSM respondió con error '${ee}': ${errorSpec?.title.es ?? 'Error'}`,
-            en: `HSM responded with error '${ee}': ${errorSpec?.title.en ?? 'Error'}`
+            es: `El HSM respondió con error '${ee}': ${errorSpec?.title.es ?? errTitle}`,
+            en: `HSM responded with error '${ee}': ${errTitle}`
           },
           start: fieldTokens[0]!.start,
           end: fieldTokens[0]!.start + 2
@@ -335,23 +365,39 @@ export function parseDelimitedPositional(
     }
   }
 
+  // Detect Key Management Mode from field tokens
+  let detectedKeyManagement: KeyManagementMode | null = null;
+  if (options?.keyManagement && options.keyManagement !== 'auto') {
+    detectedKeyManagement = options.keyManagement;
+  } else {
+    for (const tok of fieldTokens) {
+      if (tok.value.includes(',') || /^[13][A-Za-z0-9]{3}[A-Za-z0-9]000/.test(tok.value)) {
+        detectedKeyManagement = 'akb';
+        break;
+      }
+    }
+    if (!detectedKeyManagement) {
+      // Check for variant specific markers: 16/32 hex keys without commas
+      for (const tok of fieldTokens) {
+        if (/^[0-9A-Fa-f]{16}$/.test(tok.value) || /^[0-9A-Fa-f]{32}$/.test(tok.value)) {
+          detectedKeyManagement = 'variant';
+          break;
+        }
+      }
+    }
+  }
+
   // Find candidate commands
-  const matchingCommands = versionSpec.commands.filter(
-    (c) => c.code === commandCode
-  );
+  const matchingCommands = versionSpec.commands.filter((c) => c.code === commandCode);
 
   let matchedCommand: CommandSpec | null = null;
 
   if (matchingCommands.length > 0) {
     let filtered = matchingCommands;
     if (commandCode === '00') {
-      filtered = matchingCommands.filter(
-        (c) => c.direction === detectedDirection
-      );
+      filtered = matchingCommands.filter((c) => c.direction === detectedDirection);
     } else if (options?.expectedDirection) {
-      const byDirection = matchingCommands.filter(
-        (c) => c.direction === options.expectedDirection
-      );
+      const byDirection = matchingCommands.filter((c) => c.direction === options.expectedDirection);
       if (byDirection.length > 0) {
         filtered = byDirection;
         detectedDirection = options.expectedDirection;
@@ -362,17 +408,43 @@ export function parseDelimitedPositional(
       detectedDirection = matchingCommands[0]!.direction;
     }
 
+    // Try discriminating candidates using discriminator or subCode
     for (const cmd of filtered) {
-      if (cmd.subCode !== undefined) {
+      if (cmd.discriminator) {
+        const disc = cmd.discriminator;
+        const targetTok = fieldTokens[disc.fieldIndex];
+        if (targetTok) {
+          const tokVal = targetTok.value.trim().toUpperCase();
+          if (disc.match === 'exact' && disc.values.some((v) => v.toUpperCase() === tokVal)) {
+            matchedCommand = cmd;
+            break;
+          } else if (disc.match === 'oneOf' && disc.values.some((v) => v.toUpperCase() === tokVal)) {
+            matchedCommand = cmd;
+            break;
+          } else if (disc.match === 'beforeComma') {
+            const prefix = tokVal.split(',')[0]!.trim();
+            if (disc.values.some((v) => v.toUpperCase() === prefix)) {
+              matchedCommand = cmd;
+              break;
+            }
+          } else if (disc.match === 'keyword') {
+            if (disc.values.some((v) => tokVal.startsWith(v.toUpperCase()))) {
+              matchedCommand = cmd;
+              break;
+            }
+          }
+        }
+      } else if (cmd.subCode !== undefined) {
         const subIdx = cmd.subCodeFieldIndex ?? 0;
         const subTok = fieldTokens[subIdx];
-        if (subTok && subTok.value === cmd.subCode) {
+        if (subTok && subTok.value.toUpperCase() === cmd.subCode.toUpperCase()) {
           matchedCommand = cmd;
           break;
         }
       }
     }
 
+    // If still no direct discriminator match, pick candidate with closest field count & key management
     if (!matchedCommand) {
       matchedCommand = filtered[0] ?? null;
     }
@@ -393,8 +465,7 @@ export function parseDelimitedPositional(
   // Find paired command for request <-> response linking
   let pairedCommand: CommandSpec | null = null;
   if (matchedCommand?.pairedCode) {
-    const pairedDir =
-      matchedCommand.direction === 'request' ? 'response' : 'request';
+    const pairedDir = matchedCommand.direction === 'request' ? 'response' : 'request';
     pairedCommand =
       versionSpec.commands.find(
         (c) =>
@@ -404,18 +475,35 @@ export function parseDelimitedPositional(
       ) ?? null;
   }
 
-  // Parse & validate fields against matchedCommand.fields
-  const specFields = matchedCommand?.fields ?? [];
+  // Resolve target fields for this command and mode (AKB vs Variant)
+  let specFields: readonly FieldSpec[] = matchedCommand?.fields ?? [];
+  if (matchedCommand?.fieldsByMode && detectedKeyManagement) {
+    const modeFields = matchedCommand.fieldsByMode[detectedKeyManagement];
+    if (modeFields && modeFields.length > 0) {
+      specFields = modeFields;
+    }
+  }
+
+  // Calculate minimum required count: up to the last strictly required field
+  let minRequired = 0;
+  for (let idx = 0; idx < specFields.length; idx++) {
+    const sf = specFields[idx]!;
+    if (sf.presence === 'required' || (sf.presence === undefined && sf.required)) {
+      minRequired = idx + 1;
+    }
+  }
+
+  const omittedFields: FieldSpec[] = [];
 
   if (matchedCommand && !isErrorResponse) {
-    if (fieldTokens.length < specFields.length) {
+    if (fieldTokens.length < minRequired) {
       valid = false;
       diagnostics.push({
         code: 'MISSING_REQUIRED_FIELD',
         severity: 'error',
         message: {
-          es: `Se esperaban ${specFields.length} campos pero se recibieron ${fieldTokens.length}.`,
-          en: `Expected ${specFields.length} fields but received ${fieldTokens.length}.`
+          es: `Se esperaban al menos ${minRequired} campos pero se recibieron ${fieldTokens.length}.`,
+          en: `Expected at least ${minRequired} fields but received ${fieldTokens.length}.`
         }
       });
     } else if (fieldTokens.length > specFields.length) {
@@ -430,6 +518,14 @@ export function parseDelimitedPositional(
         start: fieldTokens[specFields.length]?.start,
         end: fieldTokens[fieldTokens.length - 1]?.end
       });
+    }
+  }
+
+  // Track omitted optional fields
+  if (fieldTokens.length < specFields.length) {
+    for (let j = fieldTokens.length; j < specFields.length; j++) {
+      const of = specFields[j];
+      if (of) omittedFields.push(of);
     }
   }
 
@@ -475,154 +571,135 @@ export function parseDelimitedPositional(
       continue;
     }
 
-      let fieldValid = true;
+    let fieldValid = true;
 
-      // Check required non-empty field
-      if (fSpec.required && tok.value.length === 0) {
-        fieldValid = false;
-        valid = false;
-        diagnostics.push({
-          code: 'MISSING_REQUIRED_FIELD',
-          severity: 'error',
-          message: {
-            es: `El campo obligatorio '${fSpec.name.es}' no puede estar vacío.`,
-            en: `Required field '${fSpec.name.en}' cannot be empty.`
-          },
-          start: tok.start,
-          end: tok.end,
-          fieldId: fSpec.id
-        });
-      }
-
-      // Validate length (checking main length spec or any declared key management variants)
-      const isLengthValid =
-        tok.value.length === 0 ||
-        validateFieldLength(tok.value, fSpec.length) ||
-        (fSpec.variants &&
-          fSpec.variants.length > 0 &&
-          fSpec.variants.some((v) => validateFieldLength(tok.value, v.length)));
-
-      let detectedMode: 'akb' | 'variant' | 'both' | undefined = undefined;
-      let resolvedDescription = fSpec.description;
-
-      if (fSpec.variants && fSpec.variants.length > 0) {
-        const akbVar = fSpec.variants.find((v) => v.mode === 'akb');
-        const variantVar = fSpec.variants.find((v) => v.mode === 'variant');
-        const isAkbMatch =
-          akbVar &&
-          (tok.value.includes(',') ||
-            /^[13][A-Za-z0-9]{3}[A-Za-z0-9]000/.test(tok.value) ||
-            validateFieldLength(tok.value, akbVar.length));
-        const isVariantMatch =
-          variantVar && validateFieldLength(tok.value, variantVar.length);
-
-        if (isAkbMatch && !isVariantMatch) {
-          detectedMode = 'akb';
-          if (akbVar?.description) resolvedDescription = akbVar.description;
-        } else if (isVariantMatch && !isAkbMatch) {
-          detectedMode = 'variant';
-          if (variantVar?.description) resolvedDescription = variantVar.description;
-        } else if (isAkbMatch && isVariantMatch) {
-          if (tok.value.includes(',') || /^[13][A-Za-z0-9]{7}/.test(tok.value)) {
-            detectedMode = 'akb';
-            if (akbVar?.description) resolvedDescription = akbVar.description;
-          } else {
-            detectedMode = 'variant';
-            if (variantVar?.description) resolvedDescription = variantVar.description;
-          }
-        }
-      }
-
-      if (tok.value.length > 0 && !isLengthValid) {
-        fieldValid = false;
-        valid = false;
-        diagnostics.push({
-          code: 'INVALID_FIELD_LENGTH',
-          severity: 'error',
-          message: {
-            es: `La longitud del campo '${fSpec.name.es}' (${tok.value.length}) no es válida según su especificación.`,
-            en: `Length of field '${fSpec.name.en}' (${tok.value.length}) is invalid per specification.`
-          },
-          start: tok.start,
-          end: tok.end,
-          fieldId: fSpec.id
-        });
-      }
-
-      // Validate encoding
-      if (!validateEncoding(tok.value, fSpec.encoding)) {
-        fieldValid = false;
-        valid = false;
-        diagnostics.push({
-          code: 'INVALID_FIELD_ENCODING',
-          severity: 'error',
-          message: {
-            es: `El campo '${fSpec.name.es}' tiene una codificación inválida (esperado ${fSpec.encoding}).`,
-            en: `Field '${fSpec.name.en}' has invalid encoding (expected ${fSpec.encoding}).`
-          },
-          start: tok.start,
-          end: tok.end,
-          fieldId: fSpec.id
-        });
-      }
-
-      // Validate enum values with safe masking
-      let enumMeaning = undefined;
-      if (fSpec.enumValues && fSpec.enumValues.length > 0) {
-        const option = fSpec.enumValues.find((o) => o.value === tok.value);
-        if (!option) {
-          fieldValid = false;
-          valid = false;
-          const displayVal = fSpec.sensitive ? maskSensitiveValue(tok.value) : tok.value;
-          diagnostics.push({
-            code: 'INVALID_ENUM_VALUE',
-            severity: 'error',
-            message: {
-              es: `Valor '${displayVal}' no permitido para '${fSpec.name.es}'.`,
-              en: `Value '${displayVal}' is not allowed for '${fSpec.name.en}'.`
-            },
-            start: tok.start,
-            end: tok.end,
-            fieldId: fSpec.id
-          });
-        } else {
-          enumMeaning = option.label;
-        }
-      }
-
-      const maskedValue = fSpec.sensitive
-        ? maskSensitiveValue(tok.value)
-        : tok.value;
-
-      fields.push({
-        id: fSpec.id,
-        name: fSpec.name,
-        description: resolvedDescription,
-        rawValue: tok.value,
-        decodedValue: tok.value,
-        maskedValue,
-        start: tok.start,
-        end: tok.end,
-        encoding: fSpec.encoding,
-        sensitive: !!fSpec.sensitive,
-        valid: fieldValid,
-        position: i,
-        enumMeaning,
-        notes: fSpec.notes,
-        variants: fSpec.variants,
-        detectedMode
-      });
-
-      segments.push({
-        id: `seg-field-${fSpec.id}`,
-        role: 'field',
-        label: fSpec.name,
-        rawValue: tok.value,
+    // Check presence & emptiness
+    const isStrictlyRequired = fSpec.presence === 'required' || (fSpec.presence === undefined && fSpec.required);
+    if (isStrictlyRequired && tok.value.length === 0) {
+      fieldValid = false;
+      valid = false;
+      diagnostics.push({
+        code: 'MISSING_REQUIRED_FIELD',
+        severity: 'error',
+        message: {
+          es: `El campo obligatorio '${fSpec.name.es}' no puede estar vacío.`,
+          en: `Required field '${fSpec.name.en}' cannot be empty.`
+        },
         start: tok.start,
         end: tok.end,
         fieldId: fSpec.id
       });
     }
+
+    // Validate length (handling set, range, volatile table locations, space-grouped hex)
+    const cleanHex = tok.value.replace(/\s+/g, '');
+    const isVolatile = fSpec.allowsVolatileLocation && isVolatileTableLocation(tok.value);
+    const isLengthValid =
+      tok.value.length === 0 ||
+      isVolatile ||
+      validateFieldLength(tok.value, fSpec.length) ||
+      validateFieldLength(cleanHex, fSpec.length) ||
+      (fSpec.variants &&
+        fSpec.variants.length > 0 &&
+        fSpec.variants.some((v) => validateFieldLength(tok.value, v.length) || validateFieldLength(cleanHex, v.length)));
+
+    const resolvedDescription = fSpec.description;
+    const detectedMode: 'akb' | 'variant' | 'both' | undefined = detectedKeyManagement ?? undefined;
+
+    if (tok.value.length > 0 && !isLengthValid) {
+      fieldValid = false;
+      valid = false;
+      diagnostics.push({
+        code: 'INVALID_FIELD_LENGTH',
+        severity: 'error',
+        message: {
+          es: `La longitud del campo '${fSpec.name.es}' (${tok.value.length}) no es válida según su especificación.`,
+          en: `Length of field '${fSpec.name.en}' (${tok.value.length}) is invalid per specification.`
+        },
+        start: tok.start,
+        end: tok.end,
+        fieldId: fSpec.id
+      });
+    }
+
+    // Validate encoding
+    const isEncodingValid =
+      tok.value.length === 0 ||
+      isVolatile ||
+      validateEncoding(tok.value, fSpec.encoding) ||
+      ((fSpec.encoding === 'hex-ascii' || fSpec.encoding === 'binary-hex') && validateEncoding(cleanHex, fSpec.encoding));
+
+    if (tok.value.length > 0 && !isEncodingValid) {
+      fieldValid = false;
+      valid = false;
+      diagnostics.push({
+        code: 'INVALID_FIELD_ENCODING',
+        severity: 'error',
+        message: {
+          es: `El campo '${fSpec.name.es}' tiene una codificación inválida (esperado ${fSpec.encoding}).`,
+          en: `Field '${fSpec.name.en}' has invalid encoding (expected ${fSpec.encoding}).`
+        },
+        start: tok.start,
+        end: tok.end,
+        fieldId: fSpec.id
+      });
+    }
+
+    // Validate enum values with safe masking
+    let enumMeaning = undefined;
+    if (fSpec.enumValues && fSpec.enumValues.length > 0) {
+      const option = fSpec.enumValues.find((o) => o.value === tok.value);
+      if (!option) {
+        fieldValid = false;
+        valid = false;
+        const displayVal = fSpec.sensitive ? maskSensitiveValue(tok.value) : tok.value;
+        diagnostics.push({
+          code: 'INVALID_ENUM_VALUE',
+          severity: 'error',
+          message: {
+            es: `Valor '${displayVal}' no permitido para '${fSpec.name.es}'.`,
+            en: `Value '${displayVal}' is not allowed for '${fSpec.name.en}'.`
+          },
+          start: tok.start,
+          end: tok.end,
+          fieldId: fSpec.id
+        });
+      } else {
+        enumMeaning = option.label;
+      }
+    }
+
+    const maskedValue = fSpec.sensitive ? maskSensitiveValue(tok.value) : tok.value;
+
+    fields.push({
+      id: fSpec.id,
+      name: fSpec.name,
+      description: resolvedDescription,
+      rawValue: tok.value,
+      decodedValue: tok.value,
+      maskedValue,
+      start: tok.start,
+      end: tok.end,
+      encoding: fSpec.encoding,
+      sensitive: !!fSpec.sensitive,
+      valid: fieldValid,
+      position: i,
+      enumMeaning,
+      notes: fSpec.notes,
+      variants: fSpec.variants,
+      detectedMode
+    });
+
+    segments.push({
+      id: `seg-field-${fSpec.id}`,
+      role: 'field',
+      label: fSpec.name,
+      rawValue: tok.value,
+      start: tok.start,
+      end: tok.end,
+      fieldId: fSpec.id
+    });
+  }
 
   // Record end delimiter segment
   segments.push({
@@ -630,8 +707,8 @@ export function parseDelimitedPositional(
     role: 'delimiter',
     label: { es: 'Delimitador Final', en: 'End Delimiter' },
     rawValue: endDelimiter,
-    start: text.length - endDelimiter.length,
-    end: text.length
+    start: endIdx,
+    end: endIdx + endDelimiter.length
   });
 
   return {
@@ -642,18 +719,21 @@ export function parseDelimitedPositional(
     framingType: 'delimited-positional',
     detectedDirection,
     expectedDirection: options?.expectedDirection,
+    detectedKeyManagement,
     commandCode,
     subCode: matchedCommand?.subCode ?? null,
     matchedCommand,
     pairedCommand,
     isErrorResponse,
     errorCode,
+    detailedErrorCode,
     errorSpec,
     offendingFieldOrTag,
     firmwareVersionToken,
     echoToken,
     segments,
     fields,
+    omittedFields: omittedFields.length > 0 ? omittedFields : undefined,
     diagnostics,
     valid: valid && !isErrorResponse
   };
