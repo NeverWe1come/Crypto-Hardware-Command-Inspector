@@ -115,9 +115,35 @@ export type FieldEncoding =
 export type FieldLengthSpec =
   | { readonly kind: 'fixed'; readonly length: number }
   | { readonly kind: 'range'; readonly min: number; readonly max: number }
+  | { readonly kind: 'set'; readonly values: readonly number[] }
   | { readonly kind: 'variable'; readonly min?: number; readonly max?: number }
   | { readonly kind: 'delimited'; readonly delimiter: string }
   | { readonly kind: 'thales-key' };
+
+/**
+ * Field presence mode according to hardware command specification:
+ * - `required`: Field must be present and non-empty.
+ * - `may-be-empty`: Field token must be present, but its content may be empty (`##`).
+ * - `optional`: Field may be omitted entirely from the end of the frame or present.
+ */
+export type FieldPresence = 'required' | 'may-be-empty' | 'optional';
+
+/**
+ * Key management mode for hardware commands (specifically Atalla AT1000).
+ */
+export type KeyManagementMode = 'akb' | 'variant';
+
+/**
+ * Command discriminator configuration to accurately match polymorphic command subvariants.
+ */
+export interface CommandDiscriminator {
+  /** Zero-based positional token index to test (defaults to 0 for field after command code). */
+  readonly fieldIndex: number;
+  /** Match type: exact string match, oneOf value list, or beforeComma token prefix. */
+  readonly match: 'exact' | 'oneOf' | 'beforeComma' | 'keyword';
+  /** Value or list of matching values. */
+  readonly values: readonly string[];
+}
 
 /**
  * Discrete allowed value for an enumerated field parameter.
@@ -161,6 +187,14 @@ export interface FieldSpec {
   readonly length: FieldLengthSpec;
   readonly encoding: FieldEncoding;
   readonly required: boolean;
+  /** Presence requirement: 'required', 'may-be-empty' ([FIELD]), or 'optional' ([FIELD#]). */
+  readonly presence?: FieldPresence;
+  /** Literal length description directly from manual (e.g. "16, 32", "0, 74, 90, 106, 110", "varies"). */
+  readonly lengthText?: string;
+  /** Whether this field accepts a volatile table memory reference. */
+  readonly allowsVolatileLocation?: boolean;
+  /** Optional repeat group identifier for nested repeating fields. */
+  readonly repeatGroup?: string;
   /**
    * Marks cryptographic material that must be masked by default (`••••••••`) in the UI and logs
    * (e.g., PIN blocks, clear keys, cryptograms, CVV/CVC values).
@@ -199,6 +233,22 @@ export interface CommandSpec {
   readonly subCode?: string;
   /** Zero-based index of the positional field used to match `subCode` (defaults to `0`). */
   readonly subCodeFieldIndex?: number;
+  /** Advanced discriminator for polymorphic command subvariants. */
+  readonly discriminator?: CommandDiscriminator;
+  /** Subvariant localized label (e.g., "IBM 3624", "DUKPT", "Identikey"). */
+  readonly subVariant?: LocalizedString;
+  /** Command syntax signature from the reference manual. */
+  readonly syntax?: string;
+  /** Key management compatibility matrix declared in manual. */
+  readonly keyManagement?: readonly {
+    readonly mode: KeyManagementMode;
+    readonly defaultEnabled: boolean;
+    readonly mfk: string;
+  }[];
+  /** Specific parameter fields separated by key management mode (AKB vs Variant). */
+  readonly fieldsByMode?: Partial<Record<KeyManagementMode, readonly FieldSpec[]>>;
+  /** Mode-specific usage notes. */
+  readonly usageNotes?: Partial<Record<KeyManagementMode, readonly LocalizedString[]>>;
   readonly direction: CommandDirection;
   /** Expected counterpart command/response code for correlation (e.g., `'ND'` for `'NC'`). */
   readonly pairedCode?: string;
@@ -452,6 +502,7 @@ export type DiagnosticCode =
   | 'MALFORMED_FRAME'
   | 'UNCLOSED_FRAME'
   | 'UNKNOWN_COMMAND'
+  | 'UNKNOWN_SUBCOMMAND'
   | 'DIRECTION_MISMATCH'
   | 'MISSING_REQUIRED_FIELD'
   | 'EXTRA_UNEXPECTED_FIELD'
@@ -459,7 +510,8 @@ export type DiagnosticCode =
   | 'INVALID_FIELD_LENGTH'
   | 'INVALID_FIELD_ENCODING'
   | 'INVALID_ENUM_VALUE'
-  | 'ERROR_RESPONSE_CODE';
+  | 'ERROR_RESPONSE_CODE'
+  | 'NOISE_IGNORED';
 
 /**
  * Actionable diagnostic message produced during command parsing and validation.
@@ -485,6 +537,8 @@ export interface ParseCommandOptions {
   readonly headerLength?: number;
   /** Selected device interface ID (e.g., `'pkcs11'`, `'rest-json'`, `'cca-verb'`). */
   readonly interfaceId?: string;
+  /** Selected or forced key management mode (e.g. 'akb' | 'variant' | 'auto'). */
+  readonly keyManagement?: KeyManagementMode | 'auto';
 }
 
 /**
@@ -500,12 +554,14 @@ export interface ParseResult {
   readonly framingType: FramingType;
   readonly detectedDirection: CommandDirection | 'unknown';
   readonly expectedDirection?: CommandDirection;
+  readonly detectedKeyManagement?: KeyManagementMode | null;
   readonly commandCode: string | null;
   readonly subCode?: string | null;
   readonly matchedCommand: CommandSpec | null;
   readonly pairedCommand: CommandSpec | null;
   readonly isErrorResponse: boolean;
   readonly errorCode: string | null;
+  readonly detailedErrorCode?: string | null;
   readonly errorSpec: ErrorCodeSpec | null;
   /** Offending field index (e.g., `'01'` in Atalla) or tag name (e.g., `'AF'` in Futurex) reported by an error frame. */
   readonly offendingFieldOrTag?: string | null;
@@ -521,6 +577,8 @@ export interface ParseResult {
   readonly trailer?: string | null;
   readonly segments: readonly FrameSegment[];
   readonly fields: readonly ParsedField[];
+  /** Optional fields declared in spec that were omitted from this command frame. */
+  readonly omittedFields?: readonly FieldSpec[];
   readonly diagnostics: readonly ParseDiagnostic[];
   readonly valid: boolean;
 }

@@ -449,6 +449,14 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                     >
                       {parseResult?.commandCode ?? '-'}
                     </span>
+                    {parseResult?.matchedCommand?.subVariant && (
+                      <span
+                        data-testid="general-info-subvariant-badge"
+                        className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#0284c7]/20 text-[#38bdf8] border border-[#0284c7]/30"
+                      >
+                        {resolveText(parseResult.matchedCommand.subVariant)}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -456,12 +464,26 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                   <span className="text-[11px] text-muted-foreground block font-medium">
                     Dirección
                   </span>
-                  <span
-                    data-testid="general-info-direction"
-                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-muted text-foreground border border-border"
-                  >
-                    {activeCommand.direction === 'request' ? 'Petición' : 'Respuesta'}
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                    <span
+                      data-testid="general-info-direction"
+                      className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-muted text-foreground border border-border"
+                    >
+                      {activeCommand.direction === 'request' ? 'Petición' : 'Respuesta'}
+                    </span>
+                    {parseResult?.detectedKeyManagement && (
+                      <span
+                        data-testid="general-info-key-management-badge"
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                          parseResult.detectedKeyManagement === 'akb'
+                            ? 'bg-[#FBD5CD]/20 text-[#f472b6] border border-[#f472b6]/40'
+                            : 'bg-[#B5B1D2]/20 text-purple-300 border border-purple-500/40'
+                        }`}
+                      >
+                        {parseResult.detectedKeyManagement === 'akb' ? 'Modo AKB' : 'Modo Variant'}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div>
@@ -794,7 +816,13 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                                       data-testid={`field-value-${field.id}`}
                                       className="font-mono text-xs break-all leading-relaxed text-right select-all"
                                     >
-                                      {displayValue}
+                                      {field.rawValue.length === 0 ? (
+                                        <span className="italic text-amber-500/80 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded text-[10px] select-none">
+                                          (vacío)
+                                        </span>
+                                      ) : (
+                                        displayValue
+                                      )}
                                     </span>
                                     {isSensitive && (
                                       <button
@@ -950,6 +978,34 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                             </React.Fragment>
                           );
                         })}
+                        {parseResult.omittedFields &&
+                          parseResult.omittedFields.length > 0 &&
+                          parseResult.omittedFields.map((of, ofIdx) => (
+                            <tr
+                              key={`omitted-${of.id}-${ofIdx}`}
+                              data-testid={`omitted-field-row-${of.id}`}
+                              className="align-top bg-muted/5 opacity-60 text-muted-foreground border-b border-border/30"
+                            >
+                              <td className="py-1.5 px-2 font-medium align-top">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span>{resolveText(of.name) || of.id}</span>
+                                  <span className="text-[9px] uppercase font-semibold px-1 py-0.2 rounded bg-muted text-muted-foreground border border-border">
+                                    Omitido
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="py-1.5 px-2 font-mono text-[11px] align-top">
+                                {of.lengthText ?? '-'}
+                              </td>
+                              <td className="py-1.5 px-2 font-mono text-[11px] align-top">
+                                {of.encoding}
+                              </td>
+                              <td className="py-1.5 px-2 text-right align-top font-mono text-xs italic text-muted-foreground/60 select-none">
+                                - no enviado -
+                              </td>
+                              <td className="py-1.5 px-2 text-center align-top"></td>
+                            </tr>
+                          ))}
                       </tbody>
                     </table>
                   </div>
@@ -1027,6 +1083,19 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
                       >
                         {resolveText(parseResult.errorSpec?.description)}
                       </p>
+                      {parseResult.detailedErrorCode && (
+                        <div
+                          data-testid="detailed-error-code"
+                          className="pt-1.5 border-t border-destructive/20 text-xs text-destructive-foreground/90 flex items-center gap-1.5"
+                        >
+                          <span className="font-semibold text-foreground text-[11px]">
+                            Detalle (Tabla 11-2):
+                          </span>
+                          <span className="font-mono font-bold bg-destructive/30 px-1.5 py-0.5 rounded text-[11px]">
+                            {parseResult.detailedErrorCode}
+                          </span>
+                        </div>
+                      )}
                       {parseResult.errorSpec?.troubleshooting && (
                         <div className="pt-1 border-t border-border/40">
                           <span className="text-[11px] font-semibold text-foreground">

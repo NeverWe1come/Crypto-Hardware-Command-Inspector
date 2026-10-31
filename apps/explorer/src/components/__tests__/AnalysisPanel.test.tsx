@@ -610,7 +610,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       );
 
       // Verify AKB badge is rendered for VSVC Master Key field (first parameter)
-      const akbBadge = screen.getByText('AKB');
+      const akbBadge = screen.getByTestId('badge-akb-vsvc-master-key');
       expect(akbBadge).toBeInTheDocument();
 
       unmount();
@@ -635,7 +635,7 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
         />
       );
 
-      const variantBadge = screen.getByText('Variant');
+      const variantBadge = screen.getByTestId('badge-variant-vsvc-master-key');
       expect(variantBadge).toBeInTheDocument();
     });
 
@@ -1026,13 +1026,10 @@ describe('Phase 5: AnalysisPanel Component (Detailed Analysis Panel)', () => {
       expect(badge).toHaveTextContent('01');
 
       const title = screen.getByTestId('error-code-title');
-      expect(title).toHaveTextContent(/Error de Paridad en Clave/i);
+      expect(title).toHaveTextContent(/Length out of range/i);
 
       const description = screen.getByTestId('error-code-description');
-      expect(description).toHaveTextContent(/paridad incorrecta/i);
-
-      const troubleshooting = screen.getByTestId('error-code-troubleshooting');
-      expect(troubleshooting).toHaveTextContent(/paridad impar/i);
+      expect(description).toHaveTextContent(/Length out of range/i);
     });
 
     it('renders Thales error code "10" with official Thales description and causes', () => {

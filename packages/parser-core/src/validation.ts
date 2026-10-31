@@ -23,7 +23,7 @@ export function validateEncoding(value: string, encoding: FieldEncoding): boolea
     case 'alphanumeric':
       return /^[0-9A-Za-z]+$/.test(value);
     case 'ascii':
-      return /^[\x20-\x7E\t\r\n]*$/.test(value);
+      return /^[\x20-\x7E\t\r\n\u2018\u2019\u201C\u201D\u2013\u2014]*$/.test(value);
     case 'base64':
       return /^[A-Za-z0-9+/=]+$/.test(value);
     default: {
@@ -46,6 +46,8 @@ export function validateFieldLength(value: string, spec: FieldLengthSpec): boole
       return value.length === spec.length;
     case 'range':
       return value.length >= spec.min && value.length <= spec.max;
+    case 'set':
+      return spec.values.includes(value.length);
     case 'variable':
       return (
         (spec.min === undefined || value.length >= spec.min) &&
@@ -71,4 +73,18 @@ export function validateFieldLength(value: string, spec: FieldLengthSpec): boole
       return true;
     }
   }
+}
+
+/**
+ * Checks whether a given string is a valid Atalla volatile table reference
+ * (e.g., "#0", "#1", "#99", or "T01", "V01", "00" through "99").
+ *
+ * @param value - Value to check.
+ */
+export function isVolatileTableLocation(value: string): boolean {
+  if (!value) return false;
+  // Common volatile table formats described in Atalla AT1000 manual:
+  // - single digit or 2 digits 0-99
+  // - preceded by optional prefix like V or T
+  return /^(?:[VT]?[0-9]{1,3}|#[0-9]{1,3})$/i.test(value.trim());
 }

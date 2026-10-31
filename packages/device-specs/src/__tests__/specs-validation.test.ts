@@ -331,9 +331,9 @@ describe('Version Inheritance Hierarchy (`resolveDeviceVersion`)', () => {
     });
 
     it('resolves all command specifications for Atalla AT1000 v8.60', () => {
-      expect(atallaAt1000Spec.versions['8.60']?.commands.length).toBe(468);
+      expect(atallaAt1000Spec.versions['8.60']?.commands.length).toBe(496);
       const resolved86 = resolveDeviceVersion(atallaAt1000Spec, '8.60');
-      expect(resolved86.commands.length).toBe(475);
+      expect(resolved86.commands.length).toBe(503);
     });
   });
 

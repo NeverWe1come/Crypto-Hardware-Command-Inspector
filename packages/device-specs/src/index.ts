@@ -17,6 +17,7 @@ export { DEVICE_CATALOG } from './catalog';
 export { atallaAt1000Spec } from './devices/utimaco-atalla-at1000';
 export { atallaV860Commands } from './devices/utimaco-atalla-v860-commands';
 export { thalesPayshield10kSpec } from './devices/thales-payshield-10k';
+export { THALES_PAYSHIELD_V23_ERRORS } from './devices/thales-payshield-v23-errors';
 export {
   thalesPayshieldCommandsV23,
   thalesPayshieldCommandsV19

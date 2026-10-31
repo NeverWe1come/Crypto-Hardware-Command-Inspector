@@ -60,6 +60,10 @@ export const FieldLengthSpecSchema = z.discriminatedUnion('kind', [
       message: 'Range min must be less than or equal to max'
     }),
   z.object({
+    kind: z.literal('set'),
+    values: z.array(z.number().int().min(0)).min(1)
+  }),
+  z.object({
     kind: z.literal('variable'),
     min: z.number().int().min(0).optional(),
     max: z.number().int().min(0).optional()
@@ -112,6 +116,16 @@ export const FieldConditionSchema = z.object({
   equals: z.union([z.string(), z.array(z.string())])
 });
 
+export const FieldPresenceSchema = z.enum(['required', 'may-be-empty', 'optional']);
+
+export const KeyManagementModeSchema = z.enum(['akb', 'variant']);
+
+export const CommandDiscriminatorSchema = z.object({
+  fieldIndex: z.number().int().min(0),
+  match: z.enum(['exact', 'oneOf', 'beforeComma', 'keyword']),
+  values: z.array(z.string())
+});
+
 /**
  * Zod schema for individual command parameter specifications.
  */
@@ -124,6 +138,10 @@ export const FieldSpecSchema: z.ZodType<FieldSpec> = z.object({
   length: FieldLengthSpecSchema,
   encoding: FieldEncodingSchema,
   required: z.boolean(),
+  presence: FieldPresenceSchema.optional(),
+  lengthText: z.string().optional(),
+  allowsVolatileLocation: z.boolean().optional(),
+  repeatGroup: z.string().optional(),
   sensitive: z.boolean().optional(),
   prefixDelimiter: z.string().optional(),
   enumValues: z.array(FieldEnumOptionSchema).optional(),
@@ -202,6 +220,30 @@ export const CommandSpecSchema = z.object({
   code: z.string().min(1),
   subCode: z.string().optional(),
   subCodeFieldIndex: z.number().int().min(0).optional(),
+  discriminator: CommandDiscriminatorSchema.optional(),
+  subVariant: LocalizedStringSchema.optional(),
+  syntax: z.string().optional(),
+  keyManagement: z
+    .array(
+      z.object({
+        mode: KeyManagementModeSchema,
+        defaultEnabled: z.boolean(),
+        mfk: z.string()
+      })
+    )
+    .optional(),
+  fieldsByMode: z
+    .object({
+      akb: z.array(FieldSpecSchema).optional(),
+      variant: z.array(FieldSpecSchema).optional()
+    })
+    .optional(),
+  usageNotes: z
+    .object({
+      akb: z.array(LocalizedStringSchema).optional(),
+      variant: z.array(LocalizedStringSchema).optional()
+    })
+    .optional(),
   direction: z.enum(['request', 'response']),
   pairedCode: z.string().optional(),
   name: LocalizedStringSchema,

@@ -6,6 +6,7 @@
 import type { DeviceSpec } from '@chci/parser-core';
 import { atallaV860Commands } from './utimaco-atalla-v860-commands.js';
 import { ATALLA_DOCUMENTATION_SECTIONS } from './utimaco-atalla-docs.js';
+import { ATALLA_ERROR_CODES_11_1 } from './utimaco-atalla-v860-errors.js';
 
 /**
  * Utimaco Atalla AT1000 specification.
@@ -463,18 +464,12 @@ export const atallaAt1000Spec: DeviceSpec = {
         en: 'Firmware v8.60 (Current)'
       },
       releaseNotes: {
-        es: 'Extiende v8.50 con soporte adicional para algoritmos AES en bloques AKB y el catálogo completo de comandos extraído del manual oficial v8.60.',
-        en: 'Extends v8.50 with AES support in AKB blocks and the full command catalog extracted from the official v8.60 manual.'
+        es: 'Catálogo oficial completo v8.60 con tablas diferenciadas AKB / Variant, discriminadores de subcomandos y errores de Tabla 11-1.',
+        en: 'Complete official v8.60 catalog with distinct AKB / Variant tables, subvariant discriminators, and Table 11-1 errors.'
       },
       extends: '8.50',
       commands: atallaV860Commands,
-      errorCodes: {
-        '21': {
-          code: '21',
-          title: { es: 'Formato de Bloque AKB Inválido', en: 'Invalid AKB Block Format' },
-          description: { es: 'El bloque AKB versión 8.60 no contiene los parámetros requeridos.', en: 'AKB block does not contain required v8.60 parameters.' }
-        }
-      }
+      errorCodes: ATALLA_ERROR_CODES_11_1
     }
   }
 };
