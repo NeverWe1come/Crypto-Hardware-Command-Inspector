@@ -5,7 +5,7 @@
  * field descriptions, AKB/Variant key management badges, and color-coded notices.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { CommandSpec, DeviceSpec, FieldSpec } from '@chci/parser-core';
 import {
   Dialog,
@@ -37,24 +37,30 @@ export function CommandInfoModal({
   deviceSpec,
   locale
 }: CommandInfoModalProps) {
-  const [activeView, setActiveView] = useState<'markdown' | 'fields' | 'examples'>('markdown');
-  const [modeFilter, setModeFilter] = useState<'all' | 'akb' | 'variant'>('all');
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-
-  if (!commandSpec) return null;
-
   const resolve = (ls?: { es: string; en: string; gl?: string } | null) => {
     if (!ls) return '';
     return (ls as Record<string, string>)[locale] ?? ls.es ?? ls.en ?? '';
   };
 
-  const rawDoc = resolve(commandSpec.markdownDoc);
+  const rawDoc = resolve(commandSpec?.markdownDoc);
   const hasMarkdownDoc = Boolean(rawDoc && rawDoc.trim().length > 0);
-  const hasExamples = Boolean(commandSpec.examples && commandSpec.examples.length > 0);
+  const hasExamples = Boolean(commandSpec?.examples && commandSpec.examples.length > 0);
   const hasFieldsByMode = Boolean(
-    commandSpec.fieldsByMode &&
+    commandSpec?.fieldsByMode &&
       (commandSpec.fieldsByMode.akb?.length || commandSpec.fieldsByMode.variant?.length)
   );
+
+  const [activeView, setActiveView] = useState<'markdown' | 'fields' | 'examples'>(() =>
+    hasMarkdownDoc ? 'markdown' : 'fields'
+  );
+  const [modeFilter, setModeFilter] = useState<'all' | 'akb' | 'variant'>('all');
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    setActiveView(hasMarkdownDoc ? 'markdown' : 'fields');
+  }, [commandSpec?.id, hasMarkdownDoc]);
+
+  if (!commandSpec) return null;
 
   const displayFields: readonly FieldSpec[] = (() => {
     if (modeFilter === 'akb' && commandSpec.fieldsByMode?.akb?.length) {
